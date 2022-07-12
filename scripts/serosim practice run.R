@@ -6,13 +6,13 @@ library(patchwork)
 library(tidyr)
 
 ####LOAD PACKAGE#####
-#library(serosim) #serosim
+library(serosim) #serosim
 devtools::load_all("../../serosim")
 
 
 #### POPULATION PARAMETERS####
-N <- 500 # number of individuals in the study population
-years <- 10 # number of years to run the simulation for
+N <- 10 # number of individuals in the study population
+years <- 1 # number of years to run the simulation for
 t_periods_per_year <- 12 # number of time periods per year (12 months)
 times<- seq(1,years*t_periods_per_year, by=1) # creates a vector of all months in 10 years
 N_pathogens<-2
@@ -22,10 +22,30 @@ vacc_max <- 60 #time step at which an individual becomes too old to get vaccinat
 
 birth_times <-simulate_birth_times(N, times, limit=vacc_min)
 # ?simulate_birth_times
-N_alive <- find_N_alive(N, times)
+# N_alive <- find_N_alive(N, times)  #This function doesn't work when individual's are removed from the population 
 # ?find_N_alive
 plot_age_distribution(birth_times)
 # ?plot_age_distribution
+
+
+
+removal_min <- 0 # the minimum age at which an individual can be removed from the population 
+removal_max <- 100 # the maximum age at which an individual can be removed from the population 
+prob_removal <- 0.9 # the probability that an individual will be removed from the population
+
+removal_times<-simulate_removal_times(N, times, birth_times, removal_min=0, removal_max=100, prob_removal=0.9)
+# ?simulate_removal_times
+plot_age_distribution(removal_times)
+
+
+#pre load the demography categories, values and distributions 
+aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distribution"=c(0.2,0.2,0.6)),
+            "NS"=list("name"="NS","options"=c("low","high"),"distribution"=c(0.5,0.5)),
+            "Sex"=list("name"="Sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),
+            "Location"=list("name"="Location","options"=c("North", "South", "East", "West"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+
+demography<- generate_pop_demography(N, times, birth_times, removal_times, aux=aux)
+
 
 
 #### ANTIBODY KINETICS PARAMATERS####
