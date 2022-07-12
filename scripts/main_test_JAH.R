@@ -1,13 +1,14 @@
-N <- 100
-times <- seq(1,100,by=1)
+N <- 10
+times <- seq(1,10,by=1)
 demography <- tibble(i=1:N,birth=rep(1,N), death=rep(NA,N),location=rep(1,N))
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
 observation_times <- NULL
-lambdas <- array(rep(0.01,length(times)), dim=c(length(times),1,1))
+lambdas <- array(rep(0.1,length(times)), dim=c(length(times),1,1))
 antigen_map <- tibble(exposure_id=1,antigen_id=1)
 theta <- list("boost_mean"=2,"boost_sd"=1)
 
-exposure_model <- function(i, t, e, l, lambdas, demography){
+exposure_model <- function(i, t, e, l, lambdas, demography, my_extra_argument){
+    print(my_extra_argument)
     p <- lambdas[t, e, l]
     p
 }
@@ -17,7 +18,8 @@ immunity_model <- function(i, t, e, exposure_histories,
 }
 observation_model <- NULL
 draw_parameters <- function(i, t, e, demography, theta, ...){
-    boost <- rnorm(1, theta[["boost_mean"]],theta[["boost_sd"]])
+    #boost <- rnorm(1, theta[["boost_mean"]],theta[["boost_sd"]])
+    boost <- theta[["boost_mean"]]
     tibble(i=i, t=t, e=e,name="boost",value=boost)    
 }
 antibody_model <- function(i,t1,ag, exposure_histories,kinetics_parameters,antigen_map){
@@ -35,6 +37,8 @@ antibody_model <- function(i,t1,ag, exposure_histories,kinetics_parameters,antig
 
 res <- serosim(simulation_settings, demography, observation_times,
         lambdas, antigen_map, theta,
-        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters)
+        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters,
+        
+        my_extra_argument="hello")
 image(t(res$antibody_states[,,1]))
 

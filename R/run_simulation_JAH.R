@@ -1,10 +1,14 @@
+#' @export
 serosim <- function(
+    ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
     observation_times=NULL, ## tibble of observation times and antigen for each individual
     lambdas, ## 3D matrix giving force of infection for each exposure ID, location and time
     antigen_map, ## Object determining relationship between exposure IDs and antigens
     theta,
+    
+    ## FUNCTIONS
     exposure_model, ## Calculates the probability of infection given the FOI matrix, lambda
     immunity_model, ## function determining probability of infection conditional on lambdas and individuals immune state
     antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (theta)
@@ -62,7 +66,7 @@ serosim <- function(
             ## that exposure histories may be conditional on antibody state
             for(ag in antigen_ids){
                 antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
-                                                          kinetics_parameters, antigen_map)
+                                                          kinetics_parameters, antigen_map, ...)
             }
             
             ## Work out exposure result for each exposure ID
@@ -86,8 +90,10 @@ serosim <- function(
                         ## Each successful exposure event will create a tibble with parameters
                         ## for this event, drawn from information given in theta
                         ## We also pass the demographic information in case we want demography-specific parameters
-                        kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
+                        if(successful_exposure == 1){
+                            kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
                                                               draw_parameters(i, t, e, demography, theta, ...))
+                        }
                         
                     }
                     exposure_histories[i,t,e] <- successful_exposure
