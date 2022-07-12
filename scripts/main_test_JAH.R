@@ -17,12 +17,12 @@ immunity_model <- function(i, t, e, exposure_histories,
     return(1)
 }
 observation_model <- NULL
-draw_parameters <- function(i, t, e, demography, theta, ...){
+draw_parameters <- function(i, t, e, demography, antibody_states, theta, ...){
     #boost <- rnorm(1, theta[["boost_mean"]],theta[["boost_sd"]])
     boost <- theta[["boost_mean"]]
     tibble(i=i, t=t, e=e,name="boost",value=boost)    
 }
-antibody_model <- function(i,t1,ag, exposure_histories,kinetics_parameters,antigen_map){
+antibody_model <- function(i,t1,ag, exposure_histories,antibody_states, kinetics_parameters,antigen_map){
     exp_history <- exposure_histories[i,1:(t1-1),]
     y <- 0
     if(t1 > 1 & sum(exp_history > 0)){

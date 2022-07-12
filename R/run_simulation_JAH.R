@@ -66,6 +66,7 @@ serosim <- function(
             ## that exposure histories may be conditional on antibody state
             for(ag in antigen_ids){
                 antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
+                                                          antibody_states,
                                                           kinetics_parameters, antigen_map, ...)
             }
             
@@ -92,7 +93,7 @@ serosim <- function(
                         ## We also pass the demographic information in case we want demography-specific parameters
                         if(successful_exposure == 1){
                             kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                              draw_parameters(i, t, e, demography, theta, ...))
+                                                              draw_parameters(i, t, e, demography, antibody_states, theta, ...))
                         }
                         
                     }
