@@ -7,8 +7,7 @@ lambdas <- array(rep(0.1,length(times)), dim=c(length(times),1,1))
 antigen_map <- tibble(exposure_id=1,antigen_id=1)
 theta <- list("boost_mean"=2,"boost_sd"=1)
 
-exposure_model <- function(i, t, e, l, lambdas, demography, my_extra_argument){
-    print(my_extra_argument)
+exposure_model <- function(i, t, e, l, lambdas, demography){
     p <- lambdas[t, e, l]
     p
 }
@@ -17,7 +16,7 @@ immunity_model <- function(i, t, e, exposure_histories,
     return(1)
 }
 observation_model <- NULL
-draw_parameters <- function(i, t, e, demography, antibody_states, theta, ...){
+draw_parameters <- function(i, t, e, ag, demography, antibody_states, theta, ...){
     #boost <- rnorm(1, theta[["boost_mean"]],theta[["boost_sd"]])
     boost <- theta[["boost_mean"]]
     tibble(i=i, t=t, e=e,name="boost",value=boost)    
@@ -37,8 +36,9 @@ antibody_model <- function(i,t1,ag, exposure_histories,antibody_states, kinetics
 
 res <- serosim(simulation_settings, demography, observation_times,
         lambdas, antigen_map, theta,
-        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters,
-        
-        my_extra_argument="hello")
+        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters)
 image(t(res$antibody_states[,,1]))
 
+
+test <- tibble(i=c(1,5,6,7,7,7,9), e=rep(2, 7),t=c(3,3,3,4,7,8,9), exposed=1)
+test %>% pivot_wider(names_from=-exposed,values_from=exposed)
