@@ -21,9 +21,9 @@ serosim <- function(
     indivs <- unique(demography$i)
     N <- length(indivs)
     
-    ## Note "birth" refers to first time point in the population and "death" refers to time point of removal from population
+    ## Note "birth" refers to first time point in the population and "removal" refers to time point of removal from population
     birth_times <- demography %>% select(i, birth) %>% distinct()
-    death_times <- demography %>% select(i, death) %>% distinct() 
+    removal_times <- demography %>% select(i, removal) %>% distinct() 
     
     ## If no location information provided, assume 1 location
     ## ...
@@ -52,12 +52,12 @@ serosim <- function(
         message(cat("Individual: ", i, "\n"))
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
-        death_time <- ifelse(is.na(death_times$death[i]), simulation_settings[["t_end"]], death_times$death[i])
+        removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
         l <- locations$location[i]
         
         ## Only consider times that the individual was alive for
         simulation_times_tmp <- simulation_times[simulation_times >= birth_time & 
-                                                     simulation_times <= death_time]
+                                                     simulation_times <= removal_time]
         
         ## Go through all times relevant to this individual
         for(t in simulation_times_tmp){
