@@ -1,4 +1,24 @@
+#' Main simulation function for serosim
+#' 
+#' Simulates a serological survey using custom inputs. The user can specify multiple inputs controlling population demography, simulation timeframe, observation times for each individual, force of infection, and various model functions describing the link between infections and observed antibody titers.
+#' 
+#' @param simulation_settings
+#' @param demography
+#' @param observation_times
+#' @param lambdas
+#' @param antigen_map
+#' @param theta
+#' @param exposure_model
+#' @param immunity_model
+#' @param antibody_model
+#' @param observation_model
+#' @param draw_parameters
+#' @param exposure_histories_fixed
+#' 
+#' @return a list containing the following elements.
+#' 
 #' @export
+#' @examples
 serosim <- function(
     ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings
