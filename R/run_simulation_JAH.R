@@ -19,7 +19,7 @@ serosim <- function(
     
     ## Note "birth" refers to first time point in the population and "death" refers to time point of removal from population
     birth_times <- demography %>% select(i, birth) %>% distinct()
-    death_times <- demography %>% select(i, death) %>% distinct() 
+    death_times <- demography %>% select(i, removal) %>% distinct() 
     
     ## If no location information provided, assume 1 location
     ## ...

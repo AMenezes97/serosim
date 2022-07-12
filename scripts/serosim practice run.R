@@ -42,7 +42,7 @@ plot_age_distribution(removal_times)
 aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distribution"=c(0.2,0.2,0.6)),
             "NS"=list("name"="NS","options"=c("low","high"),"distribution"=c(0.5,0.5)),
             "Sex"=list("name"="Sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),
-            "Location"=list("name"="Location","options"=c("North", "South", "East", "West"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+            "location"=list("name"="Location","options"=c("North", "South", "East", "West"), "distribution"=c(0.25,0.25,0.25,0.25)) )
 
 demography<- generate_pop_demography(N, times, birth_times, removal_times, aux=aux)
 

@@ -1,24 +1,39 @@
-#' Draw A Random Parameter From A Distribution
+#' Draw Antibody Parameters
 #'
-#' @param par1 The mean of the distribution
-#' @param par2 The standard deviation of the distribution
-#' @param distribution The distribution to use; defaults to "log-normal"
+#' @param i Individual 
+#' @param t Time
+#' @param e Exposure_ID
+#' @param ag Antigen
+#' @param demography Population demography dat set 
+#' @param theta Antibody kinetics parameters
+#' @param antibody_state 
+#' @param ... 
 #'
-#' @return A parameter value gets printed
+#' @return 
 #' @export
 #'
-#' @examples draw_parameters(5000,400,"log-normal")
-#' @examples draw_parameters(5000,400,"normal")
-draw_parameters <- function(par1, par2, distribution="log-normal"){
-  if(par1==0 & par2==0){
-    return(0)
+#' @examples 
+draw_parameters <- function(i, t, e, ag, demography, theta, antibody_state, ...){
+  ## Filter for only exposure stimulated 
+  theta_tmp <- theta %>% filter(exposure_id == e)
+  pars <- numeric(nrow(theta_tmp))
+  par_names <- character(nrow(theta_tmp))
+  ## For each parameter; randomly sample from the distribution given the mean and sd 
+  for(par in 1:nrow(theta_tmp)){
+    if(theta_tmp$distribution == "log-normal"){
+      pars[par] <- rlnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
+      par_names[par] <- theta_tmp$name[par]
+    }
+    else{
+      pars[par] <- rnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
+      par_names[par] <- theta_tmp$name[par]
+    }
+    #Add titre-dependent boosting  
+      if(par_names[par] %in% c("boost_short","boost_long")){
+        titre_threshold <- min(antibody_states[i,t1,ag], theta_tmp[theta_tmp$name=="titre_ceiling_threshold" & theta_tmp$ag==ag, "mean"])
+        pars[par] <- pars[par]*(1-theta_tmp[theta_tmp$name=="titre_ceiling_gradient" & theta_tmp$ag==ag, "mean"]*titre_threshold)
+    }
   }
-  if(distribution=="log-normal"){
-    mean<-normal_to_lognormal_mean(par1,par2)
-    sd<-normal_to_lognormal_sd(par1,par2)
-    return(stats::rlnorm(1, mean, sd))
-  }
-  if(distribution=="normal"){
-    return(stats::rnorm(1,par1,par2))
-  }
+  all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars)
+  return(all_pars)
 }

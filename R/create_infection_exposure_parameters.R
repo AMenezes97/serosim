@@ -1,4 +1,4 @@
-#' Create Antibody Kinetics Parameters For Infection Boosts
+#' Create Antibody Kinetics Parameters For Infection Boosts (NOT NEEDED ANYMORE)
 #'
 #' @param boosts_long_infections Empty matrices for all possible infection times for each pathogen and individual to store infection long-term boost parameters
 #' @param boosts_short_infections Empty matrices for all possible infection times for each pathogen and individual to store infection short-term boost parameters

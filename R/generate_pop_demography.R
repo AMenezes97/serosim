@@ -14,8 +14,8 @@ generate_pop_demography<-function(N, times, birth_times, removal_times, aux=NULL
   if(is.null(aux)){
     df<- tibble(
       i=1:N,
-      birth_times= birth_times,
-      removal_times= removal_times)
+      birth= birth_times,
+      removal= removal_times)
 
     exp<- tidyr::expand_grid(1:N, times)
     exp<-dplyr::rename(exp,i="1:N")
@@ -38,8 +38,8 @@ generate_pop_demography<-function(N, times, birth_times, removal_times, aux=NULL
     
     df<- tibble(
       i=1:N,
-      birth_times= birth_times,
-      removal_times= removal_times)
+      birth= birth_times,
+      removal= removal_times)
     exp<- tidyr::expand_grid(1:N, times)
     exp<-dplyr::rename(exp,i="1:N")
     dem<- exp %>% dplyr::left_join(df, by="i")
