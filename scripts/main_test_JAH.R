@@ -1,5 +1,6 @@
 N <- 10
-times <- seq(1,100,by=1)
+N_exposure_ids <- 2
+times <- seq(1,12,by=1)
 demography <- tibble(i=1:N,birth=rep(1,N), death=rep(NA,N),location=rep(1,N))
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
 observation_times <- NULL
@@ -33,8 +34,25 @@ antibody_model <- function(i,t1,ag, exposure_histories,kinetics_parameters,antig
     y
 }
 
+observation_model <- function(antibody_states, theta, demography){
+    antibody_states$observed <- rnorm(nrow(antibody_states),antibody_states$value,theta[["obs_sd"]])
+    antibody_states
+}
+
+
+exposure_histories_fixed <- array(NA, dim=c(N, length(times), N_exposure_ids))
+exposure_histories_fixed[1:3,1:6,] <- 0
+
+Rprof(tmp<-tempfile())
+
 res <- serosim(simulation_settings, demography, observation_times,
         lambdas, antigen_map, theta,
-        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters)
-image(t(res$antibody_states[,,1]))
+        exposure_model, immunity_model, antibody_model, observation_model, draw_parameters,
+        exposure_histories_fixed=exposure_histories_fixed)
 
+
+Rprof(NULL)
+summaryRprof(tmp)
+ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
+ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
+ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=value),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
