@@ -17,8 +17,6 @@ serosim <- function(
     
     ## Pre-specified parameters/events
     exposure_histories_fixed=NULL,
-    
-    
     ...
                     ){
     ## Simulation settings
@@ -56,6 +54,7 @@ serosim <- function(
     
     ## Create empty matrix to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
+    exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
     antibody_states <- array(0, dim=c(N, length(times), N_antigen_ids))
     kinetics_parameters <- vector(mode="list",length=N)
 
@@ -97,34 +96,65 @@ serosim <- function(
                     
                     ## If an exposure event occurred, what's the probability 
                     ## of successful infection/vaccination?
-                    successful_exposure <- 0
-                    if(runif(1)<prob_exposed){
-                        prob_success <- immunity_model(i, t, e, exposure_histories, 
-                                                       antibody_states, demography, 
-                                                       antigen_map, ...)
-                        ## Randomly assign success of exposure event based on immune state
-                        successful_exposure <- as.integer(runif(1) < prob_success)
-                        
-                        ## Create kinetics parameters for this exposure event
-                        ## Each successful exposure event will create a tibble with parameters
-                        ## for this event, drawn from information given in theta
-                        ## We also pass the demographic information in case we want demography-specific parameters
-                        if(successful_exposure == 1){
-                            kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                              draw_parameters(i, t, e, ag, demography, antibody_states, theta, ...))
-                        }
-                        
+                    prob_success <- immunity_model(i, t, e, exposure_histories, 
+                                                   antibody_states, demography, 
+                                                   antigen_map, ...)
+                    
+                    ## Randomly assign success of exposure event based on immune state
+                    successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
+                    
+                    ## Create kinetics parameters for this exposure event
+                    ## Each successful exposure event will create a tibble with parameters
+                    ## for this event, drawn from information given in theta
+                    ## We also pass the demographic information in case we want demography-specific parameters
+                    if(successful_exposure == 1){
+                        kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
+                                                          draw_parameters(i, t, e, ag, demography, antibody_states, theta, ...))
                     }
                     exposure_histories[i,t,e] <- successful_exposure
+                    exposure_probabilities[i,t,e] <- prob_success*prob_exposed
+                    if(successful_exposure == 1){
+                        for(ag in antigen_ids){
+                            antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
+                                                                      antibody_states, kinetics_parameters, antigen_map, ...)
+                        }
+                    }
                 }
             }
         }
     }
     all_kinetics_parameters <- do.call("bind_rows", kinetics_parameters)
+    
+    ## Reshape antibody states
+    antibody_states <- reshape2::melt(antibody_states)
+    colnames(antibody_states) <- c("i","t","ag","value")
+    antibody_states <- antibody_states %>% arrange(i, t, ag)
+    
+    ## Reshape exposure histories
+    exposure_histories_long <- NULL
+    if(sum(exposure_histories) > 0){
+        exposure_histories_long <- reshape2::melt(exposure_histories)
+        colnames(exposure_histories_long) <- c("i","t","e","value")
+        exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
+        exposure_histories_long <- exposure_histories_long %>% arrange(i, t, e)
+    }
+    
+    ## Reshape exposure probabilities
+    exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
+    colnames(exposure_probabilities_long) <- c("i","t","e","value")
+    exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
+    
     ## Observation process
-    observed_antibody_states <- NULL
+    if(!is.null(observation_times)){
+        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography)
+    } else {
+        observed_antibody_states <- observation_model(antibody_states, theta, demography)
+    }
     
     return(list("exposure_histories"=exposure_histories,
+                "exposure_histories_long"=exposure_histories_long,
+                "exposure_probabilities"=exposure_probabilities,
+                "exposure_probabilities_long"=exposure_probabilities_long,
                 "antibody_states"=antibody_states,
                 "observed_antibody_states"=observed_antibody_states,
                 "kinetics_parameters"=all_kinetics_parameters))
