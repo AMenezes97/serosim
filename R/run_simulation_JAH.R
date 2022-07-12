@@ -9,17 +9,21 @@ serosim <- function(
     immunity_model, ## function determining probability of infection conditional on lambdas and individuals immune state
     antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (theta)
     observation_model, ## function generating observed titers as a function of latent titers and theta
+    draw_parameters, ## function to simulate antibody kinetics parameters
     ...
                     ){
 
     ## Extract key demographic information
     indivs <- unique(demography$i)
+    N <- length(indivs)
+    
     ## Note "birth" refers to first time point in the population and "death" refers to time point of removal from population
     birth_times <- demography %>% select(i, birth) %>% distinct()
     death_times <- demography %>% select(i, death) %>% distinct() 
     
     ## If no location information provided, assume 1 location
     ## ...
+    locations <- demography %>% select(i, location) %>% distinct()
     
     
     ## Extract information on number of exposure types
@@ -28,15 +32,13 @@ serosim <- function(
     N_exposure_ids <- length(exposure_ids)
     N_antigen_ids <- length(antigen_ids)
     
-    N <- length(indivs)
-    
     simulation_times <- seq(simulation_settings[["t_start"]],simulation_settings[["t_end"]],1)
     
     ## Create empty matrix to store exposure histories
-    exposure_histories <- create_matrix(N_exposure_ids, N, simulation_times, fill=NA)
-    antibody_states <- create_matrix(N_antigen_ids, N, simulation_times, fill=0)
-    kinetics_parameters <- NULL
-    
+    exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))#create_matrix(N_exposure_ids, N, simulation_times, fill=NA)
+    antibody_states <- array(0, dim=c(N, length(times), N_antigen_ids))##create_matrix(N_antigen_ids, N, simulation_times, fill=0)
+    kinetics_parameters <- vector(mode="list",length=N)
+
     ## Merge in any pre-specified exposure history information
     ## ...
     
@@ -46,7 +48,7 @@ serosim <- function(
         message(cat("Individual: ", i, "\n"))
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
-        death_time <- death_times$death[i]
+        death_time <- ifelse(is.na(death_times$death[i]), simulation_settings[["t_end"]], death_times$death[i])
         l <- locations$location[i]
         
         ## Only consider times that the individual was alive for
@@ -55,19 +57,22 @@ serosim <- function(
         
         ## Go through all times relevant to this individual
         for(t in simulation_times_tmp){
-            
-            ## Nth exposure
-            index <- 1
-            kinetics_parameters_tmp <- NULL
+            ## Work out antibody state for each antigen
+            ## The reason we nest this at the same level as the exposure history generation is
+            ## that exposure histories may be conditional on antibody state
+            for(ag in antigen_ids){
+                antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
+                                                          kinetics_parameters, antigen_map)
+            }
             
             ## Work out exposure result for each exposure ID
             for(e in exposure_ids){
                 ## Only update if exposure history entry is NA here. If not NA, then pre-specified
                 if(is.na(exposure_histories[i,t,e])){
-                    ## What is the probability that exposure occured?
+                    ## What is the probability that exposure occurred?
                     prob_exposed <- exposure_model(i, t, e, l, lambdas, demography, ...)
                     
-                    ## If an exposure event occured, what's the probability 
+                    ## If an exposure event occurred, what's the probability 
                     ## of successful infection/vaccination?
                     successful_exposure <- 0
                     if(runif(1)<prob_exposed){
@@ -81,31 +86,21 @@ serosim <- function(
                         ## Each successful exposure event will create a tibble with parameters
                         ## for this event, drawn from information given in theta
                         ## We also pass the demographic information in case we want demography-specific parameters
-                        kinetics_parameters_tmp[[index]] <- draw_kinetics_parameters(i, t, e, 
-                                                                        demography, theta, ...)
-                        
-                        index <- index + 1
+                        kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
+                                                              draw_parameters(i, t, e, demography, theta, ...))
                         
                     }
-                    kinetics_parameters[[i]] <- do.call("bind_rows", kinetics_parameters_tmp)
                     exposure_histories[i,t,e] <- successful_exposure
                 }
-            }
-            
-            ## Work out antibody state for each antigen
-            ## The reason we nest this at the same level as the exposure history generation is
-            ## that exposure histories may be conditional on antibody state
-            for(ag in antigen_ids){
-                antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
-                                                          kinetics_parameters, antigen_map)
             }
         }
     }
     all_kinetics_parameters <- do.call("bind_rows", kinetics_parameters)
     ## Observation process
+    observed_antibody_states <- NULL
     
     return(list("exposure_histories"=exposure_histories,
                 "antibody_states"=antibody_states,
-                "observed_antibody_states"=obsevered_antibody_states,
+                "observed_antibody_states"=observed_antibody_states,
                 "kinetics_parameters"=all_kinetics_parameters))
 }
