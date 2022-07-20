@@ -20,8 +20,22 @@ draw_parameters <- function(i, t, e, ag, demography, theta, antibody_state, ...)
   par_names <- character(nrow(theta_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
   for(par in 1:nrow(theta_tmp)){
-    if(theta_tmp$distribution == "log-normal"){
-      pars[par] <- rlnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
+    if(theta_tmp$distribution == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+      
+      ## Create functions to convert normal distributions to log-normal distributions
+      normal_to_lognormal_mean <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        meanlog <- log(normmean ^ 2 / phi)
+        return(meanlog)
+      }
+      
+      normal_to_lognormal_sd <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
+        return(sdlog)
+      }
+      
+      pars[par] <- rlnorm(1, normal_to_lognormal_mean(theta_tmp$mean[par], theta_tmp$sd[par]), normal_to_lognormal_sd(theta_tmp$mean[par], theta_tmp$sd[par]))
       par_names[par] <- theta_tmp$name[par]
     }
     else{
