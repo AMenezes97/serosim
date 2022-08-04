@@ -124,20 +124,19 @@ immunity_model <- function(i, t, e, exposure_histories,
     
     
 observation_model <- function(antibody_states, theta, demography, ...){
-  ## antibody_states needs to be converted to the long format first
-  collapse_array <- function(titers, N_antigen_ids){
-    collapsed<-NULL
+  ## Collapse antibody_states array to the long format 
+    antibody_states_collapsed<-NULL
     for(antigen in 1:N_antigen_ids){
-      tmp <- reshape2::melt(titers[,,antigen])
+      tmp <- reshape2::melt(antibody_states[,,antigen])
       colnames(tmp) <- c("Individual","Time","Titer")
       tmp$Antigen <- antigen
-      collapsed<-rbind(collapsed,tmp)
+      antibody_states_collapsed<-rbind(antibody_states_collapsed,tmp)
     }
-    return(collapsed)
-  }
+   
+  ## Users can select specific antigens or individuals 
   
-  antibody_states$observed <- rnorm(nrow(antibody_states),antibody_states$value,theta[["obs_sd"]])
-  antibody_states
+    antibody_states_collapsed$observed <- rnorm(nrow(antibody_states_collapsed),antibody_states_collapsed$value,theta[["obs_sd"]])
+    antibody_states_collapsed
 }
 
 

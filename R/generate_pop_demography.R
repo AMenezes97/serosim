@@ -33,16 +33,27 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
   for(i in 1:N){
     tmp <- removal_histories[i,]
     
+    ## Only find removal time for individual's eligible to be removed 
+    if(max(times) >= birth_times[i] + (removal_min)) {
+    ## Find removal time
+    removal_time <- sample(times[times >= birth_times[i] + (removal_min) & times <= birth_times[i] + (removal_max)], 1)
+    tmp[removal_time] <- ifelse(runif(1) < prob_removal, 1, 0) 
+    
     #Cannot be removed before birth and removal_min
     tmp[times < birth_times[i] + removal_min] <- NA
     
-    #Find removal time
-    if(birth_times[i]>removal_min){
-      removal_time <- sample(times[times > birth_times[i] + (removal_min) & times < birth_times[i] + (removal_max)], 1)
-      tmp[removal_time] <- ifelse(runif(1) < prob_removal, 1, 0) #this step can be removed?
-    }
+    #Cannot be removed after removal_max 
+    tmp[times > birth_times[i] + removal_max] <- NA
     
     removal_histories[i,] <- tmp
+    }
+    
+    ## For individual's who are never eligible to be removed, add NA for every time step
+    if(max(times) <= birth_times[i] + (removal_min)){
+      tmp[]<-NA
+      removal_histories[i,] <- tmp
+    
+    }
   }
   
   removal_histories_reshaped <- reshape2::melt(removal_histories) %>% dplyr::mutate(value=as.factor(value))
@@ -67,7 +78,10 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' 
+#' @examples aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 generate_pop_demography<-function(N, times, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
   if(is.null(aux)){
     

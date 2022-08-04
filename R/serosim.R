@@ -72,7 +72,7 @@ serosim <- function(
     N_antigen_ids <- length(antigen_ids)
     
     
-    ## Create empty matrix to store exposure histories
+    ## Create empty arrays to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
     antibody_states <- array(0, dim=c(N, length(times), N_antigen_ids))
@@ -91,15 +91,17 @@ serosim <- function(
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
-        g <- groups$group[i]
+        #g <- groups$group[i] ## This would assume an individual is in the same group at all time steps; I created a new line which is now in the t loop
         
         ## Only consider times that the individual was alive for
-        simulation_times_tmp <- simulation_times[simulation_times >= birth_time & 
-                                                     simulation_times <= removal_time]
+        simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
         
         ## Go through all times relevant to this individual
         for(t in simulation_times_tmp){
-            ## Work out antibody state for each antigen
+            ## Pull group for this individual at this time 
+            g <- as.numeric(demography$group[demography$i==i & demography$times==t]) 
+           
+             ## Work out antibody state for each antigen
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
             for(ag in antigen_ids){
