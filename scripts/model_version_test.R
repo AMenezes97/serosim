@@ -61,7 +61,7 @@ exposure_histories[1,2,]<-1
 
 ## Import theta
 library(readr)
-theta <- read_csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
+theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
 
 ## Test immunity models
 immunity_model_V1()
@@ -71,3 +71,8 @@ immunity_model_V3(i, t, e, exposure_histories, antibody_states, demography, anti
 immunity_model_V4(i, t, e, exposure_histories, antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures, theta)
 
 
+## Test draw_parameters
+draw_parameters_V1(i, t, e, demography, theta, antibody_states)
+draw_parameters_V2(i, t, e, demography, theta, antibody_states)
+draw_parameters_V3(i, t, e, demography, theta, antibody_states)
+draw_parameters_V4(i, t, e, demography, theta, antibody_states)
