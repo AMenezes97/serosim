@@ -76,3 +76,30 @@ draw_parameters_V1(i, t, e, demography, theta, antibody_states)
 draw_parameters_V2(i, t, e, demography, theta, antibody_states)
 draw_parameters_V3(i, t, e, demography, theta, antibody_states)
 draw_parameters_V4(i, t, e, demography, theta, antibody_states)
+
+## Create kinetics_parameters to test out antibody models
+kinetics_parameters <- vector(mode="list",length=N)
+kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
+                                      draw_parameters_V1(i, 2, e, demography, theta, antibody_states))
+
+## Test antibody models
+antibody_model_V1(i, t, ag, exposure_histories, kinetics_parameters, antigen_map)
+
+## Reshape antibody_states to test observation model 
+antibody_states <- reshape2::melt(antibody_states)
+colnames(antibody_states) <- c("i","t","ag","value")
+antibody_states <- antibody_states %>% arrange(i, t, ag)
+
+## Create dummy arguments needed for observation models
+observation_times <- tibble(i=1:5,t=3, ag=1)
+discrete<-c(0,5,8,10) ## Cut offs for discrete assays
+boundary<-c(2,10)
+
+## Test out observation models
+observation_model_V1(antibody_states, theta, demography, boundary)
+observation_model_V2(antibody_states, theta, demography, discrete)
+observation_model_V3(antibody_states, theta, demography, boundary)
+observation_model_V4(antibody_states, theta, demography, discrete)
+  
+  
+## Reshape runserosim outputs (this is done within runserosim) to test plotting functions

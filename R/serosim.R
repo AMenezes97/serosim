@@ -136,7 +136,7 @@ serosim <- function(
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in antigen_ids){
+                        for(ag in antigen_ids){ ## Is this correct? Shouldn't it only step through the antigens in the successful exposure? Or is this handled within the function where Ags not in the exposure aren't updated? 
                             antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
                                                                       antibody_states, kinetics_parameters, antigen_map, ...)
                         }
