@@ -1,17 +1,94 @@
-#' Generate A Population Demography Data Set 
+#' Simulate Random Birth Times
+#'
+#' @param N The number of individuals in the simulation
+#' @param times The total number of time steps in the simulation
+#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step
+#'
+#' @return Random birth times for each individual are returned
+#' @export
+#'
+#' @examples simulate_birth_times(500, 1:100, limit=9) #Simulates random birth times for 500 individuals over 100 time  steps and ensures that all indiivduals are above 9 time steps old by the last time step
+simulate_birth_times <- function(N, times, limit=0){
+  birth_times <- sample(times[1:(length(times)-(limit+1))], N, replace =TRUE)
+  return(birth_times)
+}
+
+
+
+#' Simulate  Removal Times for Individuals 
 #'
 #' @param N The number of individuals in the simulation
 #' @param times The total number of time steps in the simulation
 #' @param birth_times A vector of all individual's birth times
-#' @param removal_times A vector of all individual's removal times
+#' @param removal_min The minimum age at which an individual can be removed from the population 
+#' @param removal_max The maximum age at which an individual can be removed from the population 
+#' @param prob_removal The probability that an individual will be removed from the population
+#'
+#' @return A vector of all individual's removal times is returned 
+#' @export
+#'
+#' @examples
+simulate_removal_times <- function(N, times, birth_times, removal_min, removal_max, prob_removal){
+  removal_histories <- matrix(0, nrow=N, ncol=length(times))
+  for(i in 1:N){
+    tmp <- removal_histories[i,]
+    
+    ## Only find removal time for individual's eligible to be removed 
+    if(max(times) >= birth_times[i] + (removal_min)) {
+    ## Find removal time
+    removal_time <- sample(times[times >= birth_times[i] + (removal_min) & times <= birth_times[i] + (removal_max)], 1)
+    tmp[removal_time] <- ifelse(runif(1) < prob_removal, 1, 0) 
+    
+    #Cannot be removed before birth and removal_min
+    tmp[times < birth_times[i] + removal_min] <- NA
+    
+    #Cannot be removed after removal_max 
+    tmp[times > birth_times[i] + removal_max] <- NA
+    
+    removal_histories[i,] <- tmp
+    }
+    
+    ## For individual's who are never eligible to be removed, add NA for every time step
+    if(max(times) <= birth_times[i] + (removal_min)){
+      tmp[]<-NA
+      removal_histories[i,] <- tmp
+    
+    }
+  }
+  
+  removal_histories_reshaped <- reshape2::melt(removal_histories) %>% dplyr::mutate(value=as.factor(value))
+  colnames(removal_histories_reshaped) <- c("Individual","Time","Removed?")
+  removed<-removal_histories_reshaped %>% dplyr::filter(removal_histories_reshaped$`Removed?`==1) %>%  dplyr::mutate(removal_times=Time) %>% dplyr::select(Individual, removal_times) 
+  df<- tibble(Individual= 1:N)
+  df1<- df %>% dplyr::left_join(removed, by="Individual")
+  return(df1$removal_times)
+}
+
+
+#' Generate A Population Demography Data Set 
+#'
+#' @param N The number of individuals in the simulation
+#' @param times The total number of time steps in the simulation
+#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step
+#' @param removal_min The minimum age at which an individual can be removed from the population 
+#' @param removal_max The maximum age at which an individual can be removed from the population 
+#' @param prob_removal The probability that an individual will be removed from the population
 #' @param aux A list of the demography columns, the variable options and their distributions; defaults to NULL  
 #'
 #' @return
 #' @export
 #'
-#' @examples
-generate_pop_demography<-function(N, times, birth_times, removal_times, aux=NULL){
+#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' 
+#' @examples aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+generate_pop_demography<-function(N, times, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
   if(is.null(aux)){
+    
+    birth_times <- simulate_birth_times(N, times, limit)
+    removal_times <- simulate_removal_times(N, times, birth_times, removal_min, removal_max, prob_removal)
+    
+    
     df<- tibble(
       i=1:N,
       birth= birth_times,
@@ -25,6 +102,9 @@ generate_pop_demography<-function(N, times, birth_times, removal_times, aux=NULL
   }
   
   if(!is.null(aux)){
+    birth_times <- simulate_birth_times(N, times, limit)
+    removal_times <- simulate_removal_times(N, times, birth_times, removal_min, removal_max, prob_removal)
+    
     vars <- NULL
     for(var in seq_along(aux)){
       vars[[var]] <- tibble(

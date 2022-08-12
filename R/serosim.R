@@ -24,12 +24,12 @@ serosim <- function(
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
     observation_times=NULL, ## tibble of observation times and antigen for each individual
-    lambdas, ## 3D matrix giving force of infection for each exposure ID, groups and time
+    lambdas, ## 3D array giving force of infection for each exposure ID, groups and time
     antigen_map, ## Object determining relationship between exposure IDs and antigens
     theta,
     
     ## FUNCTIONS
-    exposure_model, ## Calculates the probability of infection given the FOI matrix, lambda
+    exposure_model, ## calculates the probability of infection given the FOI array, lambdas
     immunity_model, ## function determining probability of infection conditional on lambdas and individuals immune state
     antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (theta)
     observation_model, ## function generating observed titers as a function of latent titers and theta
@@ -42,7 +42,7 @@ serosim <- function(
     ## Simulation settings
     t_start <- simulation_settings[["t_start"]]
     t_end <- simulation_settings[["t_end"]]
-    simulation_times <- seq(simulation_settings[["t_start"]],simulation_settings[["t_end"]],1)
+    times <- seq(simulation_settings[["t_start"]],simulation_settings[["t_end"]],1)
     
     ## Extract key demographic information
     indivs <- unique(demography$i)
@@ -72,7 +72,7 @@ serosim <- function(
     N_antigen_ids <- length(antigen_ids)
     
     
-    ## Create empty matrix to store exposure histories
+    ## Create empty arrays to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
     antibody_states <- array(0, dim=c(N, length(times), N_antigen_ids))
@@ -91,15 +91,17 @@ serosim <- function(
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
-        g <- groups$group[i]
+        #g <- groups$group[i] ## This would assume an individual is in the same group at all time steps; I created a new line which is now in the t loop
         
         ## Only consider times that the individual was alive for
-        simulation_times_tmp <- simulation_times[simulation_times >= birth_time & 
-                                                     simulation_times <= removal_time]
+        simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
         
         ## Go through all times relevant to this individual
         for(t in simulation_times_tmp){
-            ## Work out antibody state for each antigen
+            ## Pull group for this individual at this time 
+            g <- as.numeric(demography$group[demography$i==i & demography$times==t]) 
+           
+             ## Work out antibody state for each antigen
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
             for(ag in antigen_ids){
@@ -134,7 +136,7 @@ serosim <- function(
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in antigen_ids){
+                        for(ag in antigen_ids){ ## Is this correct? Shouldn't it only step through the antigens in the successful exposure? Or is this handled within the function where Ags not in the exposure aren't updated? 
                             antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
                                                                       antibody_states, kinetics_parameters, antigen_map, ...)
                         }

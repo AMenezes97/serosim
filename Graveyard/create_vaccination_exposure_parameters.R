@@ -1,4 +1,4 @@
-#' Create Antibody Kinetics Parameters For Vaccination Boosts
+#' Create Antibody Kinetics Parameters For Vaccination Boosts (NOT NEEDED ANYMORE)
 #'
 #' @param boosts_long_vacc  Empty matrices for all possible vaccination times for each pathogen and individual to store infection long-term boost parameters
 #' @param boosts_short_vacc Empty matrices for all possible vaccination times for each pathogen and individual to store infection short-term boost parameters
