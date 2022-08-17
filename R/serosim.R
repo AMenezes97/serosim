@@ -91,7 +91,6 @@ serosim <- function(
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
-        #g <- groups$group[i] ## This would assume an individual is in the same group at all time steps; I created a new line which is now in the t loop
         
         ## Only consider times that the individual was alive for
         simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
@@ -154,7 +153,7 @@ serosim <- function(
     
     ## Reshape exposure histories
     exposure_histories_long <- NULL
-    if(sum(exposure_histories) > 0){
+    if(sum(exposure_histories, na.rm = TRUE) > 0){
         exposure_histories_long <- reshape2::melt(exposure_histories)
         colnames(exposure_histories_long) <- c("i","t","e","value")
         exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
@@ -168,9 +167,9 @@ serosim <- function(
     
     ## Observation process
     if(!is.null(observation_times)){
-        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography)
+        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography, ...)
     } else {
-        observed_antibody_states <- observation_model(antibody_states, theta, demography)
+        observed_antibody_states <- observation_model(antibody_states, theta, demography, ...)
     }
     
     return(list("exposure_histories"=exposure_histories,

@@ -1,17 +1,18 @@
-#' Observation Model Version 1
+#' Observation Model For Continuous Assays With Detection Limits And No Added Noise
 #' 
 #' @description This observation model observes the latent titer values given a continuous assay with user-specified lower and upper limits and no added noise.
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param theta Tibble of observation model parameters 
 #' @param demography Demography information 
 #' @param boundary A list containing the lower bound and upper bound of the assay
+#' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_V1<-function(antibody_states,theta,demography,boundary){
+observation_model_continuous_bounded_no_noise<-function(antibody_states,theta,demography,boundary, ...){
   lower_bound<-boundary[1]
   upper_bound<-boundary[2]
   antibody_states$observed<-antibody_states$value
@@ -20,39 +21,41 @@ observation_model_V1<-function(antibody_states,theta,demography,boundary){
   antibody_states
 }
 
-#' Observation Model Version 2
+#' Observation Model For Discrete Assays With No Added Noise
 #' 
 #' @description This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and no added noise.
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param theta Tibble of observation model parameters 
 #' @param demography Demography information 
 #' @param discrete The cutoffs for the discrete assay in a list format
+#' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_V2<-function(antibody_states,theta,demography,discrete){
+observation_model_discrete_no_noise<-function(antibody_states,theta,demography,discrete, ...){
   discrete_tmp<-c(discrete,Inf)
   antibody_states$observed<-cut(antibody_states$value, breaks=discrete_tmp, right=FALSE, labels=discrete)
   antibody_states
 }
 
-#' Observation Model Version 3
+#' Observation Model For Continuous Assays With Detection Limits And Added Noise
 #' 
 #' @description This observation model observes the latent titer values given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution is defined within theta as the “obs_sd” parameter.
 #' 
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param theta Tibble of observation model parameters 
 #' @param demography Demography information 
 #' @param boundary A list containing the lower bound and upper bound of the assay
+#' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_V3<-function(antibody_states,theta,demography,boundary){
+observation_model_continuous_bounded_noise<-function(antibody_states,theta,demography,boundary, ...){
   ag_tmp<-unique(antibody_states$ag)
   antibody_states_new<-NULL
   lower_bound<-boundary[1]
@@ -60,11 +63,11 @@ observation_model_V3<-function(antibody_states,theta,demography,boundary){
   for(ags in seq_along(ag_tmp)){
     if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="log-normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
-      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$mean[theta$antigen_id==ags & theta$name=="obs_sd"])
+      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
     }
     if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
-      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$mean[theta$antigen_id==ags & theta$name=="obs_sd"])
+      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
     }
     antibody_states_new<-rbind(antibody_states_new,antibody_states_tmp)
   }
@@ -76,33 +79,34 @@ observation_model_V3<-function(antibody_states,theta,demography,boundary){
 }
 
 
-#' Observation Model Version 4
+#' Observation Model For Discrete Assays With Added Noise
 #' 
 #' @description This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution is defined within theta as the “obs_sd” parameter.
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param theta Tibble of observation model parameters 
 #' @param demography Demography information 
 #' @param discrete The cutoffs for the discrete assay in a list format
+#' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_V4<-function(antibody_states,theta,demography, discrete){
+observation_model_discrete_noise<-function(antibody_states,theta,demography, discrete, ...){
   ag_tmp<-unique(antibody_states$ag)
   discrete_tmp<-c(discrete,Inf)
   antibody_states_new<-NULL
   for(ags in seq_along(ag_tmp)){
     if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="log-normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
-      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$mean[theta$antigen_id==ags & theta$name=="obs_sd"])
+      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
       antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=discrete_tmp, right=FALSE, labels=discrete)
       antibody_states_tmp$temp<-NULL
     }
     if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
-      antibody_states_tmp$temp<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$mean[theta$antigen_id==ags & theta$name=="obs_sd"])
+      antibody_states_tmp$temp<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
       antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=discrete_tmp, right=FALSE, labels=discrete)
       antibody_states_tmp$temp<-NULL
     }
@@ -111,3 +115,4 @@ observation_model_V4<-function(antibody_states,theta,demography, discrete){
   antibody_states<- antibody_states_new %>% arrange(i, t, ag)
   antibody_states
 }
+

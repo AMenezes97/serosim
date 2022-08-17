@@ -1,12 +1,19 @@
-#' Here I will go through main_test_JAH.R and fill in the generic calls with
-#' more specific models.
-library(serosim)
+# library(serosim)
 
+##Source the following: 
+## serosim.R
+## generate_pop_demography.R
+## exposure_models.R
+## immunity_models.R
+## draw_parameters_versions.R
+## antibody_models.R
+## oobservation_models.R
+  
 
 
 ##******************Component 1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
-times <- seq(1,12,by=1) 
+times <- seq(1,120,by=1) 
 
 ## Set simulation settings
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
@@ -14,9 +21,8 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
 
 ##******************Component 2: Population Demography************************** 
-
 ## Specify the number of individuals in the simulation 
-N <- 10
+N <- 500
 
 ## Pre load the demography categories, values and distributions 
 aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distribution"=c(0.2,0.2,0.6)),
@@ -25,159 +31,114 @@ aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distrib
             "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
 
 ## Simulate demography settings 
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=12, prob_removal=0.9, aux=aux)
-
+demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 
 
 
 ##*****************Component 3: Force of Infection and Exposure Model***********
 ## Specify the number of exposures (eventually, this won't be needed because the serosim function can extract this from the antigen_map)
-N_exposure_ids <- 2
+N_exposure_ids <- 1
 
 ## Specify the force of infection array (different format)
 group<-c(1,2,3,4)
-lambdas <- array(rep(0.01,length(group)), dim=c(length(group),max(times),N_exposure_ids))
+lambdas <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposure_ids))
 
+## Specify exposure model within serosim function below
 
-## Define the exposure model which which will determine if an individual is exposed at a specific location in time.
-## This is a simple exposure model depending only on the force of infection at that time for that group
-exposure_model <- function(i, t, e, lambdas, demography){
-  g <- demography$group[demography$i==i & demography$times==t]
-  p <- lambdas[g, t, e]
-  p
-}
+## Some exposure models will require the following arguments specified within serosim
 
+## Create a tibble with any relevant demographic elements that affect exposure probability 
+# mod<-tibble(column=c("sex", "sex","NS","NS"), value=c("male","female","low", "high"), modifier=c(1,2,3,4))
+
+## Create a tibble with any relevant age modifiers that affect exposure probability 
+# age_mod<-tibble(age=0:10, modifier=1:11)
 
 
 
 ##***********************Component 4: Antigen Map*******************************
 ## Specify which antigens are present in each exposure type
-antigen_map <- tibble(exposure_id=c(1,2,3,3),antigen_id=c(1,2,1,2)) 
-
-
-
-
-##**************Optional Component: Antibody Kinetics Parameters****************
-
-
+antigen_map <- tibble(exposure_id=1,antigen_id=c(1,2)) 
 
 
 
 ##**********************Component 5: Immunity Model*****************************
+## Specify immunity model within serosim function below 
+
+## Some immunity models will require the following arguments specified within serosim:
+
+## Specify which exposure IDs represent vaccination events 
+# vacc_exposures<-c(1,3,5) 
+
+## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
+# max_vacc_events<-c(2,1,1,NA,1) 
 
 
 
 
+##****Component 6: Antibody Model, Antibody Kinetics Parameters, and draw_parameters*****
+## Specify antibody model within serosim function below 
 
-## Set observation time
-observation_times <- NULL
+## Specify antibody kinetics parameters 
+theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
+
+## Specify draw_parameters within serosim function below 
 
 
-##Specify the antibody kinetics parameters
-theta <- list("boost_mean"=2,"boost_sd"=1)
 
 
-## Specify the max number of vaccination events allowed for each vaccine exposure type
-max_vacc_events<- list("1"=3,"2"=1)
+##*************Component 7: Observation Model and observation_times*************
+## Specify observation model within serosim function below 
 
-## Specify which Exposure_IDs correspond to vaccination events  
-vacc_exposures<-c(1,2)
+## Some observation models will require the following arguments specified within serosim:
 
-## Define the immunity model which will determine if an exposure is successful 
-immunity_model <- function(i, t, e, exposure_histories, 
-                           antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures, lambdas, theta, ...){
-  ## If vaccination event (ie. e==vaccination events), then guaranteed exposure unless the individual has already been vaccinated
-  if(e %in% c(vacc_exposures)){  	  
-    ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e])
-    ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
-    if(curr_vacc_events<max_vacc_events[e]){
-      return(1)
-    }else{
-      return(0)
-    }
-  } else {
-    ## Find antigens which are boosted by this exposure type
-    ## The assumption here is that the titer levels to these antigens will determine if an individual is protected
-    ag<-antigen_map$antigen_id[antigen_map$exposure_id==e]
-    ## Find current titer to all relevant antigens
-    curr_t <- antibody_states[i,t,ag] ## How to deal with titers against multiple antigens? Should they be added?
+## Cut offs for discrete assays
+# discrete<-c(0,5,8,10) 
+
+## Limits of detection for continuous assays
+boundary<-c(2,10)
+
+## Set observation settings 
+observation_times <- tibble(i=1:N,t=120, ag=1)
+
+
+
     
-    ## Pull out necessary variables 
-    titer_prot_midpoint <- theta$mean[theta$exposure_id==e & theta$ag==ag & theta$name=="titer_prot_midpoint"]
-    titer_prot_width <- theta$mean[theta$exposure_id==e & theta$ag==ag & theta$name=="titer_prot_width"]
-    
-    ## Create a function to calculate the risk of infection at a given titer
-    titer_protection <- function(titer, alpha1, beta1){
-      risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
-      return(risk)
-    }
-    
-    prob_success<- (1-titer_protection(curr_t, titer_prot_midpoint, titer_prot_width))
-    
-    return(prob_success)
-  }
-}
+##***************************Run Simulation*************************************
 
+## Test full function with generated inputs
+res<- serosim(
+  simulation_settings,
+  demography, 
+  observation_times,
+  lambdas, 
+  antigen_map,
+  theta,
+  exposure_model=exposure_model_simple_FOI, 
+  immunity_model=immunity_model_all_successful, 
+  antibody_model=antibody_model_biphasic, 
+  observation_model=observation_model_continuous_bounded_no_noise,
+  draw_parameters=draw_parameters_fixed_fx, 
   
-    
-    
-    
-observation_model <- function(antibody_states, theta, demography, ...){
-  ## Collapse antibody_states array to the long format 
-    antibody_states_collapsed<-NULL
-    for(antigen in 1:N_antigen_ids){
-      tmp <- reshape2::melt(antibody_states[,,antigen])
-      colnames(tmp) <- c("Individual","Time","Titer")
-      tmp$Antigen <- antigen
-      antibody_states_collapsed<-rbind(antibody_states_collapsed,tmp)
-    }
-   
-  ## Users can select specific antigens or individuals 
+  ## Pre-specified parameters/events
+  exposure_histories_fixed=NULL,
   
-    antibody_states_collapsed$observed <- rnorm(nrow(antibody_states_collapsed),antibody_states_collapsed$value,theta[["obs_sd"]])
-    antibody_states_collapsed
-}
+  ## Other arguments needed
+  boundary=boundary
+)
 
 
+## Generate Plots 
+ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
+ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
+ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=value),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
 
-draw_parameters <- function(i, t, e, ag, demography, theta, antibody_state, ...){
-  ## Filter for only exposure stimulated 
-  theta_tmp <- theta %>% filter(exposure_id == e)
-  pars <- numeric(nrow(theta_tmp))
-  par_names <- character(nrow(theta_tmp))
-  ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(theta_tmp)){
-    if(theta_tmp$distribution == "log-normal"){ #Convert the normal distributions to log-normal distributions 
-      
-      ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
-      }
-      
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
-      
-      pars[par] <- rlnorm(1, normal_to_lognormal_mean(theta_tmp$mean[par], theta_tmp$sd[par]), normal_to_lognormal_sd(theta_tmp$mean[par], theta_tmp$sd[par]))
-      par_names[par] <- theta_tmp$name[par]
-    }
-    else{
-      pars[par] <- rnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
-      par_names[par] <- theta_tmp$name[par]
-    }
-    #Add titer-dependent boosting  
-    if(par_names[par] %in% c("boost_short","boost_long")){
-      titer_threshold <- min(antibody_states[i,t1,ag], theta_tmp[theta_tmp$name=="titer_ceiling_threshold" & theta_tmp$ag==ag, "mean"])
-      pars[par] <- pars[par]*(1-theta_tmp[theta_tmp$name=="titer_ceiling_gradient" & theta_tmp$ag==ag, "mean"]*titer_threshold)
-    }
-  }
-  all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars)
-  return(all_pars)
-}
-  
+
+## Examine serosim outputs 
+res$exposure_histories
+res$exposure_histories_long ## Create plot 
+res$exposure_probabilities
+res$exposure_probabilities_long ## Create plot
+res$antibody_states
+res$observed_antibody_states ## Create plot 
+res$kinetics_parameters
 
