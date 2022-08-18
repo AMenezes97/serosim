@@ -9,6 +9,7 @@
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
+#' @param theta Tibble including titer-mediated protection parameters 
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -16,7 +17,7 @@
 #'
 #' @examples
 immunity_model_all_successful <- function(i, t, e, exposure_histories, 
-                           antibody_states, demography, antigen_map,...){
+                           antibody_states, demography, antigen_map, theta, ...){
   return(1)
 }
 
@@ -31,6 +32,7 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
+#' @param theta Tibble including titer-mediated protection parameters 
 #' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
 #' @param ... 
 #'
@@ -39,9 +41,9 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_only <- function(i, t, e, exposure_histories, 
-                              antibody_states, demography, antigen_map, max_vacc_events, ...){
+                              antibody_states, demography, antigen_map, theta, max_vacc_events, ...){
     ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e])
+    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
     if(curr_vacc_events<max_vacc_events[e]){
       return(1)
@@ -62,7 +64,9 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
+#' @param theta Tibble including titer-mediated protection parameters 
 #' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
+#' @param vacc_exposures A list of exposure IDs (e) which represents vaccination events
 #' @param ... 
 #'
 #' @return  A probability of successful exposure is returned
@@ -70,11 +74,11 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_successful_ifxn <- function(i, t, e, exposure_histories, 
-                                     antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures, ...){
+                                     antibody_states, demography, antigen_map, theta, max_vacc_events, vacc_exposures, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(e %in% c(vacc_exposures)){  	
   ## Count the total number of successful exposures to e thus far 
-  curr_vacc_events<-sum(exposure_histories[i,1:t-1,e])
+  curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
   ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
   if(curr_vacc_events<max_vacc_events[e]){
     return(1)
@@ -100,7 +104,7 @@ immunity_model_vacc_successful_ifxn <- function(i, t, e, exposure_histories,
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble of titer-mediated protection parameters 
+#' @param theta Tibble including titer-mediated protection parameters 
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -143,9 +147,9 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
+#' @param theta Tibble including titer-mediated protection parameters 
 #' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
 #' @param vacc_exposures A list of exposure IDs (e) which represents vaccination events
-#' @param theta Tibble of titer-mediated protection parameters 
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -153,11 +157,11 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories, 
-                           antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures, theta, ...){
+                           antibody_states, demography, antigen_map, theta, max_vacc_events, vacc_exposures, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(e %in% c(vacc_exposures)){  	  
     ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e])
+    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
     if(curr_vacc_events<max_vacc_events[e]){
       return(1)

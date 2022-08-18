@@ -119,7 +119,7 @@ serosim <- function(
                     ## of successful infection/vaccination?
                     prob_success <- immunity_model(i, t, e, exposure_histories, 
                                                    antibody_states, demography, 
-                                                   antigen_map, ...)
+                                                   antigen_map, theta, ...)
                     
                     ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
@@ -164,7 +164,6 @@ serosim <- function(
     exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
     colnames(exposure_probabilities_long) <- c("i","t","e","value")
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
-    
     ## Observation process
     if(!is.null(observation_times)){
         observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography, ...)

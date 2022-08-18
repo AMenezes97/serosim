@@ -8,13 +8,13 @@ source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
 source("~/Documents/GitHub/serosim/R/immunity_models.R")
 source("~/Documents/GitHub/serosim/R/exposure_models.R")
 source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
-  
+
 library(tidyverse)
 library(data.table)
 
 ##******************Component 1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
-times <- seq(1,60,by=1) 
+times <- seq(1,120,by=1) 
 
 ## Set simulation settings
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
@@ -103,7 +103,7 @@ obs1 <- tibble(i=1:N,t=120, ag=1)
 obs2 <- tibble(i=1:N,t=120, ag=2)
 observation_times<-rbind(obs1,obs2)
 
-    
+
 ##***************************Run Simulation*************************************
 Rprof(tmp<-tempfile())
 ## Test full function with generated inputs
@@ -116,7 +116,7 @@ res<- serosim(
   theta,
   exposure_model=exposure_model_simple_FOI, 
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 
-  antibody_model=antibody_model_test, 
+  antibody_model=antibody_model_biphasic, 
   observation_model=observation_model_continuous_bounded_noise,
   draw_parameters=draw_parameters_random_fx_boost_wane, 
   
@@ -138,13 +138,4 @@ summaryRprof(tmp)
 # ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
 # ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=value),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
 
-# 
-# ## Examine serosim outputs 
-# res$exposure_histories
-# res$exposure_histories_long ## Create plot 
-# res$exposure_probabilities
-# res$exposure_probabilities_long ## Create plot
-# res$antibody_states
-# res$observed_antibody_states ## Create plot 
-# res$kinetics_parameters
 

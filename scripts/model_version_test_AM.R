@@ -1,6 +1,6 @@
 ## Create example arguments to test out various model versions
 
-N<-5 
+N<-100 
 t_start<-1
 t_end<-10
 times<-t_start:t_end
@@ -32,7 +32,7 @@ age_mod<-tibble(age=0:10, modifier=1:11)
 i<-1
 t<-1
 e<-1
-g<-1
+ag<-1
 
 i<-2
 t<-2
@@ -52,7 +52,7 @@ exposure_model_age_mod(i,t,e, g, lambdas, demography, age_mod)
 exposure_model_dem_age_mod(i,t,e, g, lambdas, demography, mod, age_mod)
 
 ## Create dummy arguments to be used for immunity models
-N_antigen_ids <-2
+N_antigen_ids <-1
 antibody_states=array(data=sample(1:10,100,replace=TRUE), dim = c(N,max(times),N_antigen_ids))
 vacc_exposures<-c(1,3,5) ## Specify which exposure IDs represent vaccination events 
 max_vacc_events<-c(2,1,1,NA,1) ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
@@ -85,10 +85,16 @@ draw_parameters_random_fx_boost_wane(i, t, e, demography, theta, antibody_states
 kinetics_parameters <- vector(mode="list",length=N)
 ## Draw parameters for an exposure event at time 2
 kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                      draw_parameters_fixed_fx(i, 2, e, ag, demography, antibody_states, theta))
+                                      draw_parameters_fixed_fx(i, 9, e, ag, demography, antibody_states, theta))
 
 ## Test antibody models
-antibody_model_biphasic(i, t, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)
+antibody_model_biphasic(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)
+antibody_model_test(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)
+
+
+microbenchmark(antibody_model_biphasic(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map),
+               antibody_model_test(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map))
+
 
 ## Reshape antibody_states to test observation model 
 antibody_states <- reshape2::melt(antibody_states)
@@ -105,7 +111,8 @@ observation_model_continuous_bounded_no_noise(antibody_states, theta=theta_obs, 
 observation_model_discrete_no_noise(antibody_states, theta=theta_obs, demography, discrete)
 observation_model_continuous_bounded_noise(antibody_states, theta=theta_obs, demography, boundary)
 observation_model_discrete_noise(antibody_states, theta=theta_obs, demography, discrete)
-  
+
+left_join(observation_times,antibody_states)
   
 ## Reshape runserosim outputs (this is done within runserosim) to test plotting functions
 ## Antibody states is reshaped above 

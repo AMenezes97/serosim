@@ -61,11 +61,11 @@ observation_model_continuous_bounded_noise<-function(antibody_states,theta,demog
   lower_bound<-boundary[1]
   upper_bound<-boundary[2]
   for(ags in seq_along(ag_tmp)){
-    if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="log-normal"){
+    if(theta$distribution[theta$antigen_id==ags & theta$name=="obs_sd"]=="log-normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
       antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
     }
-    if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="normal"){
+    if(theta$distribution[theta$antigen_id==ags & theta$name=="obs_sd"]=="normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
       antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
     }
@@ -93,18 +93,18 @@ observation_model_continuous_bounded_noise<-function(antibody_states,theta,demog
 #' @export
 #'
 #' @examples
-observation_model_discrete_noise<-function(antibody_states,theta,demography, discrete, ...){
+observation_model_discrete_noise<-function(antibody_states,theta, demography, discrete, ...){
   ag_tmp<-unique(antibody_states$ag)
   discrete_tmp<-c(discrete,Inf)
   antibody_states_new<-NULL
   for(ags in seq_along(ag_tmp)){
-    if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="log-normal"){
+    if(theta$distribution[theta$antigen_id==ags & theta$name=="obs_sd"]=="log-normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
       antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
       antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=discrete_tmp, right=FALSE, labels=discrete)
       antibody_states_tmp$temp<-NULL
     }
-    if(theta$distribution[theta$antigen_id==ag & theta$name=="obs_sd"]=="normal"){
+    if(theta$distribution[theta$antigen_id==ags & theta$name=="obs_sd"]=="normal"){
       antibody_states_tmp<-antibody_states %>% filter(ag==ags)
       antibody_states_tmp$temp<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,theta$sd[theta$antigen_id==ags & theta$name=="obs_sd"])
       antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=discrete_tmp, right=FALSE, labels=discrete)
