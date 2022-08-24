@@ -30,18 +30,18 @@ antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_sta
     return(0)
   }
   if(sum(exp_history,na.rm = TRUE)>0){
-    
     ## Extract all kinetics_parameters for antigen 
     ag_tmp<-ag
     
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
-    tmp_kinetics_parameters<-tmp_kinetics_parameters[t<t1 & ag==ag_tmp]
+    tmp_kinetics_parameters<-tmp_kinetics_parameters[ag==ag_tmp] ## Since you are going through time, all parameters will only be from the current or previous times?
     
-    tmp_boost_long <- tmp_kinetics_parameters[name == "boost_long"] 
-    tmp_boost_short <- tmp_kinetics_parameters[name == "boost_short"] 
+    # setkey(tmp_kinetics_parameters, cols="i","t","e","ag","name","value", "realized_value")
+    tmp_boost_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",] 
+    tmp_boost_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_short",] 
     
-    tmp_wane_long <- tmp_kinetics_parameters[name == "wane_long"] 
-    tmp_wane_short <- tmp_kinetics_parameters[name == "wane_short"] 
+    tmp_wane_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_long",] 
+    tmp_wane_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_short",] 
     
     
     for(j in seq_along(tmp_boost_long$realized_value)){

@@ -85,7 +85,7 @@ draw_parameters_random_fx_boost_wane(i, t, e, demography, theta, antibody_states
 kinetics_parameters <- vector(mode="list",length=N)
 ## Draw parameters for an exposure event at time 2
 kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                      draw_parameters_fixed_fx(i, 9, e, ag, demography, antibody_states, theta))
+                                      draw_parameters_fixed_fx(i, 2, e, ag, demography, antibody_states, theta))
 
 ## Test antibody models
 antibody_model_biphasic(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)

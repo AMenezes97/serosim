@@ -197,11 +197,11 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories,
     }else{
       return(0)
     }
+    }
     if(curr_age<vacc_age){
       return(0)
     }
   } 
-    }
   else {
     ## Find antigens which are boosted by this exposure type
     ## The assumption here is that the titer levels to these antigens will determine if an individual is protected

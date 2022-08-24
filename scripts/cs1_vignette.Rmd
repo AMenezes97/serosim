@@ -5,26 +5,18 @@ date: '2022-08-23'
 output: html_document
 ---
 
-Here, we will use the serosim package to generate a simple measles paired serosurvey.
-In this simulation individuals can either be vaccinated against measles or naturally 
-infected, or a combination of both. We will set up each of the required arguments 
+Here, we will use the serosim package to generate a measles longitudinal serological survey.
+The overall structure and principles discussed within this case study are also applicable to 
+other vaccine preventable pathogens.In this simulation individuals can either be 
+vaccinated against measles or naturally infected, or a combination of both. We will set up each of the required arguments 
 and models for runserosim in the order outlined in the methods section of the paper. 
 
 Load necessary packages:
-```{r message=FALSE, warning=FALSE, r,eval=TRUE}
-#devtools::install_github("serosim")
-library(serosim)
+```{r message=FALSE, warning=FALSE,eval=TRUE}
+devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
-source("~/Documents/GitHub/serosim/R/serosim.R")
-source("~/Documents/GitHub/serosim/R/observation_models.R")
-source("~/Documents/GitHub/serosim/R/antibody_models.R")
-source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
-source("~/Documents/GitHub/serosim/R/immunity_models.R")
-source("~/Documents/GitHub/serosim/R/exposure_models.R")
-source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
-source("~/Documents/GitHub/serosim/R/generate_plots.R")
 ```
 
 
@@ -46,11 +38,11 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 For this case study, we are not interested in tracking any demography information
 but we are interested in tracking individual's birth and removal time. We will 
 use the generate_pop_demography function to create the demography tibble needed 
-for run serosim.
+for runserosim.
 
 ```{r}
 ## Specify the number of individuals in the simulation 
-N<-500
+N<-100
 
 ## Generate the population demography tibble
 ## Limit is set to 0 which allows births to occur until the last time step
@@ -63,7 +55,7 @@ summary(demography)
 Individuals can be measles seropositive either by natural infection or by 
 vaccination and we want to track both exposure types separately. 
 In this case, we need two exposure IDs and 1 antigen ID. Exposure ID 1 will 
-represent natrual infection while exposure ID 2 will represent vaccination.
+represent natural infection while exposure ID 2 will represent vaccination.
 ```{r}
 antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
 antigen_map
@@ -75,7 +67,6 @@ Now, we need to specify the lambdas argument which contains the force of infecti
 for all exposure_IDs across all time steps. We also specify the exposure model 
 which will be called within runserosim later. The exposure model will determine
 whether an individual is exposed to a specific exposure event.
-
 ```{r}
 ## Create an empty array to store the force of infection for all exposure types
 lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
@@ -84,7 +75,6 @@ lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
 lambdas[,,1] <- 0.2
 
 ## Specify the force of vaccination for exposure ID 2 which represents vaccination
-## Assume this is constant across all time steps
 lambdas[,,2] <- 0.4
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
@@ -95,11 +85,16 @@ exposure_model<-exposure_model_simple_FOI
 # 1.5 Immunity Model
 Here, we specify the immunity model which will determine whether an exposure 
 event is successful or not. Since we have both vaccination and natural infection 
-events, we will use immunity_model_vacc_ifxn_titer_prot. The probability of 
+events, we will use immunity_model_vacc_ifxn_titer_prot. With this model, the probability of 
 successful vaccination exposure depends on the number of vaccines received 
-prior to time t while the probability of successful infection is dependent 
+prior to time t and age at time t while the probability of successful infection is dependent 
 on the titer at the time of exposure. The titer-mediated protection parameters used 
-within this model are defined within theta which will be laded in section 1.6.
+within this model are defined within theta which will be loaded in section 1.6. 
+Although measles is known to be fully immunizing, an individual can still be 
+"reinfected" within the simulation.These "reinfection" events are representative 
+of boosting events which can occur if an individual is exposed to measles following 
+a vaccination or previous infection. The user can limit the frequency of multiple infections(aka boosting events)
+by adjusting the titer-mediated protection parameters within theta.
 ```{r}
 ## Specify immunity model within serosim function below 
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
@@ -112,15 +107,18 @@ vacc_age<-9
 
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(NA,1)
+
+## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 which will be loaded in section 1.6
+plot_titer_mediated_protection(0:20, titer_prot_midpoint=2, titer_prot_width=1.5)
 ```
 
 # 1.6  Antibody Model, Antibody Kinetics Parameters, and draw_parameters
 Now, we specify the antibody model to be used within runserosim. We will be using 
 a biphasic boosting-waning model.  This model assumes that for each exposure there 
 is a set of long-term boost, long-term boost waning, short-term boost, and 
-short-term boost waning parameters. This model incorporates titer-ceiling effects 
-by taking into account an individual’s preexisting titer at the time of a new 
-exposure event. The antibody kinetics parameters are loaded within a csv file. 
+short-term boost waning parameters. This model incorporates titer dependent boosting effects 
+by taking an individual's realized boost which is adjusted by draw_parameters.
+The antibody kinetics parameters are pre loaded within a csv file. 
 Users can edit the csv file to adjust any parameters. Lastly, we define
 the draw_parameters function which determines how each individual’s antibody kinetics 
 parameters are simulated from the antibody kinetics parameters tibble (theta). 
@@ -134,21 +132,22 @@ dependent on their titer level at the time of the exposure event.
 antibody_model<-antibody_model_biphasic
 
 ## Bring in the antibody parameters needed for the antibody model
-## Note that the titer-mediated protection parameters needed for the immunity model, the titer-ceiling parameters needed for draw_parameters and the observation error needed for the observation model are all defined here too.
+## Note that the titer-mediated protection parameters needed for the immunity model, the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-# theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
-# theta
-# theta_path <- system.file("extdata", "theta_cs1.csv", package = "serosim")
-# theta <- read.csv(file = input_dat_path, header = TRUE)
+theta_path <- system.file("extdata", "theta_cs1.csv", package = "serosim")
+theta <- read.csv(file = theta_path, header = TRUE)
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
+
+## Plot titer dependent boosting effects given parameters specified within theta for antigen 1
+plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
 ```
 
 # 1.7 Observation Model and observation_times
 Now we specify how observed antibody titers are generated as a probabilistic 
 function of the true, latent antibody titer and when to observe these titers. 
-We will take a samples of all individuals alive at the midpoint and end of the 
+We will take samples of all individuals alive at the midpoint and end of the 
 simulation. This will provide us with paired samples for all individuals alive 
 at the midpoint of the simulation. We will use a continuous assay with lower and 
 upper bounds mimicking the measles IgG ELISA with added noise. This observation model 
@@ -165,9 +164,9 @@ boundary<-c(2,20)
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
 
-## Specify observation_times to observe antigen 1 (aka Measles antibody titer) across all individuals at the midpoint and the end of the simulation (t=60 and t=120)
+## Specify observation_times to observe antigen 1 (aka measles antibody titer) across all individuals at the midpoint and the end of the simulation (t=60 and t=120)
 obs1 <- tibble(i=1:N,t=60, ag=1)
-obs2 <- tibble(i=1:N,t=120, ag=2)
+obs2 <- tibble(i=1:N,t=120, ag=1)
 observation_times<-rbind(obs1,obs2)
 ```
 
@@ -176,33 +175,52 @@ observation_times<-rbind(obs1,obs2)
 There are no optional arguments needed for this simulation. 
 
 # 1.9 Run Simulation 
-```{r}
-# res<- runserosim(
-#   simulation_settings,
-#   demography, 
-#   observation_times,
-#   lambdas, 
-#   antigen_map,
-#   theta,
-#   exposure_model, 
-#   immunity_model, 
-#   antibody_model, 
-#   observation_model=observation_model_continuous_bounded_noise,
-#   draw_parameters=draw_parameters_random_fx_titer_dep, 
-#   
-#   ## Other arguments needed
-#   boundary=boundary,
-#   max_vacc_events=max_vacc_events,
-#   vacc_exposures=vacc_exposures,
-#   vacc_age=vacc_age,
-# )
+```{r message=FALSE, warning=FALSE, eval=TRUE}
+res<- runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  lambdas,
+  antigen_map,
+  theta,
+  exposure_model,
+  immunity_model,
+  antibody_model,
+  observation_model,
+  draw_parameters,
+
+  ## Other arguments needed
+  boundary=boundary,
+  max_vacc_events=max_vacc_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+)
 ```
 
 # 1.10 Generate Plots
+Let's plot and examine the simulation outputs.
 ```{r}
-# plot_titers(res$antibody_states)
-# plot_exposure_prob(res$exposure_probabilities_long)
-# plot_obs_titers_one_sample(res$observed_antibody_states)
-# plot_obs_titers_paired_sample(res$observed_antibody_states)
-# plot_exposure_histories(res$exposure_histories_long)
+## Plot exposure histories for all exposure types
+plot_exposure_histories(res$exposure_histories_long)
+
+## Plot exposure probabilities for all exposure types
+plot_exposure_prob(res$exposure_probabilities_long)
+
+## Plot antibody states for all individuals
+plot_titers(res$antibody_states)
+
+## Plot the first serosurvey at time 60 
+obs60<-res$observed_antibody_states %>% filter(t==60)
+plot_obs_titers_one_sample(obs60)
+
+## Plot the second serosurvey at time 120 
+obs120<-res$observed_antibody_states %>% filter(t==120)
+plot_obs_titers_one_sample(obs120)
+
+## Plot both serosurveys paired samples
+plot_obs_titers_paired_sample(res$observed_antibody_states)
+
+## Note that the simulated kinetics parameters are also stored
+head(res$kinetics_parameters)
+
 ```

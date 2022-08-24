@@ -1,44 +1,17 @@
----
-title: 'Paper case study 2: Diphtheria and Pertussis'
-author: "Arthur Menezes, James Hay"
-date: '2022-08-24'
-output: html_document
----
-Here, we will use the serosim package to generate a diphtheria and pertussis 
-cross-sectional serosurvey. In this simulation individuals can either be vaccinated with a 
-combined diphtheria and pertussis vaccine or naturally infected with each, or a 
-combination of both. We will set up each of the required arguments and models 
-for runserosim in the order outlined in the methods section of the paper. 
 
-Load necessary packages:
-```{r message=FALSE, warning=FALSE,eval=TRUE}
 devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
-```
 
 
-# 1.1 Simulation Settings
-We will simulate monthly time steps across a 10 year period. Therefore, we will 
-have 120 time steps. Note that these are arbitrary time steps which will need to 
-be scaled to the right time resolution to match any time-based parameters used 
-later on.
-```{r}
-## Specify the number of time periods to simulate 
 times <- seq(1,120,by=1) 
 
 ## Set simulation settings
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
-```
 
-# 1.2 Population Demography
-For this case study, we are interested in tracking an individual's socioeconomic 
-status, location(group), birth and removal time. We will use the generate_pop_demography 
-function to create the demography tibble needed for runserosim.
 
-```{r}
-## Specify the number of individuals in the simulation 
+
 N<-100
 
 ## Pre load the demography categories, values and distributions 
@@ -51,38 +24,12 @@ aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribut
 ## Limit is set to 0 which allows births to occur until the last time step
 ## Let's assume that individuals are removed from the population and set prob_removal to 0.2
 demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
-head(demography)
-tail(demography)
-```
 
-# 1.3 Antigen Map 
-Individuals can be seropositive either by natural infection or by vaccination 
-and we want to track both exposure types separately. 
-In this case, we need three exposure IDs:
 
-1. Diphtheria + Pertussis combined vaccine
-2. Diphtheria natural infection
-3. Pertussis natural infection 
-
-And two antigen IDs:
-
-1. Diphtheria
-2. Pertussis
-```{r}
 antigen_map <- tibble(exposure_id=c(1,1,2,3),antigen_id=c(1,2,1,2)) 
 antigen_map
-```
 
-# 1.4 Force of Infection and Exposure Model
-Now, we need to specify the lambdas argument which contains the force of infection
-for all exposure_IDs across all time steps. We also specify the exposure model 
-which will be called within runserosim later. The exposure model will determine
-whether an individual is exposed to a specific exposure event. The probability of 
-exposure (1-e-λ) depends on the force of infection (λ) at the current time t for 
-group g modulated by relevant demographic elements (mod) and age (age_mod)
 
-```{r}
-## Create an empty array to store the force of infection for all exposure types
 lambdas <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
 
 ## Note that we can specify a different force of infection for each group, time and exposure ID
@@ -115,30 +62,22 @@ age_mod_2<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,
 ## Individuals who are 0-3 are 2 times more likely to be exposed to pertussis
 age_mod_3<-tibble(exposure_id=rep(3,11), age=0:10, modifier=c(1,2,1,1,1,1,1,1,1,1,1))
 age_mod<-rbind(age_mod_1,age_mod_2,age_mod_3)
-age_mod
+
 
 ## Specify the demography exposure modifiers
 ## Here, individuals who are of low nutritional status are twice as likely of being exposed to diphtheria and pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
 ## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 1 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 1 (vaccination) that individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
 mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
-mod
+
 
 
 ## Specify the number of time steps within a year 
 ## We are simulating on the monthly scale
 t_in_year=12
-```
 
-# 1.5 Immunity Model
-Here, we specify the immunity model which will determine whether an exposure 
-event is successful or not. Since we have both vaccination and natural infection 
-events, we will use immunity_model_vacc_ifxn_titer_prot. The probability of 
-successful vaccination exposure depends on the number of vaccines received 
-prior to time t while the probability of successful infection is dependent 
-on the titer at the time of exposure. The titer-mediated protection parameters used 
-within this model are defined within theta which will be loaded in section 1.6.
-```{r}
+
+
 ## Specify immunity model within the runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
 
@@ -156,25 +95,9 @@ plot_titer_mediated_protection(0:20, titer_prot_midpoint=2, titer_prot_width=1.5
 
 ## Plot titer-mediated protection curve given parameters specified within theta for antigen 2 (pertussis) which will be loaded in section 1.6
 plot_titer_mediated_protection(0:20, titer_prot_midpoint=4, titer_prot_width=.5)
-```
 
-# 1.6  Antibody Model, Antibody Kinetics Parameters, and draw_parameters
-Now, we specify the antibody model to be used within runserosim. We will be using 
-a biphasic boosting-waning model.  This model assumes that for each exposure there 
-is a set of long-term boost, long-term boost waning, short-term boost, and 
-short-term boost waning parameters. This model incorporates titer dependent boosting effects 
-by taking an individual's realized boost which is adjusted by draw_parameters.
-The antibody kinetics parameters are pre loaded within a csv file. 
-Users can edit the csv file to adjust any parameters. Lastly, we define
-the draw_parameters function which determines how each individual’s antibody kinetics 
-parameters are simulated from the antibody kinetics parameters tibble (theta). 
-We will use a function which draws parameters directly from theta for the antibody 
-model with random effects. Parameters are drawn randomly from a distribution 
-with mean and standard deviation specified within theta. This draw_parameters function
-also incorporates titer-ceiling effects where an individual’s realized boost is 
-dependent on their titer level at the time of the exposure event.
-```{r}
-## Specify the antibody model 
+
+
 antibody_model<-antibody_model_biphasic
 
 ## Bring in the antibody parameters needed for the antibody model
@@ -182,7 +105,7 @@ antibody_model<-antibody_model_biphasic
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
 theta_path <- system.file("extdata", "theta_cs2.csv", package = "serosim")
 theta <- read.csv(file = theta_path, header = TRUE)
-theta
+
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
@@ -192,22 +115,8 @@ plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, 
 
 ## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (pertussis)
 plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
-```
 
-# 1.7 Observation Model and observation_times
-Now we specify how observed antibody titers are generated as a probabilistic 
-function of the true, latent antibody titer and when to observe these titers. 
-We will take a sample of all individuals present at the end of the 
-simulation. We will use a continuous assay with lower and 
-upper bounds mimicking the diphtheria and pertussis IgG ELISA with added noise. 
-This observation model observes the latent titer values given a continuous assay 
-with user-specified lower and upper limits and added noise. The added noise 
-represents assay variability and is done by sampling from a distribution with 
-the latent antibody titer as the mean and the measurement error as the standard deviation. The 
-observation standard deviation and distribution is defined within theta as the 
-“obs_sd” parameter for each antigen.
-```{r}
-## Limits of detection for continuous assays
+
 boundary<-c(2,20)
 
 ## Specify the observation model 
@@ -217,15 +126,10 @@ observation_model<-observation_model_continuous_bounded_noise
 obs1 <- tibble(i=1:N,t=120, ag=1)
 obs2 <- tibble(i=1:N,t=120, ag=2)
 observation_times<-rbind(obs1,obs2)
-```
 
 
-# 1.8 Optional Arguments 
-There are no optional arguments needed for this simulation. 
-
-# 1.9 Run Simulation 
-```{r message=FALSE, warning=FALSE, eval=TRUE}
-res<- runserosim(
+Rprof(tmp<-tempfile())
+results<- runserosim(
   simulation_settings,
   demography,
   observation_times,
@@ -247,23 +151,16 @@ res<- runserosim(
   age_mod=age_mod,
   t_in_year=t_in_year
 )
-```
+
+
+Rprof(NULL)
+summaryRprof(tmp)
+
 
 # 1.10 Generate Plots
-```{r}
-## Plot exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
 
-## Plot exposure probabilities for all exposure types
-plot_exposure_prob(res$exposure_probabilities_long)
-
-## Plot antibody states for all individuals
-plot_titers(res$antibody_states)
-
-## Plot the serosurvey results 
-obs120<-res$observed_antibody_states %>% filter(t==120)
-plot_obs_titers_one_sample(obs120)
-
-## Note that the simulated kinetics parameters are also stored
-head(res$kinetics_parameters)
-```
+# plot_titers(res$antibody_states)
+# plot_exposure_prob(res$exposure_probabilities_long)
+# plot_obs_titers_one_sample(res$observed_antibody_states)
+# plot_obs_titers_paired_sample(res$observed_antibody_states)
+# plot_exposure_histories(res$exposure_histories_long)

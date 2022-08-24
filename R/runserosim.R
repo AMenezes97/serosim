@@ -84,10 +84,10 @@ runserosim <- function(
         exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
     }
     
-    message(cat("Beginning simulation\n"))
+    # message(cat("Beginning simulation\n"))
     ## For each individual
     for(i in indivs){
-        message(cat("Individual: ", i, "\n"))
+        # message(cat("Individual: ", i, "\n"))
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
@@ -135,7 +135,7 @@ runserosim <- function(
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in antigen_ids){ ## Is this correct? Shouldn't it only step through the antigens in the successful exposure? Or is this handled within the function where Ags not in the exposure aren't updated? 
+                        for(ag in antigen_ids){
                             antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
                                                                       antibody_states, kinetics_parameters, antigen_map, ...)
                         }
