@@ -80,7 +80,7 @@ max_vacc_events<-1
 ## Specify antibody model within serosim function below 
 
 ## Specify antibody kinetics parameters 
-theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
+theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
 
 ## Specify draw_parameters within serosim function below 
 

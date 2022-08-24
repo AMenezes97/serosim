@@ -19,7 +19,7 @@
 #' 
 #' @export
 #' @examples
-serosim <- function(
+runserosim <- function(
     ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
@@ -156,7 +156,7 @@ serosim <- function(
     if(sum(exposure_histories, na.rm = TRUE) > 0){
         exposure_histories_long <- reshape2::melt(exposure_histories)
         colnames(exposure_histories_long) <- c("i","t","e","value")
-        exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
+        # exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
         exposure_histories_long <- exposure_histories_long %>% arrange(i, t, e)
     }
     

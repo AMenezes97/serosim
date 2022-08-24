@@ -8,13 +8,15 @@ source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
 source("~/Documents/GitHub/serosim/R/immunity_models.R")
 source("~/Documents/GitHub/serosim/R/exposure_models.R")
 source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
+source("~/Documents/GitHub/serosim/R/generate_plots.R")
   
 library(tidyverse)
 library(data.table)
+library(ggplot2)
 
 ##******************Component 1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
-times <- seq(1,60,by=1) 
+times <- seq(1,120,by=1) 
 
 ## Set simulation settings
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
@@ -23,7 +25,7 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
 ##******************Component 2: Population Demography************************** 
 ## Specify the number of individuals in the simulation 
-N <- 1000
+N <- 100
 
 ## Pre load the demography categories, values and distributions 
 aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distribution"=c(0.2,0.2,0.6)),
@@ -80,7 +82,7 @@ max_vacc_events<-1
 ## Specify antibody model within serosim function below 
 
 ## Specify antibody kinetics parameters 
-theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
+theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
 
 ## Specify draw_parameters within serosim function below 
 
@@ -96,18 +98,20 @@ theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_V1.csv")
 # discrete<-c(0,5,8,10) 
 
 ## Limits of detection for continuous assays
-boundary<-c(2,10)
+boundary<-c(2,20)
 
 ## Set observation settings 
-obs1 <- tibble(i=1:N,t=120, ag=1)
-obs2 <- tibble(i=1:N,t=120, ag=2)
-observation_times<-rbind(obs1,obs2)
+obs1 <- tibble(i=1:N,t=60, ag=1)
+obs2 <- tibble(i=1:N,t=60, ag=2)
+obs3 <- tibble(i=1:N,t=120, ag=1)
+obs4 <- tibble(i=1:N,t=120, ag=2)
+observation_times<-rbind(obs1,obs2,obs3,obs4)
 
     
 ##***************************Run Simulation*************************************
-Rprof(tmp<-tempfile())
+# Rprof(tmp<-tempfile())
 ## Test full function with generated inputs
-res<- serosim(
+res<- runserosim(
   simulation_settings,
   demography, 
   observation_times,
@@ -116,9 +120,9 @@ res<- serosim(
   theta,
   exposure_model=exposure_model_simple_FOI, 
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 
-  antibody_model=antibody_model_test, 
+  antibody_model=antibody_model_biphasic, 
   observation_model=observation_model_continuous_bounded_noise,
-  draw_parameters=draw_parameters_random_fx_boost_wane, 
+  draw_parameters=draw_parameters_random_fx_titer_dep, 
   
   ## Pre-specified parameters/events
   exposure_histories_fixed=NULL,
@@ -129,22 +133,19 @@ res<- serosim(
   vacc_exposures=vacc_exposures
 )
 
-Rprof(NULL)
-summaryRprof(tmp)
+# Rprof(NULL)
+# summaryRprof(tmp)
 
 
 # # ## Generate Plots 
 # ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
+plot_titers(res$antibody_states)
 # ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
-# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=value),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
+plot_exposure_prob(res$exposure_probabilities_long)
+# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
+plot_obs_titers_one_sample(res$observed_antibody_states)
+plot_obs_titers_paired_sample(res$observed_antibody_states)
+plot_exposure_histories(res$exposure_histories_long)
 
-# 
-# ## Examine serosim outputs 
-# res$exposure_histories
-# res$exposure_histories_long ## Create plot 
-# res$exposure_probabilities
-# res$exposure_probabilities_long ## Create plot
-# res$antibody_states
-# res$observed_antibody_states ## Create plot 
-# res$kinetics_parameters
+
 

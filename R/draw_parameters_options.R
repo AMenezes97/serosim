@@ -1,6 +1,6 @@
 #' Draw Parameters Fixed Effects
 #'  
-#' @description This function draws all parameters listed in theta for successful exposures with fixed effects.
+#' @description This function draws parameters directly from theta for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 #'
 #' @param i Individual
 #' @param t time
@@ -31,7 +31,7 @@ draw_parameters_fixed_fx <- function(i, t, e, ag, demography, antibody_states, t
 }
 #' Draw Parameters Random Effects
 #'  
-#' @description This function draws all parameters listed in theta for successful exposures with random effects.
+#' @description This function draws parameters directly from theta for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within theta.
 #'
 #' @param i Individual
 #' @param t time
@@ -46,7 +46,7 @@ draw_parameters_fixed_fx <- function(i, t, e, ag, demography, antibody_states, t
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx_boost_wane <- function(i, t, e, ag, demography, antibody_states, theta, ...){
+draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, theta, ...){
   ## Filter for only exposure stimulated 
   theta_tmp <- theta %>% filter(exposure_id == e)
   pars <- numeric(nrow(theta_tmp))
@@ -84,10 +84,11 @@ draw_parameters_random_fx_boost_wane <- function(i, t, e, ag, demography, antibo
   all_pars <- tibble(i=rep(i,nrow(theta_tmp)),t=rep(t,nrow(theta_tmp)), e=rep(e,nrow(theta_tmp)), ag=theta_tmp$antigen_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
+
 #' Draw Parameters Fixed Effects With Titer-Dependent Boosting
 #'  
-#' @description This function draws all parameters listed in theta for successful exposures with fixed effects and titer-dependent boosting.
-#'
+#' @description This function adds titer-ceiling effects to the previous draw_parameters_fixed_fx. Here an individual’s realized boost is dependent on their titer level at the time of the exposure event.
+#' 
 #' @param i Individual
 #' @param t time
 #' @param e exposure
@@ -127,7 +128,7 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, ag, demography, antibody
 
 #' Draw Parameters Random Effects With Titer-Dependent Boosting
 #'  
-#' @description This function draws all parameters listed in theta for successful exposures with random effects and titer-dependent boosting.
+#' @description This function adds titer-ceiling effects to the previous draw_parameters_random_fx. Here an individual’s realized boost is dependent on their titer level at the time of the exposure event.
 #'
 #' @param i Individual
 #' @param t time
