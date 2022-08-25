@@ -12,7 +12,7 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
 
 
-N<-100
+N<-10
 
 ## Pre load the demography categories, values and distributions 
 ## Specify options for each demography element and the distribution of each within the population
@@ -127,9 +127,9 @@ obs1 <- tibble(i=1:N,t=120, ag=1)
 obs2 <- tibble(i=1:N,t=120, ag=2)
 observation_times<-rbind(obs1,obs2)
 
-
-Rprof(tmp<-tempfile())
-results<- runserosim(
+# 
+# Rprof(tmp<-tempfile())
+res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
@@ -153,8 +153,8 @@ results<- runserosim(
 )
 
 
-Rprof(NULL)
-summaryRprof(tmp)
+# Rprof(NULL)
+# summaryRprof(tmp)
 
 
 # 1.10 Generate Plots

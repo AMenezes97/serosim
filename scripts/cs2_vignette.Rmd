@@ -152,10 +152,10 @@ vacc_age<-2
 max_vacc_events<-c(3,NA,NA)
 
 ## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 (diphtheria) which will be loaded in section 1.6
-plot_titer_mediated_protection(0:20, titer_prot_midpoint=2, titer_prot_width=1.5)
+plot_titer_mediated_protection(0:20, titer_prot_midpoint=7, titer_prot_width=.5)
 
 ## Plot titer-mediated protection curve given parameters specified within theta for antigen 2 (pertussis) which will be loaded in section 1.6
-plot_titer_mediated_protection(0:20, titer_prot_midpoint=4, titer_prot_width=.5)
+plot_titer_mediated_protection(0:100, titer_prot_midpoint=50, titer_prot_width=.1)
 ```
 
 # 1.6  Antibody Model, Antibody Kinetics Parameters, and draw_parameters
@@ -188,10 +188,14 @@ theta
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
 ## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (diphtheria)
-plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
+plot_titer_dependent_boosting(start=0, end=4, by=1, titer_ceiling_threshold=2, titer_ceiling_gradient=0.45)
+
+## These parameters indicate that any individual with a diphtheria titer level above 2 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 
 ## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (pertussis)
-plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
+plot_titer_dependent_boosting(start=0, end=30, by=1, titer_ceiling_threshold=20, titer_ceiling_gradient=0.045)
+
+## These parameters indicate that any individual with a pertussis titer level above 1000 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 ```
 
 # 1.7 Observation Model and observation_times
@@ -208,7 +212,7 @@ observation standard deviation and distribution is defined within theta as the
 “obs_sd” parameter for each antigen.
 ```{r}
 ## Limits of detection for continuous assays
-boundary<-c(2,20)
+boundary<-c(2,100)
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
@@ -250,7 +254,11 @@ res<- runserosim(
 ```
 
 # 1.10 Generate Plots
-```{r}
+Let's plot and examine the simulation outputs.
+```{r} 
+## Plot antibody states and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10)
+
 ## Plot exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 
@@ -261,8 +269,7 @@ plot_exposure_prob(res$exposure_probabilities_long)
 plot_titers(res$antibody_states)
 
 ## Plot the serosurvey results 
-obs120<-res$observed_antibody_states %>% filter(t==120)
-plot_obs_titers_one_sample(obs120)
+plot_obs_titers_one_sample(res$observed_antibody_states)
 
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)

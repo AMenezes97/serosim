@@ -34,7 +34,7 @@ antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_sta
     ag_tmp<-ag
     
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
-    tmp_kinetics_parameters<-tmp_kinetics_parameters[ag==ag_tmp] ## Since you are going through time, all parameters will only be from the current or previous times?
+    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$ag==ag_tmp,] ## Since you are going through time, all parameters will only be from the current or previous times?
     
     # setkey(tmp_kinetics_parameters, cols="i","t","e","ag","name","value", "realized_value")
     tmp_boost_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",] 
@@ -45,8 +45,7 @@ antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_sta
     
     
     for(j in seq_along(tmp_boost_long$realized_value)){
-      titer<- titer + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j])) 
-      + tmp_boost_short$realized_value[j]*max(0,1-tmp_wane_short$realized_value[j]*(t1-tmp_wane_short$t[j]))
+      titer<- titer + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j])) + tmp_boost_short$realized_value[j]*max(0,1-tmp_wane_short$realized_value[j]*(t1-tmp_wane_short$t[j]))
     }
     titer
     

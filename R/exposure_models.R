@@ -59,8 +59,7 @@ exposure_model_dem_mod <- function(i, t, e, g, lambdas, demography, mod, ...){
     ## Pull the column name
     colname<-cols[col] 
     ## Pull the individual's column entry within demography 
-    entry<-demography_tmp[,..colname]
-    entry<-pull(entry)
+    entry<-demography_tmp[[colname]]
     ## Find the modifier within mod tibble 
     mod2<-data.table(mod)
     modifier<-mod2$modifier[mod2$exposure_id==e & mod2$column==colname & mod2$value==entry]
@@ -102,7 +101,7 @@ exposure_model_age_mod <- function(i, t, e, g, lambdas, demography, age_mod, t_i
   if(e  %in% exps_age){ 
   
     age_mod2<-data.table(age_mod)
-    age_mod_tmp<-age_mod2[age_mod$exposure_id==e]
+    age_mod_tmp<-age_mod2[age_mod$exposure_id==e,]
     
   ## Calculate individual's current age
     ## Pull individual's information within demography 
@@ -152,7 +151,7 @@ exposure_model_dem_age_mod <- function(i, t, e, g, lambdas, demography, mod, age
   ## Pull individual's information within demography 
   individualnum<-i
   demography_tmp<-data.table(demography)
-  demography_tmp<-demography_tmp[i==individualnum & times==t,]
+  demography_tmp<-demography_tmp[demography_tmp$i==individualnum & times==t,]
   
   ## If there are defined modifiers for this exposure then
   if(e  %in% exps){ 
@@ -160,13 +159,11 @@ exposure_model_dem_age_mod <- function(i, t, e, g, lambdas, demography, mod, age
     ## Pull out unique columns in mod 
     cols<-mod$column %>% unique()
     
-    browser()
     for (column in seq_along(cols)){ ## For each unique column entry in mod 
       ## Pull the column name
       colname<-cols[column] 
       ## Pull the individual's column entry within demography 
-      entry<-demography_tmp[,..colname]
-      entry<-pull(entry)
+      entry<-demography_tmp[[colname]]
       ## Find the modifier within mod tibble 
       mod2<-data.table(mod)
       modifier<-mod2$modifier[mod2$exposure_id==e & mod2$column==colname & mod2$value==entry]
@@ -182,7 +179,7 @@ exposure_model_dem_age_mod <- function(i, t, e, g, lambdas, demography, mod, age
   if(e  %in% exps_age){ 
     
     age_mod2<-data.table(age_mod)
-    age_mod_tmp<-age_mod2[age_mod$exposure_id==e]
+    age_mod_tmp<-age_mod2[age_mod$exposure_id==e,]
     
     ## Calculate individual's current age
     birth_time<-demography_tmp$birth

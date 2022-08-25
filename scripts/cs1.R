@@ -10,7 +10,7 @@ times <- seq(1,120,by=1)
 ## Set simulation settings
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
-N<-500
+N<-100
 
 demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0)
 

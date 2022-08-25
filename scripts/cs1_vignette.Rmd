@@ -109,7 +109,7 @@ vacc_age<-9
 max_vacc_events<-c(NA,1)
 
 ## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 which will be loaded in section 1.6
-plot_titer_mediated_protection(0:20, titer_prot_midpoint=2, titer_prot_width=1.5)
+plot_titer_mediated_protection(0:7500, titer_prot_midpoint=5000, titer_prot_width=.001)
 ```
 
 # 1.6  Antibody Model, Antibody Kinetics Parameters, and draw_parameters
@@ -136,12 +136,15 @@ antibody_model<-antibody_model_biphasic
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
 theta_path <- system.file("extdata", "theta_cs1.csv", package = "serosim")
 theta <- read.csv(file = theta_path, header = TRUE)
+theta
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within theta for antigen 1
-plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
+## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (measles)
+plot_titer_dependent_boosting(start=0, end=1500, by=1, titer_ceiling_threshold=1000, titer_ceiling_gradient=0.0009)
+
+## These parameters indicate that any individual with a titer level above 1000 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 ```
 
 # 1.7 Observation Model and observation_times
@@ -159,7 +162,7 @@ observation standard deviation and distribution is defined within theta as the
 “obs_sd” parameter.
 ```{r}
 ## Limits of detection for continuous assays
-boundary<-c(2,20)
+boundary<-c(20,20000)
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
@@ -200,6 +203,9 @@ res<- runserosim(
 # 1.10 Generate Plots
 Let's plot and examine the simulation outputs.
 ```{r}
+## Plot antibody states and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10)
+
 ## Plot exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 

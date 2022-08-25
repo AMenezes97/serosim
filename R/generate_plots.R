@@ -182,6 +182,30 @@ plot_exposure_histories <- function(exposure_histories){
   return(p)
 }
 
+#' Plot Antibody States and Exposure Histories For A Subset Of Individuals
+#'
+#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each antigen ID
+#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure ID
+#' @param subset The number of individuals you want to plot
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_subset_individuals_history <- function(titers, exposure_histories, subset){
+  exposure_histories$e <- paste0("Exposure: ", exposure_histories$e)
+  titers$ag <- paste0("Antigen: ", titers$ag)
+  
+  exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
+  sample_indivs <- sample(1:N, size=subset)
+  
+  g<-  ggplot() +
+    geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=e),linetype="dotted") +
+    geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=ag)) +
+    facet_wrap(~i) + theme_bw() +
+    scale_color_hue("Key", guide=guide_legend(order=1))
+  return(g)
+}
 
 
 
