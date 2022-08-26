@@ -204,7 +204,7 @@ res<- runserosim(
 Let's plot and examine the simulation outputs.
 ```{r}
 ## Plot antibody states and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10)
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
 
 ## Plot exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)

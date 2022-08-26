@@ -1,5 +1,6 @@
 
 devtools::load_all("~/Documents/GitHub/serosim")
+# devtools::document("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
@@ -158,7 +159,7 @@ res<- runserosim(
 
 
 # 1.10 Generate Plots
-
+# plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10)
 # plot_titers(res$antibody_states)
 # plot_exposure_prob(res$exposure_probabilities_long)
 # plot_obs_titers_one_sample(res$observed_antibody_states)

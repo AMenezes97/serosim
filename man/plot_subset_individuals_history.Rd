@@ -4,7 +4,7 @@
 \alias{plot_subset_individuals_history}
 \title{Plot Antibody States and Exposure Histories For A Subset Of Individuals}
 \usage{
-plot_subset_individuals_history(titers, exposure_histories, subset)
+plot_subset_individuals_history(titers, exposure_histories, subset, demography)
 }
 \arguments{
 \item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each antigen ID}
@@ -12,6 +12,8 @@ plot_subset_individuals_history(titers, exposure_histories, subset)
 \item{exposure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure ID}
 
 \item{subset}{The number of individuals you want to plot}
+
+\item{demography}{Tibble of removal time for each individual}
 }
 \value{
 
