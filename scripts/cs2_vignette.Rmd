@@ -5,7 +5,9 @@ date: '2022-08-24'
 output: html_document
 ---
 Here, we will use the serosim package to generate a diphtheria and pertussis 
-cross-sectional serosurvey. In this simulation individuals can either be vaccinated with a 
+cross-sectional serosurvey. The overall structure and principles discussed within 
+this case study are also applicable to other vaccine preventable pathogens delivered in multi-valent vaccines. 
+In this simulation individuals can either be vaccinated with a 
 combined diphtheria and pertussis vaccine or naturally infected with each, or a 
 combination of both. We will set up each of the required arguments and models 
 for runserosim in the order outlined in the methods section of the paper. 
@@ -37,12 +39,16 @@ For this case study, we are interested in tracking an individual's socioeconomic
 status, location(group), birth and removal time. We will use the generate_pop_demography 
 function to create the demography tibble needed for runserosim.
 
+Note: The runserosim function, called later on, only requires a demography tibble 
+with two columns (individuals and times). 
+
 ```{r}
 ## Specify the number of individuals in the simulation 
 N<-100
 
 ## Pre load the demography categories, values and distributions 
 ## Specify options for each demography element and the distribution of each within the population
+## We are interested in simulating a population where individuals have varying nutritional statuses and can reside in either of 2 locations
 aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribution"=c(0.3,0.3,0.4)),
             "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
 
@@ -51,11 +57,14 @@ aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribut
 ## Limit is set to 0 which allows births to occur until the last time step
 ## Let's assume that individuals are removed from the population and set prob_removal to 0.2
 demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
+
+## Examine the generated demography tibble
 head(demography)
 tail(demography)
 ```
 
 # 1.3 Antigen Map 
+Now, we have to set up the exposure IDs and antigen IDs for our desired simulation. 
 Individuals can be seropositive either by natural infection or by vaccination 
 and we want to track both exposure types separately. 
 In this case, we need three exposure IDs:
@@ -81,11 +90,13 @@ whether an individual is exposed to a specific exposure event. The probability o
 exposure (1-e-λ) depends on the force of infection (λ) at the current time t for 
 group g modulated by relevant demographic elements (mod) and age (age_mod)
 
+Since we have two groups, there are 2 rows in the first lambdas dimension.
 ```{r}
 ## Create an empty array to store the force of infection for all exposure types
 lambdas <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
 
 ## Note that we can specify a different force of infection for each group, time and exposure ID
+## We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
 
 ## Assign arbitrary forces of infection/vaccination
 ## Specify the force of vaccination for exposure ID 1 which represents diphtheria and pertussis vaccination
@@ -133,11 +144,17 @@ t_in_year=12
 # 1.5 Immunity Model
 Here, we specify the immunity model which will determine whether an exposure 
 event is successful or not. Since we have both vaccination and natural infection 
-events, we will use immunity_model_vacc_ifxn_titer_prot. The probability of 
+events, we will use immunity_model_vacc_ifxn_titer_prot. With this model, the probability of 
 successful vaccination exposure depends on the number of vaccines received 
-prior to time t while the probability of successful infection is dependent 
+prior to time t and age at time t while the probability of successful infection is dependent 
 on the titer at the time of exposure. The titer-mediated protection parameters used 
-within this model are defined within theta which will be loaded in section 1.6.
+within this model are defined within theta which will be loaded in section 1.6. 
+In this simulation an individual can still be "reinfected" with either diphtheria or pertussis. 
+These "reinfection" events are representative of boosting events which can occur if an individual is exposed to either pathogen following a vaccination or previous infection. The user can limit the frequency of multiple infections(aka boosting events)
+by adjusting the titer-mediated protection parameters within theta.
+
+
+
 ```{r}
 ## Specify immunity model within the runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
@@ -165,7 +182,8 @@ is a set of long-term boost, long-term boost waning, short-term boost, and
 short-term boost waning parameters. This model incorporates titer dependent boosting effects 
 by taking an individual's realized boost which is adjusted by draw_parameters.
 The antibody kinetics parameters are pre loaded within a csv file. 
-Users can edit the csv file to adjust any parameters. Lastly, we define
+Users can edit the csv file to adjust any parameters. All parameters needed for 
+the antibody model, must be specified within theta. Lastly, we define
 the draw_parameters function which determines how each individual’s antibody kinetics 
 parameters are simulated from the antibody kinetics parameters tibble (theta). 
 We will use a function which draws parameters directly from theta for the antibody 
@@ -201,6 +219,8 @@ plot_titer_dependent_boosting(start=0, end=30, by=1, titer_ceiling_threshold=20,
 # 1.7 Observation Model and observation_times
 Now we specify how observed antibody titers are generated as a probabilistic 
 function of the true, latent antibody titer and when to observe these titers. 
+In this step, users are specifying the sampling design and assay choice for their
+serological survey.
 We will take a sample of all individuals present at the end of the 
 simulation. We will use a continuous assay with lower and 
 upper bounds mimicking the diphtheria and pertussis IgG ELISA with added noise. 
@@ -228,6 +248,7 @@ observation_times<-rbind(obs1,obs2)
 There are no optional arguments needed for this simulation. 
 
 # 1.9 Run Simulation 
+This is the core simulation where all simulation settings, models and parameters are specified within the main simulation function. Time to run this step varies depending on the number of individuals and the complexities of the specified models. 
 ```{r message=FALSE, warning=FALSE, eval=TRUE}
 res<- runserosim(
   simulation_settings,
@@ -251,10 +272,12 @@ res<- runserosim(
   age_mod=age_mod,
   t_in_year=t_in_year
 )
+
+## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
 # 1.10 Generate Plots
-Let's plot and examine the simulation outputs.
+Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
 ## Plot antibody states and exposure histories for 10 individuals 
 plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
