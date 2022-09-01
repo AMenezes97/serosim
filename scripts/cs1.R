@@ -1,5 +1,6 @@
 
 devtools::load_all("~/Documents/GitHub/serosim")
+devtools::document("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
@@ -39,7 +40,7 @@ immunity_model<-immunity_model_vacc_ifxn_titer_prot
 vacc_exposures<-2
 
 ## Specify the age at which an individual is eligible for vaccination (9 months old for measles)
-vacc_age<-9
+vacc_age<-c(NA,9)
 
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(NA,1)

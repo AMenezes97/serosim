@@ -86,7 +86,7 @@ immunity_model<-immunity_model_vacc_ifxn_titer_prot
 vacc_exposures<-1
 
 ## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for DP vaccine)
-vacc_age<-2
+vacc_age<-c(2,NA,NA)
 
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(3,NA,NA)

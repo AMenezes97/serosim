@@ -36,11 +36,11 @@ immunity_model_vacc_ifxn_titer_prot(
 
 \item{theta}{Tibble including titer-mediated protection parameters}
 
-\item{max_vacc_events}{A list of the maximum number of vaccination events possible for each exposure type}
+\item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 
-\item{vacc_exposures}{A list of exposure IDs (e) which represents vaccination events}
+\item{vacc_exposures}{A vector of exposure IDs (e) which represents vaccination events}
 
-\item{vacc_age}{The minimum age at which an individual is eligible for vaccination; defaults to 1}
+\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA}
 
 \item{...}{}
 }

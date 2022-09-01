@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_titer_dependent_boosting}
 \alias{plot_titer_dependent_boosting}
-\title{Generate A Plot Displaying Proportion Of FUll Boost Received At Each Starting Titer}
+\title{Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Titer}
 \usage{
 plot_titer_dependent_boosting(
   start,
@@ -27,5 +27,5 @@ plot_titer_dependent_boosting(
 A plot displaying titer dependent boosting is returned
 }
 \description{
-Generate A Plot Displaying Proportion Of FUll Boost Received At Each Starting Titer
+Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Titer
 }

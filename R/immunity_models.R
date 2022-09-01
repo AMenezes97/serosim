@@ -33,8 +33,8 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
 #' @param theta Tibble including titer-mediated protection parameters 
-#' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
-#' @param vacc_age The minimum age at which an individual is eligible for vaccination; defaults to 1 
+#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return  A probability of successful exposure is returned
@@ -43,7 +43,7 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #' @examples
 immunity_model_vacc_only <- function(i, t, e, exposure_histories, 
                               antibody_states, demography, antigen_map, 
-                              theta, max_vacc_events, vacc_age=1,...){
+                              theta, max_vacc_events, vacc_age,...){
   ## Calculate the individual's current age
   birth_time<-unique(demography$birth[demography$i==i])
   curr_age<- t-birth_time
@@ -76,9 +76,9 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
 #' @param theta Tibble including titer-mediated protection parameters 
-#' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
-#' @param vacc_exposures A list of exposure IDs (e) which represents vaccination events
-#' @param vacc_age The minimum age at which an individual is eligible for vaccination; defaults to 1 
+#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return  A probability of successful exposure is returned
@@ -86,7 +86,7 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_successful_ifxn <- function(i, t, e, exposure_histories, 
-                                     antibody_states, demography, antigen_map, theta, max_vacc_events, vacc_exposures, vacc_age=1, ...){
+                                     antibody_states, demography, antigen_map, theta, max_vacc_events, vacc_exposures, vacc_age, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(e %in% c(vacc_exposures)){  	
     ## Calculate the individual's current age
@@ -94,7 +94,7 @@ immunity_model_vacc_successful_ifxn <- function(i, t, e, exposure_histories,
     curr_age<- t-birth_time
     
     ## If the individual is above the minimum age of vaccination 
-    if(curr_age>=vacc_age){
+    if(curr_age>=vacc_age[e]){
          ## Count the total number of successful exposures to e thus far 
           curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
         ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
@@ -104,7 +104,7 @@ immunity_model_vacc_successful_ifxn <- function(i, t, e, exposure_histories,
              return(0)
               }
     }
-    if(curr_age<vacc_age){
+    if(curr_age<vacc_age[e]){
       return(0)
     }
   }
@@ -170,9 +170,9 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #' @param demography Demography information 
 #' @param antigen_map Object determining relationship between exposure IDs and antigens
 #' @param theta Tibble including titer-mediated protection parameters 
-#' @param max_vacc_events A list of the maximum number of vaccination events possible for each exposure type
-#' @param vacc_exposures A list of exposure IDs (e) which represents vaccination events
-#' @param vacc_age The minimum age at which an individual is eligible for vaccination; defaults to 1 
+#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -188,7 +188,7 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories,
     curr_age<- t-birth_time
     
     ## If the individual is above the minimum age of vaccination 
-    if(curr_age>=vacc_age){
+    if(curr_age>=vacc_age[e]){
     ## Count the total number of successful exposures to e thus far 
     curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
@@ -198,7 +198,7 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories,
       return(0)
     }
     }
-    if(curr_age<vacc_age){
+    if(curr_age<vacc_age[e]){
       return(0)
     }
   } 
