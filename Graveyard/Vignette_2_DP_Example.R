@@ -8,11 +8,9 @@ source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
 source("~/Documents/GitHub/serosim/R/immunity_models.R")
 source("~/Documents/GitHub/serosim/R/exposure_models.R")
 source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
-source("~/Documents/GitHub/serosim/R/generate_plots.R")
-  
+
 library(tidyverse)
 library(data.table)
-library(ggplot2)
 
 ##******************Component 1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
@@ -25,7 +23,7 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
 ##******************Component 2: Population Demography************************** 
 ## Specify the number of individuals in the simulation 
-N <- 100
+N <- 1000
 
 ## Pre load the demography categories, values and distributions 
 aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distribution"=c(0.2,0.2,0.6)),
@@ -98,20 +96,18 @@ theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
 # discrete<-c(0,5,8,10) 
 
 ## Limits of detection for continuous assays
-boundary<-c(2,20)
+boundary<-c(2,10)
 
 ## Set observation settings 
-obs1 <- tibble(i=1:N,t=60, ag=1)
-obs2 <- tibble(i=1:N,t=60, ag=2)
-obs3 <- tibble(i=1:N,t=120, ag=1)
-obs4 <- tibble(i=1:N,t=120, ag=2)
-observation_times<-rbind(obs1,obs2,obs3,obs4)
+obs1 <- tibble(i=1:N,t=120, ag=1)
+obs2 <- tibble(i=1:N,t=120, ag=2)
+observation_times<-rbind(obs1,obs2)
 
-    
+
 ##***************************Run Simulation*************************************
-# Rprof(tmp<-tempfile())
+Rprof(tmp<-tempfile())
 ## Test full function with generated inputs
-res<- runserosim(
+res<- serosim(
   simulation_settings,
   demography, 
   observation_times,
@@ -122,7 +118,7 @@ res<- runserosim(
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 
   antibody_model=antibody_model_biphasic, 
   observation_model=observation_model_continuous_bounded_noise,
-  draw_parameters=draw_parameters_random_fx_titer_dep, 
+  draw_parameters=draw_parameters_random_fx_boost_wane, 
   
   ## Pre-specified parameters/events
   exposure_histories_fixed=NULL,
@@ -133,19 +129,13 @@ res<- runserosim(
   vacc_exposures=vacc_exposures
 )
 
-# Rprof(NULL)
-# summaryRprof(tmp)
+Rprof(NULL)
+summaryRprof(tmp)
 
 
 # # ## Generate Plots 
 # ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
-plot_titers(res$antibody_states)
 # ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
-plot_exposure_prob(res$exposure_probabilities_long)
-# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
-plot_obs_titers_one_sample(res$observed_antibody_states)
-plot_obs_titers_paired_sample(res$observed_antibody_states)
-plot_exposure_histories(res$exposure_histories_long)
-
+# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=value),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
 
 

@@ -69,7 +69,8 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 #'
 #' @param N The number of individuals in the simulation
 #' @param times The total number of time steps in the simulation
-#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step
+#' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual
+#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step; defaults to 0
 #' @param removal_min The minimum age at which an individual can be removed from the population 
 #' @param removal_max The maximum age at which an individual can be removed from the population 
 #' @param prob_removal The probability that an individual will be removed from the population
@@ -82,16 +83,19 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 #' 
 #' @examples aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
 #' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
-generate_pop_demography<-function(N, times, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
+generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
+  if(!is.null(birth_times)){
+    birth_tm<-birth_times} 
+    else{birth_tm=simulate_birth_times(N, times, limit)}
+  
   if(is.null(aux)){
     
-    birth_times <- simulate_birth_times(N, times, limit)
-    removal_times <- simulate_removal_times(N, times, birth_times, removal_min, removal_max, prob_removal)
+    removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
     
     
     df<- tibble(
       i=1:N,
-      birth= birth_times,
+      birth= birth_tm,
       removal= removal_times)
 
     exp<- tidyr::expand_grid(1:N, times)
@@ -102,8 +106,7 @@ generate_pop_demography<-function(N, times, limit=0, removal_min, removal_max, p
   }
   
   if(!is.null(aux)){
-    birth_times <- simulate_birth_times(N, times, limit)
-    removal_times <- simulate_removal_times(N, times, birth_times, removal_min, removal_max, prob_removal)
+    removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
     
     vars <- NULL
     for(var in seq_along(aux)){
@@ -118,7 +121,7 @@ generate_pop_demography<-function(N, times, limit=0, removal_min, removal_max, p
     
     df<- tibble(
       i=1:N,
-      birth= birth_times,
+      birth= birth_tm,
       removal= removal_times)
     exp<- tidyr::expand_grid(1:N, times)
     exp<-dplyr::rename(exp,i="1:N")

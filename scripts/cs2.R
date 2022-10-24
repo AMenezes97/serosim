@@ -1,0 +1,167 @@
+
+devtools::load_all("~/Documents/GitHub/serosim")
+# devtools::document("~/Documents/GitHub/serosim")
+library(tidyverse)
+library(data.table)
+library(ggplot2)
+
+
+times <- seq(1,120,by=1) 
+
+## Set simulation settings
+simulation_settings <- list("t_start"=1,"t_end"=max(times))
+
+
+
+N<-10
+
+## Pre load the demography categories, values and distributions 
+## Specify options for each demography element and the distribution of each within the population
+aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribution"=c(0.3,0.3,0.4)),
+            "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
+
+
+## Generate the population demography tibble
+## Limit is set to 0 which allows births to occur until the last time step
+## Let's assume that individuals are removed from the population and set prob_removal to 0.2
+demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
+
+
+antigen_map <- tibble(exposure_id=c(1,1,2,3),antigen_id=c(1,2,1,2)) 
+antigen_map
+
+
+lambdas <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
+
+## Note that we can specify a different force of infection for each group, time and exposure ID
+
+## Assign arbitrary forces of infection/vaccination
+## Specify the force of vaccination for exposure ID 1 which represents diphtheria and pertussis vaccination
+lambdas[1,,1] <- 0.2 ## Group 1 (aka Location 1)
+lambdas[2,,1] <- 0.3 ## Group 2 (aka Location 2)
+
+## Specify the force of infection for exposure ID 2 which represents diphtheria natural infection
+lambdas[1,,2] <- 0.4 ## Group 1 (aka Location 1)
+lambdas[2,,2] <- 0.3 ## Group 2 (aka Location 2)
+
+## Specify the force of infection for exposure ID 2 which represents pertussis natural infection
+lambdas[1,,3] <- 0.2 ## Group 1 (aka Location 1)
+lambdas[2,,3] <- 0.1 ## Group 2 (aka Location 2)
+
+## Specify a simple exposure model which calculates the probability of exposure from the force of infection modulated by age and demography elements 
+exposure_model<-exposure_model_dem_age_mod
+
+## This exposure model requires age_mod, mod and t_in_year arguments
+
+## Create a tibble with any relevant age modifiers that affect exposure probability 
+## Individuals who are less than one years old are 3 times more likely be vaccinated than other age classes
+age_mod_1<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
+
+## Individuals who are 0-3 are 2 times more likely to be exposed to diphtheria
+age_mod_2<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+
+## Individuals who are 0-3 are 2 times more likely to be exposed to pertussis
+age_mod_3<-tibble(exposure_id=rep(3,11), age=0:10, modifier=c(1,2,1,1,1,1,1,1,1,1,1))
+age_mod<-rbind(age_mod_1,age_mod_2,age_mod_3)
+
+
+## Specify the demography exposure modifiers
+## Here, individuals who are of low nutritional status are twice as likely of being exposed to diphtheria and pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
+## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 1 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 1 (vaccination) that individuals of low nutritional status. 
+## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
+mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
+
+
+
+## Specify the number of time steps within a year 
+## We are simulating on the monthly scale
+t_in_year=12
+
+
+
+## Specify immunity model within the runserosim function below 
+immunity_model<-immunity_model_vacc_ifxn_titer_prot
+
+## Specify which exposure IDs represent vaccination events 
+vacc_exposures<-1
+
+## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for DP vaccine)
+vacc_age<-c(2,NA,NA)
+
+## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
+max_vacc_events<-c(3,NA,NA)
+
+## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 (diphtheria) which will be loaded in section 1.6
+plot_titer_mediated_protection(0:20, titer_prot_midpoint=2, titer_prot_width=1.5)
+
+## Plot titer-mediated protection curve given parameters specified within theta for antigen 2 (pertussis) which will be loaded in section 1.6
+plot_titer_mediated_protection(0:20, titer_prot_midpoint=4, titer_prot_width=.5)
+
+
+
+antibody_model<-antibody_model_biphasic
+
+## Bring in the antibody parameters needed for the antibody model
+## Note that the titer-mediated protection parameters needed for the immunity model, the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model are all defined here too.
+## Also note that these are all arbitrary parameter values loosely informed by plausible values.
+theta_path <- system.file("extdata", "theta_cs2.csv", package = "serosim")
+theta <- read.csv(file = theta_path, header = TRUE)
+
+
+## Specify the draw_parameters function to use 
+draw_parameters<-draw_parameters_random_fx_titer_dep
+
+## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (diphtheria)
+plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
+
+## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (pertussis)
+plot_titer_dependent_boosting(start=0, end=20, by=1, titer_ceiling_threshold=5, titer_ceiling_gradient=0.1)
+
+
+boundary<-c(2,20)
+
+## Specify the observation model 
+observation_model<-observation_model_continuous_bounded_noise
+
+## Specify observation_times to observe both antigens (aka diphtheria and pertussis antibody titer) across all individuals at the end of the simulation (t=120)
+obs1 <- tibble(i=1:N,t=120, ag=1)
+obs2 <- tibble(i=1:N,t=120, ag=2)
+observation_times<-rbind(obs1,obs2)
+
+# 
+# Rprof(tmp<-tempfile())
+res<- runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  lambdas,
+  antigen_map,
+  theta,
+  exposure_model,
+  immunity_model,
+  antibody_model,
+  observation_model,
+  draw_parameters,
+
+  ## Other arguments needed
+  boundary=boundary,
+  max_vacc_events=max_vacc_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+  mod=mod,
+  age_mod=age_mod,
+  t_in_year=t_in_year
+)
+
+
+# Rprof(NULL)
+# summaryRprof(tmp)
+
+
+# 1.10 Generate Plots
+# plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10)
+# plot_titers(res$antibody_states)
+# plot_exposure_prob(res$exposure_probabilities_long)
+# plot_obs_titers_one_sample(res$observed_antibody_states)
+# plot_obs_titers_paired_sample(res$observed_antibody_states)
+# plot_exposure_histories(res$exposure_histories_long)

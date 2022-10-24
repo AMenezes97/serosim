@@ -19,7 +19,7 @@
 #' 
 #' @export
 #' @examples
-serosim <- function(
+runserosim <- function(
     ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
@@ -84,14 +84,13 @@ serosim <- function(
         exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
     }
     
-    message(cat("Beginning simulation\n"))
+    # message(cat("Beginning simulation\n"))
     ## For each individual
     for(i in indivs){
-        message(cat("Individual: ", i, "\n"))
+        # message(cat("Individual: ", i, "\n"))
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
-        #g <- groups$group[i] ## This would assume an individual is in the same group at all time steps; I created a new line which is now in the t loop
         
         ## Only consider times that the individual was alive for
         simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
@@ -120,7 +119,7 @@ serosim <- function(
                     ## of successful infection/vaccination?
                     prob_success <- immunity_model(i, t, e, exposure_histories, 
                                                    antibody_states, demography, 
-                                                   antigen_map, ...)
+                                                   antigen_map, theta, ...)
                     
                     ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
@@ -136,7 +135,7 @@ serosim <- function(
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in antigen_ids){ ## Is this correct? Shouldn't it only step through the antigens in the successful exposure? Or is this handled within the function where Ags not in the exposure aren't updated? 
+                        for(ag in antigen_ids){
                             antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
                                                                       antibody_states, kinetics_parameters, antigen_map, ...)
                         }
@@ -154,10 +153,10 @@ serosim <- function(
     
     ## Reshape exposure histories
     exposure_histories_long <- NULL
-    if(sum(exposure_histories) > 0){
+    if(sum(exposure_histories, na.rm = TRUE) > 0){
         exposure_histories_long <- reshape2::melt(exposure_histories)
         colnames(exposure_histories_long) <- c("i","t","e","value")
-        exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
+        # exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
         exposure_histories_long <- exposure_histories_long %>% arrange(i, t, e)
     }
     
@@ -165,12 +164,11 @@ serosim <- function(
     exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
     colnames(exposure_probabilities_long) <- c("i","t","e","value")
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
-    
     ## Observation process
     if(!is.null(observation_times)){
-        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography)
+        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography, ...)
     } else {
-        observed_antibody_states <- observation_model(antibody_states, theta, demography)
+        observed_antibody_states <- observation_model(antibody_states, theta, demography, ...)
     }
     
     return(list("exposure_histories"=exposure_histories,

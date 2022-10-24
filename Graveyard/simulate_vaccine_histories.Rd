@@ -10,8 +10,7 @@ simulate_vaccine_histories(
   birth_times,
   vacc_min,
   vacc_max,
-  prob_vaccination,
-  vacc_num = 1
+  prob_vaccination
 )
 }
 \arguments{
@@ -26,8 +25,6 @@ simulate_vaccine_histories(
 \item{vacc_max}{The age at which an individual is no longer eligible for vaccination}
 
 \item{prob_vaccination}{The overall probability of being vaccinated at some point in an individual's life}
-
-\item{vacc_num}{The maximum number of vaccines an individual can receive; defaults to 1}
 }
 \value{
 A matrix with each individual's vaccination histories is returned
