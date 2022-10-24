@@ -91,7 +91,7 @@ immunity_model_V3 <- function(i, t, e, exposure_histories,
     
     return(prob_success)
   }
-}
+
 
 #' Immunity Model Version 4
 #' 

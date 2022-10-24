@@ -1,3 +1,5 @@
+library(tidyverse)
+devtools::load_all("~/Documents/GitHub/serosim")
 N <- 10
 N_exposure_ids <- 2
 times <- seq(1,12,by=1)
