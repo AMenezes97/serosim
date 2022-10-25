@@ -115,8 +115,7 @@ immunity_model<-immunity_model_vacc_ifxn_titer_prot
 vacc_exposures<-c(2,3)
 
 ## Specify the age at which an individual is eligible for MCV1 and MCV2 vaccination
-## DOUBLE CHECK WITH KEYA ##
-vacc_age<-c(NA,9,16)
+vacc_age<-c(NA,9,12)
 
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 ## DOUBLE CHECK WITH KEYA ##
@@ -150,8 +149,9 @@ plot_titer_dependent_boosting(start=0, end=1500, by=1, titer_ceiling_threshold=1
 ##*****************1.7: Observation Model and observation_times*************
 ## Specify observation model to be used within runserosim 
 
-## Specify the limits of detection for continuous assays
-boundary<-c(20,20000)
+## Specify the limits of detection for each antigen for the continuous assays (lower detection limit is 8IU/I and the upper is 5000 IU/I)
+bounds<-tibble(antigen_id=c(1,1),name=c("lower_bound","upper_bound"),value=c(8,5000))
+
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
@@ -176,7 +176,7 @@ res<- runserosim(
   draw_parameters,
   
   ## Other arguments needed
-  boundary=boundary,
+  bounds=bounds,
   max_vacc_events=max_vacc_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,

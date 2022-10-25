@@ -35,24 +35,24 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
     
     ## Only find removal time for individual's eligible to be removed 
     if(max(times) >= birth_times[i] + (removal_min)) {
-    ## Find removal time
-    removal_time <- sample(times[times >= birth_times[i] + (removal_min) & times <= birth_times[i] + (removal_max)], 1)
-    tmp[removal_time] <- ifelse(runif(1) < prob_removal, 1, 0) 
-    
-    #Cannot be removed before birth and removal_min
-    tmp[times < birth_times[i] + removal_min] <- NA
-    
-    #Cannot be removed after removal_max 
-    tmp[times > birth_times[i] + removal_max] <- NA
-    
-    removal_histories[i,] <- tmp
+      ## Find removal time
+      removal_time <- sample(times[times >= birth_times[i] + (removal_min) & times <= birth_times[i] + (removal_max)], 1)
+      tmp[removal_time] <- ifelse(runif(1) < prob_removal, 1, 0) 
+      
+      #Cannot be removed before birth and removal_min
+      tmp[times < birth_times[i] + removal_min] <- NA
+      
+      #Cannot be removed after removal_max 
+      tmp[times > birth_times[i] + removal_max] <- NA
+      
+      removal_histories[i,] <- tmp
     }
     
     ## For individual's who are never eligible to be removed, add NA for every time step
     if(max(times) <= birth_times[i] + (removal_min)){
       tmp[]<-NA
       removal_histories[i,] <- tmp
-    
+      
     }
   }
   
@@ -86,7 +86,7 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
   if(!is.null(birth_times)){
     birth_tm<-birth_times} 
-    else{birth_tm=simulate_birth_times(N, times, limit)}
+  else{birth_tm=simulate_birth_times(N, times, limit)}
   
   if(is.null(aux)){
     
@@ -97,10 +97,10 @@ generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_m
       i=1:N,
       birth= birth_tm,
       removal= removal_times)
-
+    
     exp<- tidyr::expand_grid(1:N, times)
     exp<-dplyr::rename(exp,i="1:N")
-
+    
     dem<- exp %>% dplyr::left_join(df, by="i")
     return(dem)
   }
@@ -131,13 +131,31 @@ generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_m
     
   }
 }
-  
-  
 
-
-
-  
-  
-  
-  
-  
+#' Simulate Vaccine Histories
+#'
+#' @param N The number of individuals in the simulation
+#' @param times The number of time steps in the simulation
+#' @param birth_times The time of birth of each individual in the simulation
+#' @param vacc_min The age at which an individual becomes eligible for vaccination
+#' @param vacc_max The age at which an individual is no longer eligible for vaccination
+#' @param prob_vaccination The overall probability of being vaccinated at some point in an individual's life
+#' @param vacc_num The maximum number of vaccines an individual can receive; defaults to 1
+#'
+#' @return A matrix with each individual's vaccination histories is returned
+#' @export
+#'
+#' @examples
+simulate_vaccine_histories <- function(N, times, birth_times, vacc_min, vacc_max, prob_vaccination, vacc_num=1){
+  vaccine_histories <- matrix(0, nrow=N, ncol=length(times))
+  for(i in 1:N){
+    tmp <- vaccine_histories[i,]
+    #Find vaccination time(s)
+    vacc_time <- sample(times[times >= birth_times[i] + (vacc_min) & times <= birth_times[i] + (vacc_max)], vacc_num)
+    tmp[vacc_time] <- ifelse(runif(1) < prob_vaccination, 1, 0)
+    #Cannot be vaccinated before birth
+    tmp[times < birth_times[i]] <- NA
+    vaccine_histories[i,] <- tmp
+  }
+  return(vaccine_histories)
+}

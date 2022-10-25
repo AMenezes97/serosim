@@ -116,10 +116,10 @@ exposure_model_age_mod <- function(i, t, e, g, lambdas, demography, age_mod, t_i
   
   ## Multiply modifier by p
   p <- p*age_modifier
-  
+  }
   p_exp<-1-exp(-p)
   p_exp
-  }
+
 }
 
 #' Exposure Model Modified By Relevant Demographic Elements and Age
@@ -190,10 +190,10 @@ exposure_model_dem_age_mod <- function(i, t, e, g, lambdas, demography, mod, age
     
     ## Multiply age modifier by p
     p <- p*age_modifier
-    
+  }
     p_exp<-1-exp(-p)
     p_exp
-  }
+  
 }
   
 

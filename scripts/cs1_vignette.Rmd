@@ -1,6 +1,6 @@
 ---
 title: "Paper case study 1: Measles"
-author: "Arthur Menezes, James Hay"
+author: "Arthur Menezes"
 date: '2022-08-23'
 output: html_document
 ---
@@ -184,8 +184,8 @@ titer as the mean and the measurement error as the standard deviation. The
 observation standard deviation and distribution is defined within theta as the 
 “obs_sd” parameter.
 ```{r}
-## Specify the limits of detection for continuous assays
-boundary<-c(20,20000)
+## Specify the limits of detection for each antigen for the continuous assays
+bounds<-tibble(antigen_id=c(1,1),name=c("lower_bound","upper_bound"),value=c(20,20000))
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
@@ -218,7 +218,7 @@ res<- runserosim(
   draw_parameters,
 
   ## Other arguments needed
-  boundary=boundary,
+  bounds=bounds,
   max_vacc_events=max_vacc_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,

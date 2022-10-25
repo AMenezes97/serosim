@@ -2,20 +2,20 @@
 #' 
 #' Simulates a serological survey using custom inputs. The user can specify multiple inputs controlling population demography, simulation timeframe, observation times for each individual, force of infection, and various model functions describing the link between infections and observed antibody titers.
 #' 
-#' @param simulation_settings
-#' @param demography
-#' @param observation_times
-#' @param lambdas
-#' @param antigen_map
-#' @param theta
-#' @param exposure_model
-#' @param immunity_model
-#' @param antibody_model
-#' @param observation_model
-#' @param draw_parameters
-#' @param exposure_histories_fixed
+#' @param simulation_settings A list of parameters governing the simulation time step settings
+#' @param demography A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals. 
+#' @param observation_times A tibble of observation times and antigen for each individual
+#' @param lambdas A 3D array providing the rate of infection or vaccination for each exposure ID, group and time
+#' @param antigen_map An object specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
+#' @param exposure_model A function which calculates the probability of exposure given the foe_pars array
+#' @param immunity_model A function determining the probability of an exposure leading to successful infection or vaccination for a given individual
+#' @param antibody_model A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)
+#' @param observation_model A function generating observed titers as a function of latent titers and kinetics parameters (model_pars)
+#' @param draw_parameters A function to simulate parameters antibody kinetics model, immunity model, observation model from model_pars
+#' @param exposure_histories_fixed A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.
 #' 
-#' @return a list containing the following elements.
+#' @return a list containing the following elements: exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' 
 #' @export
 #' @examples

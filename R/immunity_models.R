@@ -49,7 +49,7 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
   curr_age<- t-birth_time
   
   ## If the individual is above the minimum age of vaccination 
-  if(curr_age>=vacc_age){
+  if(curr_age>=vacc_age[e]){
   ## Count the total number of successful exposures to e thus far 
     curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
