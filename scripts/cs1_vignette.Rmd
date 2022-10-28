@@ -76,8 +76,8 @@ antigen_map
 ```
 
 
-# 1.4 Force of Infection and Exposure Model
-Now, we need to specify the lambdas argument which contains the force of infection
+# 1.4 Force of Exposure and Exposure Model
+Now, we need to specify the lambdas argument which contains the force of exposure
 for all exposure_IDs across all time steps and groups. We also specify the exposure model 
 which will be called within runserosim later. The exposure model will determine
 whether an individual is exposed to a specific exposure event.
@@ -86,20 +86,20 @@ Since we did not specify different groups within demography, all individuals wil
 automatically be assigned group 1. Therefore, we only need 1 row for dimension
 1 in lambdas.
 ```{r}
-## Create an empty array to store the force of infection for all exposure types
+## Create an empty array to store the force of exposure for all exposure types
 lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
 
-## Specify the force of infection for exposure ID 1 which represents natural infection
+## Specify the force of exposure for exposure ID 1 which represents natural infection
 lambdas[,,1] <- 0.2
 
-## Specify the force of vaccination for exposure ID 2 which represents vaccination
+## Specify the force of exposure for exposure ID 2 which represents vaccination
 lambdas[,,2] <- 0.4
 
 ## We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
-exposure_model<-exposure_model_simple_FOI
-## In this selected model, the probability of exposure is 1-exp(-FOI) where FOI is the force of infection at that time.
+exposure_model<-exposure_model_simple_FOE
+## In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 ```
 
 # 1.5 Immunity Model
@@ -116,7 +116,7 @@ of boosting events which can occur if an individual is exposed to measles follow
 a vaccination or previous infection. The user can limit the frequency of multiple infections(aka boosting events)
 by adjusting the titer-mediated protection parameters within theta.
 ```{r}
-## Specify immunity model within serosim function below 
+## Specify immunity model within runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
 
 ## Specify which exposure IDs represent vaccination events 
@@ -179,9 +179,9 @@ at the midpoint of the simulation. We will use a continuous assay with lower and
 upper bounds mimicking the measles IgG ELISA with added noise. This observation model 
 observes the latent titer values given a continuous assay with user-specified 
 lower and upper limits and added noise. The added noise represents assay 
-variability and is done by sampling from a distribution with the true latent antibody 
+variability and is implemented by sampling from a distribution with the true latent antibody 
 titer as the mean and the measurement error as the standard deviation. The 
-observation standard deviation and distribution is defined within theta as the 
+observation standard deviation and distribution are defined within theta as the 
 “obs_sd” parameter.
 ```{r}
 ## Specify the limits of detection for each antigen for the continuous assays

@@ -1,0 +1,6 @@
+exposure_id,antigen_id,name,mean,sd,distribution
+1,1,boost,4,2,log-normal
+1,1,wane,0.0033,0.0005,log-normal
+,1,obs_sd,,0.25,normal
+2,1,boost,2,1,log-normal
+2,1,wane,0.0016,0.0005,log-normal

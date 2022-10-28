@@ -1,6 +1,6 @@
 #' Monophasic antibody boosting-waning model
 #' 
-#' @description Monophasic antibody boosting-waning model. This model assumes that for each exposure there is a boost and boost waning parameters
+#' @description This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and boost waning parameter
 #'
 #' @param i Individual
 #' @param t1 time
@@ -37,16 +37,15 @@ antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_s
     tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$ag==a_tmp,] ## Since you are going through time, all parameters will only be from the current or previous times?
     
     # setkey(tmp_kinetics_parameters, cols="i","t","e","ag","name","value", "realized_value")
-    tmp_boost_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",] 
-    tmp_wane_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_long",] 
+    tmp_boost <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",] 
+    tmp_wane <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",] 
     
     
     
-    for(j in seq_along(tmp_boost_long$realized_value)){
-      titer<- titer + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j]))
+    for(j in seq_along(tmp_boost$realized_value)){
+      titer<- titer + tmp_boost$realized_value[j]*max(0,1-tmp_wane$realized_value[j]*(t1-tmp_wane$t[j]))
     }
     titer
-    
   }
 }
 

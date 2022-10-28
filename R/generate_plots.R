@@ -219,7 +219,7 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
   removal_subset <- demography %>% filter(times==1)
   
-  sample_indivs <- sample(1:N, size=subset)
+  sample_indivs <- sample(1:max(demography$i), size=subset)
   
   g<-  ggplot() +
     geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=e),linetype="dotted") +

@@ -82,36 +82,36 @@ antigen_map <- tibble(exposure_id=c(1,1,2,3),antigen_id=c(1,2,1,2))
 antigen_map
 ```
 
-# 1.4 Force of Infection and Exposure Model
-Now, we need to specify the lambdas argument which contains the force of infection
+# 1.4 Force of Exposure and Exposure Model
+Now, we need to specify the lambdas argument which contains the force of exposure
 for all exposure_IDs across all time steps. We also specify the exposure model 
 which will be called within runserosim later. The exposure model will determine
 whether an individual is exposed to a specific exposure event. The probability of 
-exposure (1-e-λ) depends on the force of infection (λ) at the current time t for 
+exposure (1-e-λ) depends on the force of exposure (λ) at the current time t for 
 group g modulated by relevant demographic elements (mod) and age (age_mod)
 
 Since we have two groups, there are 2 rows in the first lambdas dimension.
 ```{r}
-## Create an empty array to store the force of infection for all exposure types
+## Create an empty array to store the force of exposure for all exposure types
 lambdas <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
 
-## Note that we can specify a different force of infection for each group, time and exposure ID
+## Note that we can specify a different force of exposure for each group, time and exposure ID
 ## We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
 
-## Assign arbitrary forces of infection/vaccination
-## Specify the force of vaccination for exposure ID 1 which represents diphtheria and pertussis vaccination
+## Assign arbitrary force of exposure
+## Specify the force of exposure for exposure ID 1 which represents diphtheria and pertussis vaccination
 lambdas[1,,1] <- 0.2 ## Group 1 (aka Location 1)
 lambdas[2,,1] <- 0.3 ## Group 2 (aka Location 2)
 
-## Specify the force of infection for exposure ID 2 which represents diphtheria natural infection
+## Specify the force of exposure for exposure ID 2 which represents diphtheria natural infection
 lambdas[1,,2] <- 0.4 ## Group 1 (aka Location 1)
 lambdas[2,,2] <- 0.3 ## Group 2 (aka Location 2)
 
-## Specify the force of infection for exposure ID 2 which represents pertussis natural infection
+## Specify the force of exposure for exposure ID 2 which represents pertussis natural infection
 lambdas[1,,3] <- 0.2 ## Group 1 (aka Location 1)
 lambdas[2,,3] <- 0.1 ## Group 2 (aka Location 2)
 
-## Specify a simple exposure model which calculates the probability of exposure from the force of infection modulated by age and demography elements 
+## Specify a simple exposure model which calculates the probability of exposure from the force of exposure modulated by age and demography elements 
 exposure_model<-exposure_model_dem_age_mod
 
 ## This exposure model requires age_mod, mod and t_in_year arguments
