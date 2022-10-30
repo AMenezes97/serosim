@@ -62,21 +62,21 @@ antigen_map
 ```
 
 # 1.4 Force of Exposure and Exposure Model
-Now, we specify the lambdas argument which contains the force of exposure
+Now, we specify the foe_pars argument which contains the force of exposure
 for all exposure_IDs across all time steps. We also specify the exposure model 
 which will determine whether an individual is exposed to a specific exposure event.
 
 Since we did not specify different groups within demography, all individuals will 
 automatically be assigned group 1. Therefore, we only need 1 row for dimension
-1 in lambdas. Groups can be used as an indicator of location if the user wishes to 
-specify a location specific force of exposure. We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
+1 in foe_pars. Groups can be used as an indicator of location if the user wishes to 
+specify a location specific force of exposure. We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
 ```{r}
 ## Create an empty array to store the force of infection for all exposure types
-lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-lambdas[,,1] <- 0.2
+foe_pars[,,1] <- 0.2
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-lambdas[,,2] <- 0.4
+foe_pars[,,2] <- 0.4
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
@@ -156,7 +156,7 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
   theta,
   exposure_model,

@@ -6,7 +6,7 @@
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param lambdas Force of infection array 
+#' @param foe_pars Force of infection array 
 #' @param demography Demography information 
 #' @param ... 
 #'
@@ -14,8 +14,8 @@
 #' @export
 #'
 #' @examples
-exposure_model_simple_FOE <- function(i, t, e, g, lambdas, demography, ...){
-  p <- lambdas[g, t, e]
+exposure_model_simple_FOE <- function(i, t, e, g, foe_pars, demography, ...){
+  p <- foe_pars[g, t, e]
   p_exp<-1-exp(-p)
   p_exp
 }
@@ -28,7 +28,7 @@ exposure_model_simple_FOE <- function(i, t, e, g, lambdas, demography, ...){
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param lambdas Force of exposure array 
+#' @param foe_pars Force of exposure array 
 #' @param demography Demography information 
 #' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param ... 
@@ -37,9 +37,9 @@ exposure_model_simple_FOE <- function(i, t, e, g, lambdas, demography, ...){
 #' @export
 #'
 #' @examples
-exposure_model_dem_mod <- function(i, t, e, g, lambdas, demography, mod, ...){
+exposure_model_dem_mod <- function(i, t, e, g, foe_pars, demography, mod, ...){
   ## Find the force of exposure
-  p <- lambdas[g, t, e]
+  p <- foe_pars[g, t, e]
   
   ## Find which exposure events have modifiers
   exps<-mod$exposure_id %>% unique()
@@ -80,7 +80,7 @@ exposure_model_dem_mod <- function(i, t, e, g, lambdas, demography, mod, ...){
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param lambdas Force of exposure array 
+#' @param foe_pars Force of exposure array 
 #' @param demography Demography information 
 #' @param age_mod A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.
 #' @param t_in_year The number of time steps in a year; defaults to 1 
@@ -90,9 +90,9 @@ exposure_model_dem_mod <- function(i, t, e, g, lambdas, demography, mod, ...){
 #' @export
 #'
 #' @examples
-exposure_model_age_mod <- function(i, t, e, g, lambdas, demography, age_mod, t_in_year=1, ...){
+exposure_model_age_mod <- function(i, t, e, g, foe_pars, demography, age_mod, t_in_year=1, ...){
   ## Find the force of exposure
-  p <- lambdas[g, t, e]
+  p <- foe_pars[g, t, e]
   
   ## Check if age modifiers apply to this particular exposure 
   exps_age<-age_mod$exposure_id %>% unique()
@@ -130,7 +130,7 @@ exposure_model_age_mod <- function(i, t, e, g, lambdas, demography, age_mod, t_i
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param lambdas Force of exposure array 
+#' @param foe_pars Force of exposure array 
 #' @param demography Demography information 
 #' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param age_mod A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.
@@ -141,9 +141,9 @@ exposure_model_age_mod <- function(i, t, e, g, lambdas, demography, age_mod, t_i
 #' @export
 #'
 #' @examples
-exposure_model_dem_age_mod <- function(i, t, e, g, lambdas, demography, mod, age_mod, t_in_year=1, ...){
+exposure_model_dem_age_mod <- function(i, t, e, g, foe_pars, demography, mod, age_mod, t_in_year=1, ...){
   ## Find the force of exposure 
-  p <- lambdas[g, t, e]
+  p <- foe_pars[g, t, e]
   
   ## Find which exposure events have modifiers
   exps<-mod$exposure_id %>% unique()

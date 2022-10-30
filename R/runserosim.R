@@ -5,7 +5,7 @@
 #' @param simulation_settings A list of parameters governing the simulation time step settings
 #' @param demography A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals. 
 #' @param observation_times A tibble of observation times and antigen for each individual
-#' @param lambdas A 3D array providing the rate of infection or vaccination for each exposure ID, group and time
+#' @param foe_pars A 3D array providing the rate of infection or vaccination for each exposure ID, group and time
 #' @param antigen_map An object specifying the relationship between exposure IDs and antigen IDs
 #' @param theta A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #' @param exposure_model A function which calculates the probability of exposure given the foe_pars array
@@ -24,13 +24,13 @@ runserosim <- function(
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
     observation_times=NULL, ## tibble of observation times and antigen for each individual
-    lambdas, ## 3D array giving force of infection for each exposure ID, groups and time
+    foe_pars, ## 3D array giving force of infection for each exposure ID, groups and time
     antigen_map, ## Object determining relationship between exposure IDs and antigens
     theta,
     
     ## FUNCTIONS
-    exposure_model, ## calculates the probability of infection given the FOI array, lambdas
-    immunity_model, ## function determining probability of infection conditional on lambdas and individuals immune state
+    exposure_model, ## calculates the probability of infection given the FOI array, foe_pars
+    immunity_model, ## function determining probability of infection conditional on foe_pars and individuals immune state
     antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (theta)
     observation_model, ## function generating observed titers as a function of latent titers and theta
     draw_parameters, ## function to simulate antibody kinetics parameters
@@ -113,7 +113,7 @@ runserosim <- function(
                 ## Only update if exposure history entry is NA here. If not NA, then pre-specified
                 if(is.na(exposure_histories[i,t,e])){
                     ## What is the probability that exposure occurred?
-                    prob_exposed <- exposure_model(i, t, e, g, lambdas, demography, ...)
+                    prob_exposed <- exposure_model(i, t, e, g, foe_pars, demography, ...)
                     
                     ## If an exposure event occurred, what's the probability 
                     ## of successful infection/vaccination?

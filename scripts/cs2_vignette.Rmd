@@ -83,33 +83,33 @@ antigen_map
 ```
 
 # 1.4 Force of Exposure and Exposure Model
-Now, we need to specify the lambdas argument which contains the force of exposure
+Now, we need to specify the foe_pars argument which contains the force of exposure
 for all exposure_IDs across all time steps. We also specify the exposure model 
 which will be called within runserosim later. The exposure model will determine
 whether an individual is exposed to a specific exposure event. The probability of 
 exposure (1-e-λ) depends on the force of exposure (λ) at the current time t for 
 group g modulated by relevant demographic elements (mod) and age (age_mod)
 
-Since we have two groups, there are 2 rows in the first lambdas dimension.
+Since we have two groups, there are 2 rows in the first foe_pars dimension.
 ```{r}
 ## Create an empty array to store the force of exposure for all exposure types
-lambdas <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
 
 ## Note that we can specify a different force of exposure for each group, time and exposure ID
-## We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
+## We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
 
 ## Assign arbitrary force of exposure
 ## Specify the force of exposure for exposure ID 1 which represents diphtheria and pertussis vaccination
-lambdas[1,,1] <- 0.2 ## Group 1 (aka Location 1)
-lambdas[2,,1] <- 0.3 ## Group 2 (aka Location 2)
+foe_pars[1,,1] <- 0.2 ## Group 1 (aka Location 1)
+foe_pars[2,,1] <- 0.3 ## Group 2 (aka Location 2)
 
 ## Specify the force of exposure for exposure ID 2 which represents diphtheria natural infection
-lambdas[1,,2] <- 0.4 ## Group 1 (aka Location 1)
-lambdas[2,,2] <- 0.3 ## Group 2 (aka Location 2)
+foe_pars[1,,2] <- 0.4 ## Group 1 (aka Location 1)
+foe_pars[2,,2] <- 0.3 ## Group 2 (aka Location 2)
 
 ## Specify the force of exposure for exposure ID 2 which represents pertussis natural infection
-lambdas[1,,3] <- 0.2 ## Group 1 (aka Location 1)
-lambdas[2,,3] <- 0.1 ## Group 2 (aka Location 2)
+foe_pars[1,,3] <- 0.2 ## Group 1 (aka Location 1)
+foe_pars[2,,3] <- 0.1 ## Group 2 (aka Location 2)
 
 ## Specify a simple exposure model which calculates the probability of exposure from the force of exposure modulated by age and demography elements 
 exposure_model<-exposure_model_dem_age_mod
@@ -254,7 +254,7 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
   theta,
   exposure_model,

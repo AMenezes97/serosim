@@ -77,25 +77,25 @@ antigen_map
 
 
 # 1.4 Force of Exposure and Exposure Model
-Now, we need to specify the lambdas argument which contains the force of exposure
+Now, we need to specify the foe_pars argument which contains the force of exposure
 for all exposure_IDs across all time steps and groups. We also specify the exposure model 
 which will be called within runserosim later. The exposure model will determine
 whether an individual is exposed to a specific exposure event.
 
 Since we did not specify different groups within demography, all individuals will 
 automatically be assigned group 1. Therefore, we only need 1 row for dimension
-1 in lambdas.
+1 in foe_pars.
 ```{r}
 ## Create an empty array to store the force of exposure for all exposure types
-lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
 
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-lambdas[,,1] <- 0.2
+foe_pars[,,1] <- 0.2
 
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-lambdas[,,2] <- 0.4
+foe_pars[,,2] <- 0.4
 
-## We specified the same value for all time steps within lambdas for simplicity but users will likely have varying numbers to match real world settings. 
+## We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
 exposure_model<-exposure_model_simple_FOE
@@ -208,7 +208,7 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
   theta,
   exposure_model,

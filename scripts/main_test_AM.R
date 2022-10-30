@@ -44,7 +44,7 @@ N_exposure_ids <- 2
 
 ## Specify the force of infection array (different format)
 group<-c(1,2,3,4)
-lambdas <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposure_ids))
+foe_pars <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposure_ids))
 
 ## Specify exposure model within serosim function below
 
@@ -115,7 +115,7 @@ res<- runserosim(
   simulation_settings,
   demography, 
   observation_times,
-  lambdas, 
+  foe_pars, 
   antigen_map,
   theta,
   exposure_model=exposure_model_simple_FOI, 

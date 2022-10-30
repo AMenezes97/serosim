@@ -89,18 +89,18 @@ antigen_map <- tibble(exposure_id=c(1,2,3),antigen_id=c(1,1,1))
 
 ##***************************1.4: Force of Infection and Exposure Model***********
 ## Create an empty array to store the force of infection for all exposure types
-lambdas <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
 
 ## Specify the force of infection for exposure ID 1 which represents natural infection
-lambdas[,,1] <- 0.2
+foe_pars[,,1] <- 0.2
 
 ## Specify the force of vaccination for exposure ID 2 which represents MCV1 vaccination
-lambdas[,,2] <- 0.4
+foe_pars[,,2] <- 0.4
 
 ## Specify the force of vaccination for exposure ID 3 which represents MCV2 vaccination
-lambdas[,,3] <- 0.05
+foe_pars[,,3] <- 0.05
 
-## I specified the same value for all time steps within lambdas for simplicity but we can change to varying numbers to match real world settings. 
+## I specified the same value for all time steps within foe_pars for simplicity but we can change to varying numbers to match real world settings. 
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
 ## In this selected model, the probability of exposure is 1-exp(-FOI) where FOI is the force of infection at that time.
@@ -166,7 +166,7 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
   theta,
   exposure_model,

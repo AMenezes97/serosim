@@ -67,12 +67,12 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  3.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 35.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 68.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 64.57   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 98.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 29.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 56.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 57.53   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 89.00   3rd Qu.: NA    
+    ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
     ##                                                     NA's   :12000
 
 # 1.3 Antigen Map
@@ -99,26 +99,26 @@ antigen_map
 
 # 1.4 Force of Exposure and Exposure Model
 
-Now, we specify the lambdas argument which contains the force of
+Now, we specify the foe_pars argument which contains the force of
 exposure for all exposure_IDs across all time steps. We also specify the
 exposure model which will determine whether an individual is exposed to
 a specific exposure event.
 
 Since we did not specify different groups within demography, all
 individuals will automatically be assigned group 1. Therefore, we only
-need 1 row for dimension 1 in lambdas. Groups can be used as an
+need 1 row for dimension 1 in foe_pars. Groups can be used as an
 indicator of location if the user wishes to specify a location specific
 force of exposure. We specified the same value for all time steps within
-lambdas for simplicity but users will likely have varying numbers to
+foe_pars for simplicity but users will likely have varying numbers to
 match real world settings.
 
 ``` r
 ## Create an empty array to store the force of infection for all exposure types
-lambdas <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-lambdas[,,1] <- 0.2
+foe_pars[,,1] <- 0.2
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-lambdas[,,2] <- 0.4
+foe_pars[,,2] <- 0.4
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
@@ -228,7 +228,7 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
   theta,
   exposure_model,
@@ -294,9 +294,9 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     e    ag name    value realized_value
     ##   <int> <dbl> <dbl> <int> <chr>   <dbl>          <dbl>
-    ## 1     1   113     1     1 boost 3.38           3.38   
-    ## 2     1   113     1     1 wane  0.00316        0.00316
-    ## 3     1   119     2     1 boost 0.725          0.725  
-    ## 4     1   119     2     1 wane  0.00158        0.00158
-    ## 5     2   117     1     1 boost 3.27           3.27   
-    ## 6     2   117     1     1 wane  0.00299        0.00299
+    ## 1     1   118     1     1 boost 4.39           4.39   
+    ## 2     1   118     1     1 wane  0.00288        0.00288
+    ## 3     2     7     1     1 boost 4.18           4.18   
+    ## 4     2     7     1     1 wane  0.00463        0.00463
+    ## 5     2    16     2     1 boost 1.72           1.72   
+    ## 6     2    16     2     1 wane  0.00225        0.00225
