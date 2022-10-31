@@ -198,7 +198,12 @@ observation_times<-rbind(obs1,obs2)
 
 
 # 1.8 Optional Arguments 
-There are no optional arguments needed for this simulation. 
+Users can specify any additional arguments needed for their models. 
+```{r}
+## If VERBOSE is specified within runserosim, there will be an update message printed for every multiple of the integer specified.
+## Print a message for every 10 individuals 
+VERBOSE<-10
+```
 
 # 1.9 Run Simulation 
 This is the core simulation where all simulation settings, models and parameters are specified within the main simulation function. Time to run this step varies depending on the number of individuals and the complexities of the specified models. 
@@ -216,6 +221,7 @@ res<- runserosim(
   antibody_model,
   observation_model,
   draw_parameters,
+  VERBOSE=VERBOSE,
 
   ## Other arguments needed
   bounds=bounds,

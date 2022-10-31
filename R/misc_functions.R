@@ -159,3 +159,22 @@ simulate_vaccine_histories <- function(N, times, birth_times, vacc_min, vacc_max
   }
   return(vaccine_histories)
 }
+
+#' runserosim function update message
+#' 
+#' @description This function is used within runserosim to produce messages to inform the user which individual the simulation is currently running
+#'
+#' @param VERBOSE The interval of individuals in which messages will be printed at
+#' @param i The individual that the simulation is currently on 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+update <- function(VERBOSE, i){ 
+  if(!is.null(VERBOSE)){
+   if(i %% VERBOSE == 0){
+    message(cat("Individual: ", i))
+  }
+  }
+}

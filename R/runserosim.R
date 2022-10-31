@@ -13,7 +13,8 @@
 #' @param antibody_model A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)
 #' @param observation_model A function generating observed titers as a function of latent titers and kinetics parameters (model_pars)
 #' @param draw_parameters A function to simulate parameters antibody kinetics model, immunity model, observation model from model_pars
-#' @param exposure_histories_fixed A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.
+#' @param exposure_histories_fixed (optional) A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.
+#' @param VERBOSE (optional) If an integer is specified; an update message will be printed once the simulation reaches that individual and every multiple thereafter; defaults to NULL 
 #' 
 #' @return a list containing the following elements: exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' 
@@ -35,8 +36,11 @@ runserosim <- function(
     observation_model, ## function generating observed titers as a function of latent titers and theta
     draw_parameters, ## function to simulate antibody kinetics parameters
     
-    ## Pre-specified parameters/events
+    ## Pre-specified parameters/events (optional)
     exposure_histories_fixed=NULL,
+    
+    ## UPDATE MESSAGE
+    VERBOSE=NULL,
     ...
                     ){
     ## Simulation settings
@@ -87,7 +91,8 @@ runserosim <- function(
     # message(cat("Beginning simulation\n"))
     ## For each individual
     for(i in indivs){
-        # message(cat("Individual: ", i, "\n"))
+        ## Print update message
+        update(VERBOSE,i)
         ## Pull birth time for this individual
         birth_time <- birth_times$birth[i]
         removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])

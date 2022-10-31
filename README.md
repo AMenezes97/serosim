@@ -67,12 +67,12 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 29.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 56.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 57.53   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 89.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  6.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 33.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 64.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 62.64   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 94.25   3rd Qu.: NA    
+    ##  Max.   :100.00   Max.   :120.00   Max.   :116.00   Max.   : NA    
     ##                                                     NA's   :12000
 
 # 1.3 Antigen Map
@@ -294,9 +294,9 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     e    ag name    value realized_value
     ##   <int> <dbl> <dbl> <int> <chr>   <dbl>          <dbl>
-    ## 1     1   118     1     1 boost 4.39           4.39   
-    ## 2     1   118     1     1 wane  0.00288        0.00288
-    ## 3     2     7     1     1 boost 4.18           4.18   
-    ## 4     2     7     1     1 wane  0.00463        0.00463
-    ## 5     2    16     2     1 boost 1.72           1.72   
-    ## 6     2    16     2     1 wane  0.00225        0.00225
+    ## 1     1   111     1     1 boost 1.63           1.63   
+    ## 2     1   111     1     1 wane  0.00329        0.00329
+    ## 3     1   119     2     1 boost 2.96           2.96   
+    ## 4     1   119     2     1 wane  0.00230        0.00230
+    ## 5     2   110     1     1 boost 2.15           2.15   
+    ## 6     2   110     1     1 wane  0.00256        0.00256
