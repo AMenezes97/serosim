@@ -2,12 +2,13 @@
 #'
 #' @param titer_range The range of possible titers an individual can have at exposure
 #' @param titer_prot_midpoint The titer value at which you are 50% protected from infection
-#' @param titer_prot_width
+#' @param titer_prot_width Determines the chape of the curve
 #'
 #' @return A plot of the probability of infection given an individual's titer at exposure
 #' @export
 #'
 #' @examples
+#' plot_titer_mediated_protection(0:10,5,0.9)
 plot_titer_mediated_protection <- function(titer_range, titer_prot_midpoint, titer_prot_width){
   ## Create a function to calculate the risk of infection at a given titer
   titer_protection <- function(titer, alpha1, beta1){
@@ -39,6 +40,7 @@ plot_titer_mediated_protection <- function(titer_range, titer_prot_midpoint, tit
 #' @export
 #'
 #' @examples
+#' plot_titer_dependent_boosting(0,10,1,4,.14)
 plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshold, titer_ceiling_gradient){
     test_titres <-pmin(seq(start,end,by=by), titer_ceiling_threshold)
     boost_modifier <- (1-titer_ceiling_gradient*test_titres)
@@ -58,6 +60,7 @@ plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshol
 #' @export
 #'
 #' @examples
+#' plot_exposure_prob(example_exposure_probabilities)
 plot_exposure_prob<-function(exposure_probabilities_long){
   p <- ggplot2::ggplot(exposure_probabilities_long) + 
     ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
@@ -88,6 +91,7 @@ plot_exposure_prob<-function(exposure_probabilities_long){
 #' @export
 #'
 #' @examples
+#' plot_exposure_histories(example_exposure_histories)
 plot_exposure_histories <- function(exposure_histories){
   exposure_histories$value <- ifelse(!is.na(exposure_histories$value),
                                      ifelse(exposure_histories$value==1,"Succesful Exposure","No Exposure"), "NA")
@@ -115,6 +119,7 @@ plot_exposure_histories <- function(exposure_histories){
 #' @export
 #'
 #' @examples
+#' plot_titers(example_antibody_states)
 plot_titers<- function(titers){
   p <- ggplot2::ggplot(titers) + 
     ggplot2::geom_tile(aes(x=t,y=i,fill=value)) + 
@@ -147,6 +152,7 @@ plot_titers<- function(titers){
 #' @export
 #'
 #' @examples
+#' plot_obs_titers_one_sample(example_observed_antibody_states)
 plot_obs_titers_one_sample<-function(observed_titers){
   p<-ggplot2::ggplot(observed_titers  %>% filter(!is.na(observed))) +
   ggplot2::geom_jitter(ggplot2::aes(x=ag, y=observed),
@@ -212,6 +218,7 @@ return(p)
 #' @export
 #'
 #' @examples
+#' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
 plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography){
   exposure_histories$e <- paste0("Exposure: ", exposure_histories$e)
   titers$ag <- paste0("Antigen: ", titers$ag)

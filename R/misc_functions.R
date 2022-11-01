@@ -1,24 +1,29 @@
 #' Simulate Random Birth Times
-#'
+#' 
+#' @description This function simulates random birth times for a specified number of individuals across a range of times
+#' 
 #' @param N The number of individuals in the simulation
-#' @param times The total number of time steps in the simulation
-#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step
+#' @param times  A vector of each time step in the simulation
+#' @param limit A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
 #'
-#' @return Random birth times for each individual are returned
+#' @return A vector of simulated birth times for each individual is returned
 #' @export
 #'
-#' @examples simulate_birth_times(500, 1:100, limit=9) #Simulates random birth times for 500 individuals over 100 time  steps and ensures that all indiivduals are above 9 time steps old by the last time step
+#' @examples 
+#' ## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
+#' simulate_birth_times(500, 1:100, limit=9) 
 simulate_birth_times <- function(N, times, limit=0){
   birth_times <- sample(times[1:(length(times)-(limit+1))], N, replace =TRUE)
   return(birth_times)
 }
 
 
-
 #' Simulate  Removal Times for Individuals 
 #'
+#' @description This function simulates random removal times for a specified number of individuals across a range of times
+#' 
 #' @param N The number of individuals in the simulation
-#' @param times The total number of time steps in the simulation
+#' @param times  A vector of each time step in the simulation
 #' @param birth_times A vector of all individual's birth times
 #' @param removal_min The minimum age at which an individual can be removed from the population 
 #' @param removal_max The maximum age at which an individual can be removed from the population 
@@ -28,6 +33,10 @@ simulate_birth_times <- function(N, times, limit=0){
 #' @export
 #'
 #' @examples
+#' ## First, simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
+#' births<-simulate_birth_times(500, 1:100, limit=9) 
+#' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
+#' simulate_removal_times(500,1:100,birth_times=births,removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min, removal_max, prob_removal){
   removal_histories <- matrix(0, nrow=N, ncol=length(times))
   for(i in 1:N){
@@ -66,23 +75,26 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 
 
 #' Generate A Population Demography Data Set 
+#' 
+#' @description This function generates a tibble of relevant demographic information for each individual in the simulation
 #'
 #' @param N The number of individuals in the simulation
-#' @param times The total number of time steps in the simulation
+#' @param times A vector of each time step in the simulation
 #' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual
-#' @param limit This number limits the last month an individual is born; if you want to ensure that all individuals simulated are above age of vaccination then enter the time step at which individuals are eligible for vaccination; defaults to 0 which allows individuals to be born up until the second to last step which ensures that each individual is alive for sampling at the last time step; defaults to 0
+#' @param limit A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
 #' @param removal_min The minimum age at which an individual can be removed from the population 
 #' @param removal_max The maximum age at which an individual can be removed from the population 
 #' @param prob_removal The probability that an individual will be removed from the population
 #' @param aux A list of the demography columns, the variable options and their distributions; defaults to NULL  
 #'
-#' @return
+#' @return A tibble of relevant demographic information for each individual in the simulation is returned;  This output matches the required "demography" input for the runserosi function
 #' @export
 #'
 #' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3)
 #' 
-#' @examples aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
-#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+#' @examples 
+#' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+#' generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
   if(!is.null(birth_times)){
     birth_tm<-birth_times} 
@@ -132,34 +144,6 @@ generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_m
   }
 }
 
-#' Simulate Vaccine Histories
-#'
-#' @param N The number of individuals in the simulation
-#' @param times The number of time steps in the simulation
-#' @param birth_times The time of birth of each individual in the simulation
-#' @param vacc_min The age at which an individual becomes eligible for vaccination
-#' @param vacc_max The age at which an individual is no longer eligible for vaccination
-#' @param prob_vaccination The overall probability of being vaccinated at some point in an individual's life
-#' @param vacc_num The maximum number of vaccines an individual can receive; defaults to 1
-#'
-#' @return A matrix with each individual's vaccination histories is returned
-#' @export
-#'
-#' @examples
-simulate_vaccine_histories <- function(N, times, birth_times, vacc_min, vacc_max, prob_vaccination, vacc_num=1){
-  vaccine_histories <- matrix(0, nrow=N, ncol=length(times))
-  for(i in 1:N){
-    tmp <- vaccine_histories[i,]
-    #Find vaccination time(s)
-    vacc_time <- sample(times[times >= birth_times[i] + (vacc_min) & times <= birth_times[i] + (vacc_max)], vacc_num)
-    tmp[vacc_time] <- ifelse(runif(1) < prob_vaccination, 1, 0)
-    #Cannot be vaccinated before birth
-    tmp[times < birth_times[i]] <- NA
-    vaccine_histories[i,] <- tmp
-  }
-  return(vaccine_histories)
-}
-
 #' runserosim function update message
 #' 
 #' @description This function is used within runserosim to produce messages to inform the user which individual the simulation is currently running
@@ -167,7 +151,7 @@ simulate_vaccine_histories <- function(N, times, birth_times, vacc_min, vacc_max
 #' @param VERBOSE The interval of individuals in which messages will be printed at
 #' @param i The individual that the simulation is currently on 
 #'
-#' @return
+#' @return A printed statement indicating an individual number is returned 
 #' @export
 #'
 #' @examples

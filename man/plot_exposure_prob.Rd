@@ -15,3 +15,6 @@ A plot of exposure probabilities across time for all individuals and exposure ID
 \description{
 Plot Exposure Probabilities Across Time For All Individuals And Exposure IDs
 }
+\examples{
+plot_exposure_prob(example_exposure_probabilities)
+}

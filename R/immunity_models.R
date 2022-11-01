@@ -7,9 +7,9 @@
 #' @param e exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param demography Demography information 
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble including titer-mediated protection parameters 
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the immunity model
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -30,9 +30,9 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #' @param e exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param demography Demography information 
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble including titer-mediated protection parameters 
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the immunity model
 #' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
@@ -73,9 +73,9 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #' @param e exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param demography Demography information 
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble including titer-mediated protection parameters 
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the immunity model
 #' @param max_events A vector of the maximum number of successful exposure events possible for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
@@ -130,9 +130,9 @@ immunity_model_vacc_ifxn_simple <- function(i, t, e, exposure_histories,
 #' @param e exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param demography Demography information 
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble including titer-mediated protection parameters 
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the immunity model
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned
@@ -173,9 +173,9 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #' @param e exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
-#' @param demography Demography information 
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
-#' @param theta Tibble including titer-mediated protection parameters 
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param theta A tibble of parameters needed for the immunity model
 #' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA

@@ -1,12 +1,12 @@
 #' Main simulation function for serosim
 #' 
-#' Simulates a serological survey using custom inputs. The user can specify multiple inputs controlling population demography, simulation timeframe, observation times for each individual, force of infection, and various model functions describing the link between infections and observed antibody titers.
+#' @description Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers.
 #' 
 #' @param simulation_settings A list of parameters governing the simulation time step settings
 #' @param demography A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals. 
 #' @param observation_times A tibble of observation times and antigen for each individual
-#' @param foe_pars A 3D array providing the rate of infection or vaccination for each exposure ID, group and time
-#' @param antigen_map An object specifying the relationship between exposure IDs and antigen IDs
+#' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
 #' @param theta A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #' @param exposure_model A function which calculates the probability of exposure given the foe_pars array
 #' @param immunity_model A function determining the probability of an exposure leading to successful infection or vaccination for a given individual
@@ -105,7 +105,7 @@ runserosim <- function(
             ## Pull group for this individual at this time 
             g <- as.numeric(demography$group[demography$i==i & demography$times==t]) 
            
-             ## Work out antibody state for each antigen
+            ## Work out antibody state for each antigen
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
             for(ag in antigen_ids){
@@ -121,7 +121,7 @@ runserosim <- function(
                     prob_exposed <- exposure_model(i, t, e, g, foe_pars, demography, ...)
                     
                     ## If an exposure event occurred, what's the probability 
-                    ## of successful infection/vaccination?
+                    ## of successful exposure?
                     prob_success <- immunity_model(i, t, e, exposure_histories, 
                                                    antibody_states, demography, 
                                                    antigen_map, theta, ...)
@@ -129,10 +129,9 @@ runserosim <- function(
                     ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
                     
-                    ## Create kinetics parameters for this exposure event
+                    ## Simulate kinetics parameters for this exposure event
                     ## Each successful exposure event will create a tibble with parameters
                     ## for this event, drawn from information given in theta
-                    ## We also pass the demographic information in case we want demography-specific parameters
                     if(successful_exposure == 1){
                         kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
                                                           draw_parameters(i, t, e, ag, demography, antibody_states, theta, ...))
@@ -171,9 +170,9 @@ runserosim <- function(
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
     ## Observation process
     if(!is.null(observation_times)){
-        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, demography, ...)
+        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, ...)
     } else {
-        observed_antibody_states <- observation_model(antibody_states, theta, demography, ...)
+        observed_antibody_states <- observation_model(antibody_states, theta, ...)
     }
     
     return(list("exposure_histories"=exposure_histories,

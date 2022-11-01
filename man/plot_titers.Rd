@@ -15,3 +15,6 @@ A plot of titers across all time steps for all individuals and antigens is retur
 \description{
 Plot Titers Across Time For All Individuals And Antigens
 }
+\examples{
+plot_titers(example_antibody_states)
+}

@@ -15,3 +15,6 @@ A plot of observed titers for all individuals and antigens is returned
 \description{
 This function should be used when there was only one time step in which titers were observed
 }
+\examples{
+plot_obs_titers_one_sample(example_observed_antibody_states)
+}

@@ -15,11 +15,14 @@ plot_titer_mediated_protection(
 
 \item{titer_prot_midpoint}{The titer value at which you are 50\% protected from infection}
 
-\item{titer_prot_width}{}
+\item{titer_prot_width}{Determines the chape of the curve}
 }
 \value{
 A plot of the probability of infection given an individual's titer at exposure
 }
 \description{
 Plot Titer Mediated Protection Graphs For Each Pathogen
+}
+\examples{
+plot_titer_mediated_protection(0:10,5,0.9)
 }

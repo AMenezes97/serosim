@@ -4,7 +4,7 @@
 \alias{exposure_model_dem_mod}
 \title{Exposure Model Modified By Relevant Demographic Elements}
 \usage{
-exposure_model_dem_mod(i, t, e, g, lambdas, demography, mod, ...)
+exposure_model_dem_mod(i, t, e, g, foe_pars, demography, mod, ...)
 }
 \arguments{
 \item{i}{Individual}
@@ -15,9 +15,9 @@ exposure_model_dem_mod(i, t, e, g, lambdas, demography, mod, ...)
 
 \item{g}{group}
 
-\item{lambdas}{Force of infection array}
+\item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time.}
 
-\item{demography}{Demography information}
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
 \item{mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
 
@@ -27,5 +27,5 @@ exposure_model_dem_mod(i, t, e, g, lambdas, demography, mod, ...)
 A probability of exposure is returned
 }
 \description{
-Probability of exposure depends on the force of infection at the current time t for group g modulated by relevant demographic elements specified within the mod. Within mod, users can select which demographic elements affect the probability of exposure and by how much.
+Probability of exposure depends on the force of exposure at the current time t for group g modulated by relevant demographic elements specified within the mod. Within mod, users can select which demographic elements affect the probability of exposure and by how much.
 }

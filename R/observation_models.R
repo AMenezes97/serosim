@@ -4,14 +4,13 @@
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param theta Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_continuous<-function(antibody_states,theta,demography, ...){
+observation_model_continuous<-function(antibody_states,theta, ...){
   antibody_states$observed<-antibody_states$value
   antibody_states_new
 }
@@ -22,7 +21,6 @@ observation_model_continuous<-function(antibody_states,theta,demography, ...){
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param theta Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param bounds A tibble containing the assay lower bound and upper bound for all antigens; column names=antigen_id, name, and value where name is either "lower_bound" or "upper_bound"
 #' @param ... 
 #'
@@ -30,7 +28,7 @@ observation_model_continuous<-function(antibody_states,theta,demography, ...){
 #' @export
 #'
 #' @examples
-observation_model_continuous_bounded<-function(antibody_states,theta,demography,bounds, ...){
+observation_model_continuous_bounded<-function(antibody_states,theta, bounds, ...){
   antibody_states$observed<-antibody_states$value
   antibody_states_new<-NULL
   for(ags in unique(antibody_states$ag)){ ## For each antigen
@@ -54,7 +52,6 @@ observation_model_continuous_bounded<-function(antibody_states,theta,demography,
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param theta Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param cutoffs A matrix containing the assay cutoffs for each antigen. Each row contains all of the cutoffs for that antigen starting with 0. For example, all of the cutoffs for the assay measuring antigen 1 specific antibodies are in the first row of this matrix.
 #' @param ... 
 #'
@@ -62,7 +59,7 @@ observation_model_continuous_bounded<-function(antibody_states,theta,demography,
 #' @export
 #'
 #' @examples
-observation_model_discrete<-function(antibody_states,theta,demography,cutoffs, ...){
+observation_model_discrete<-function(antibody_states,theta, cutoffs, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
   for(ags in unique(antibody_states$ag)){ ## For each antigen
@@ -82,7 +79,6 @@ observation_model_discrete<-function(antibody_states,theta,demography,cutoffs, .
 #' 
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param theta Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param bounds A tibble containing the assay lower bound and upper bound for all antigens; column names=antigen_id, name, and value where name is either "lower_bound" or "upper_bound"
 #' @param ... 
 #'
@@ -90,7 +86,7 @@ observation_model_discrete<-function(antibody_states,theta,demography,cutoffs, .
 #' @export
 #'
 #' @examples
-observation_model_continuous_bounded_noise<-function(antibody_states,theta,demography,bounds, ...){
+observation_model_continuous_bounded_noise<-function(antibody_states,theta, bounds, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
   for(ags in unique(antibody_states$ag)){
@@ -121,14 +117,13 @@ observation_model_continuous_bounded_noise<-function(antibody_states,theta,demog
 #' 
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param theta Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param ... 
 #'
 #' @return antibody_states is returned with a new column for observed titers
 #' @export
 #'
 #' @examples
-observation_model_continuous_noise<-function(antibody_states,theta,demography, ...){
+observation_model_continuous_noise<-function(antibody_states,theta, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
   for(ags in unique(antibody_states$ag)){
@@ -153,7 +148,6 @@ observation_model_continuous_noise<-function(antibody_states,theta,demography, .
 #'
 #' @param antibody_states True antibody titers for all individuals across all time steps and antigens  
 #' @param model_pars Tibble of observation model parameters 
-#' @param demography A tibble of any relevant demographic information for each individual
 #' @param cutoffs A matrix containing the assay cutoffs for each antigen. Each row contains all of the cutoffs for that antigen starting with 0. For example, all of the cutoffs for the assay measuring antigen 1 specific antibodies are in the first row of this matrix.
 #' @param ... 
 #'
@@ -161,7 +155,7 @@ observation_model_continuous_noise<-function(antibody_states,theta,demography, .
 #' @export
 #'
 #' @examples
-observation_model_discrete_noise<-function(antibody_states,theta, demography, cutoffs, ...){
+observation_model_discrete_noise<-function(antibody_states,theta, cutoffs, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
   for(ags in unique(antibody_states$ag)){

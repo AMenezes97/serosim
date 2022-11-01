@@ -4,28 +4,20 @@
 \alias{observation_model_discrete_noise}
 \title{Observation Model For Discrete Assays With Added Noise}
 \usage{
-observation_model_discrete_noise(
-  antibody_states,
-  theta,
-  demography,
-  discrete,
-  ...
-)
+observation_model_discrete_noise(antibody_states, theta, cutoffs, ...)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of observation model parameters}
-
-\item{demography}{Demography information}
-
-\item{discrete}{The cutoffs for the discrete assay in a list format}
+\item{cutoffs}{A matrix containing the assay cutoffs for each antigen. Each row contains all of the cutoffs for that antigen starting with 0. For example, all of the cutoffs for the assay measuring antigen 1 specific antibodies are in the first row of this matrix.}
 
 \item{...}{}
+
+\item{model_pars}{Tibble of observation model parameters}
 }
 \value{
 antibody_states is returned with a new column for observed titers
 }
 \description{
-This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution is defined within theta as the “obs_sd” parameter.
+This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within theta as the “obs_sd” parameter.
 }

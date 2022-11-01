@@ -6,8 +6,8 @@
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param foe_pars Force of infection array 
-#' @param demography Demography information 
+#' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param ... 
 #'
 #' @return A probability of exposure is returned
@@ -28,8 +28,8 @@ exposure_model_simple_FOE <- function(i, t, e, g, foe_pars, demography, ...){
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param foe_pars Force of exposure array 
-#' @param demography Demography information 
+#' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param ... 
 #'  
@@ -80,8 +80,8 @@ exposure_model_dem_mod <- function(i, t, e, g, foe_pars, demography, mod, ...){
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param foe_pars Force of exposure array 
-#' @param demography Demography information 
+#' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param age_mod A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.
 #' @param t_in_year The number of time steps in a year; defaults to 1 
 #' @param ... 
@@ -130,8 +130,8 @@ exposure_model_age_mod <- function(i, t, e, g, foe_pars, demography, age_mod, t_
 #' @param t time
 #' @param e exposure
 #' @param g group
-#' @param foe_pars Force of exposure array 
-#' @param demography Demography information 
+#' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
+#' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param age_mod A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.
 #' @param t_in_year The number of time steps in a year; defaults to 1 

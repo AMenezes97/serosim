@@ -8,7 +8,7 @@
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states An array of antibody states across all individuals, time steps and antigen IDs
 #' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all antigens 
-#' @param antigen_map An object specifying the relationship between exposure IDs and antigen IDs
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
 #' @param ... 
 #'
 #' @return A titer value is returned 
@@ -59,7 +59,7 @@ antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_s
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states An array of antibody states across all individuals, time steps and antigen IDs
 #' @param kinetics_parameters An object of all kinetics parameters for all exposures
-#' @param antigen_map Object determining relationship between exposure IDs and antigens
+#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
 #' @param ... 
 #'
 #' @return A titer value is returned 

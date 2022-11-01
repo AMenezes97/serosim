@@ -27,11 +27,11 @@ immunity_model_all_successful(
 
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{demography}{Demography information}
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{antigen_map}{Object determining relationship between exposure IDs and antigens}
+\item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
 
-\item{theta}{Tibble including titer-mediated protection parameters}
+\item{theta}{A tibble of parameters needed for the immunity model}
 
 \item{...}{}
 }

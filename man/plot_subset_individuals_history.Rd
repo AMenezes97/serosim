@@ -21,3 +21,6 @@ plot_subset_individuals_history(titers, exposure_histories, subset, demography)
 \description{
 Plot Antibody States and Exposure Histories For A Subset Of Individuals
 }
+\examples{
+plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
+}

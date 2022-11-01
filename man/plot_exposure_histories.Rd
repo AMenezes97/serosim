@@ -15,3 +15,6 @@ A plot of exposures histories across time for all individuals and exposures is r
 \description{
 Plot Exposure Histories
 }
+\examples{
+plot_exposure_histories(example_exposure_histories)
+}
