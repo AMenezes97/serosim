@@ -132,8 +132,8 @@ age_mod
 ## Here, individuals who are of low nutritional status are twice as likely of being exposed to diphtheria and pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
 ## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 1 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 1 (vaccination) that individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
-mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
-mod
+dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
+dem_mod
 
 
 ## Specify the number of time steps within a year 
@@ -148,10 +148,10 @@ events, we will use immunity_model_vacc_ifxn_titer_prot. With this model, the pr
 successful vaccination exposure depends on the number of vaccines received 
 prior to time t and age at time t while the probability of successful infection is dependent 
 on the titer at the time of exposure. The titer-mediated protection parameters used 
-within this model are defined within theta which will be loaded in section 1.6. 
+within this model are defined within model_pars which will be loaded in section 1.6. 
 In this simulation an individual can still be "reinfected" with either diphtheria or pertussis. 
 These "reinfection" events are representative of boosting events which can occur if an individual is exposed to either pathogen following a vaccination or previous infection. The user can limit the frequency of multiple infections(aka boosting events)
-by adjusting the titer-mediated protection parameters within theta.
+by adjusting the titer-mediated protection parameters within model_pars.
 
 
 
@@ -168,10 +168,10 @@ vacc_age<-c(2,NA,NA)
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(3,NA,NA)
 
-## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 (diphtheria) which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for antigen 1 (diphtheria) which will be loaded in section 1.6
 plot_titer_mediated_protection(0:20, titer_prot_midpoint=7, titer_prot_width=.5)
 
-## Plot titer-mediated protection curve given parameters specified within theta for antigen 2 (pertussis) which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for antigen 2 (pertussis) which will be loaded in section 1.6
 plot_titer_mediated_protection(0:100, titer_prot_midpoint=50, titer_prot_width=.1)
 ```
 
@@ -183,12 +183,12 @@ short-term boost waning parameters. This model incorporates titer dependent boos
 by taking an individual's realized boost which is adjusted by draw_parameters.
 The antibody kinetics parameters are pre loaded within a csv file. 
 Users can edit the csv file to adjust any parameters. All parameters needed for 
-the antibody model, must be specified within theta. Lastly, we define
+the antibody model, must be specified within model_pars. Lastly, we define
 the draw_parameters function which determines how each individual’s antibody kinetics 
-parameters are simulated from the antibody kinetics parameters tibble (theta). 
-We will use a function which draws parameters directly from theta for the antibody 
+parameters are simulated from the antibody kinetics parameters tibble (model_pars). 
+We will use a function which draws parameters directly from model_pars for the antibody 
 model with random effects. Parameters are drawn randomly from a distribution 
-with mean and standard deviation specified within theta. This draw_parameters function
+with mean and standard deviation specified within model_pars. This draw_parameters function
 also incorporates titer-ceiling effects where an individual’s realized boost is 
 dependent on their titer level at the time of the exposure event.
 ```{r}
@@ -198,19 +198,19 @@ antibody_model<-antibody_model_biphasic
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model, the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "theta_cs2.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
-theta
+model_pars_path <- system.file("extdata", "model_pars_cs2.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (diphtheria)
+## Plot titer dependent boosting effects given parameters specified within model_pars for antigen 1 (diphtheria)
 plot_titer_dependent_boosting(start=0, end=4, by=1, titer_ceiling_threshold=2, titer_ceiling_gradient=0.45)
 
 ## These parameters indicate that any individual with a diphtheria titer level above 2 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 
-## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (pertussis)
+## Plot titer dependent boosting effects given parameters specified within model_pars for antigen 1 (pertussis)
 plot_titer_dependent_boosting(start=0, end=30, by=1, titer_ceiling_threshold=20, titer_ceiling_gradient=0.045)
 
 ## These parameters indicate that any individual with a pertussis titer level above 1000 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
@@ -228,7 +228,7 @@ This observation model observes the latent titer values given a continuous assay
 with user-specified lower and upper limits and added noise. The added noise 
 represents assay variability and is done by sampling from a distribution with 
 the latent antibody titer as the mean and the measurement error as the standard deviation. The 
-observation standard deviation and distribution is defined within theta as the 
+observation standard deviation and distribution is defined within model_pars as the 
 “obs_sd” parameter for each antigen.
 ```{r}
 ## Specify the limits of detection for each antigen for the continuous assays
@@ -256,7 +256,7 @@ res<- runserosim(
   observation_times,
   foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,
@@ -268,7 +268,7 @@ res<- runserosim(
   max_vacc_events=max_vacc_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
-  mod=mod,
+  dem_mod=dem_mod,
   age_mod=age_mod,
   t_in_year=t_in_year
 )

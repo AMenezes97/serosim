@@ -106,22 +106,22 @@ Now, we specify the antibody model to be used within runserosim. We will be usin
 a monophasic boosting-waning model. This model assumes that for each exposure there 
 is a boost and boost waning parameter.The antibody kinetics parameters are pre-loaded within a csv file. 
 Users can edit the csv file to specify their own parameters. All parameters needed for 
-the user specified antibody model, must be specified within the antibody kinetics parameters tibble (theta). 
+the user specified antibody model, must be specified within the antibody kinetics parameters tibble (model_pars). 
 Lastly, we define the draw_parameters function which determines how each individual’s antibody kinetics 
-parameters are simulated from the antibody kinetics parameters tibble (theta). 
-We will use a function which draws parameters directly from theta for the antibody 
+parameters are simulated from the antibody kinetics parameters tibble (model_pars). 
+We will use a function which draws parameters directly from model_pars for the antibody 
 model with random effects. Parameters are drawn randomly from a distribution 
-with mean and standard deviation specified within theta.
+with mean and standard deviation specified within model_pars.
 ```{r}
 ## Specify the antibody model 
 antibody_model<-antibody_model_monophasic
 
 ## Bring in the antibody parameters needed for the antibody model
-## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
+## Note that the observation error parameter needed for the observation model (Section 1.7) is defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
-theta
+model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars
 
 ## Specify the draw_parameters function
 draw_parameters<-draw_parameters_random_fx
@@ -136,7 +136,7 @@ simulation (t=120).
 
 Our chosen observation model observes the latent titer values given a continuous assay with added noise. 
 The added noise represents assay variability and is implemented by sampling from a distribution with the true latent antibody titer as the mean and the measurement error as the standard deviation. The 
-observation standard deviation and distribution are defined within theta as the “obs_sd” parameter.
+observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter.
 ```{r}
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
@@ -158,7 +158,7 @@ res<- runserosim(
   observation_times,
   foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,

@@ -68,10 +68,10 @@ summary(demography)
 
     ##        i              times            birth           removal     
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :  4.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 27.75   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 66.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 60.16   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 93.25   3rd Qu.: NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 37.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 61.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 61.21   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 89.25   3rd Qu.: NA    
     ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
     ##                                                     NA's   :12000
 
@@ -156,24 +156,24 @@ each exposure there is a boost and boost waning parameter.The antibody
 kinetics parameters are pre-loaded within a csv file. Users can edit the
 csv file to specify their own parameters. All parameters needed for the
 user specified antibody model, must be specified within the antibody
-kinetics parameters tibble (theta). Lastly, we define the
+kinetics parameters tibble (model_pars). Lastly, we define the
 draw_parameters function which determines how each individual’s antibody
 kinetics parameters are simulated from the antibody kinetics parameters
-tibble (theta). We will use a function which draws parameters directly
-from theta for the antibody model with random effects. Parameters are
-drawn randomly from a distribution with mean and standard deviation
-specified within theta.
+tibble (model_pars). We will use a function which draws parameters
+directly from model_pars for the antibody model with random effects.
+Parameters are drawn randomly from a distribution with mean and standard
+deviation specified within model_pars.
 
 ``` r
 ## Specify the antibody model 
 antibody_model<-antibody_model_monophasic
 
 ## Bring in the antibody parameters needed for the antibody model
-## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
+## Note that the observation error parameter needed for the observation model (Section 1.7) is defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
-theta
+model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars
 ```
 
     ##   exposure_id antigen_id   name   mean     sd distribution
@@ -201,7 +201,7 @@ continuous assay with added noise. The added noise represents assay
 variability and is implemented by sampling from a distribution with the
 true latent antibody titer as the mean and the measurement error as the
 standard deviation. The observation standard deviation and distribution
-are defined within theta as the “obs_sd” parameter.
+are defined within model_pars as the “obs_sd” parameter.
 
 ``` r
 ## Specify the observation model 
@@ -230,7 +230,7 @@ res<- runserosim(
   observation_times,
   foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,
@@ -294,9 +294,9 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     e    ag name    value realized_value
     ##   <int> <dbl> <dbl> <int> <chr>   <dbl>          <dbl>
-    ## 1     1    39     1     1 boost 3.28           3.28   
-    ## 2     1    39     1     1 wane  0.00296        0.00296
-    ## 3     1    47     2     1 boost 2.23           2.23   
-    ## 4     1    47     2     1 wane  0.00141        0.00141
-    ## 5     2    16     1     1 boost 2.30           2.30   
-    ## 6     2    16     1     1 wane  0.00352        0.00352
+    ## 1     1    40     1     1 boost 5.44           5.44   
+    ## 2     1    40     1     1 wane  0.00377        0.00377
+    ## 3     1    40     2     1 boost 1.94           1.94   
+    ## 4     1    40     2     1 wane  0.00180        0.00180
+    ## 5     2    61     1     1 boost 4.82           4.82   
+    ## 6     2    61     1     1 wane  0.00295        0.00295

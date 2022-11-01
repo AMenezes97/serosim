@@ -12,7 +12,7 @@ immunity_model_vacc_ifxn_simple(
   antibody_states,
   demography,
   antigen_map,
-  theta,
+  model_pars,
   max_events,
   vacc_exposures,
   vacc_age,
@@ -34,7 +34,7 @@ immunity_model_vacc_ifxn_simple(
 
 \item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
 
-\item{theta}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{A tibble of parameters needed for the immunity model}
 
 \item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 

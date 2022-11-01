@@ -4,12 +4,12 @@
 \alias{observation_model_discrete}
 \title{Observation Model For Discrete Assays With No Added Noise}
 \usage{
-observation_model_discrete(antibody_states, theta, cutoffs, ...)
+observation_model_discrete(antibody_states, model_pars, cutoffs, ...)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of observation model parameters}
+\item{model_pars}{Tibble of observation model parameters}
 
 \item{cutoffs}{A matrix containing the assay cutoffs for each antigen. Each row contains all of the cutoffs for that antigen starting with 0. For example, all of the cutoffs for the assay measuring antigen 1 specific antibodies are in the first row of this matrix.}
 

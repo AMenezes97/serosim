@@ -39,7 +39,7 @@ library(ggplot2)
 ##***************************1.1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
 ## Since children in Keya's data set are 0.7 to 14.99, let's simulate 15 years
-## I decided to use monthly time steps since case study 1 theta parameters are 
+## I decided to use monthly time steps since case study 1 model_pars parameters are 
 ## already structured for monthly time steps
 times <- seq(1,180,by=1) 
 
@@ -121,9 +121,9 @@ vacc_age<-c(NA,9,12)
 ## DOUBLE CHECK WITH KEYA ##
 max_vacc_events<-c(NA,1,1)
 
-## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for antigen 1 which will be loaded in section 1.6
 plot_titer_mediated_protection(0:7500, titer_prot_midpoint=5000, titer_prot_width=.001)
-## These are the current parameters used within theta_cs1
+## These are the current parameters used within model_pars_cs1
 ## Maybe we should start of with simpler versions with high titer-mediated protection and no boosting events?
 
 
@@ -134,14 +134,14 @@ antibody_model<-antibody_model_biphasic
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "theta_keya.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
-theta
+model_pars_path <- system.file("extdata", "model_pars_keya.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (measles)
+## Plot titer dependent boosting effects given parameters specified within model_pars for antigen 1 (measles)
 plot_titer_dependent_boosting(start=0, end=1500, by=1, titer_ceiling_threshold=1000, titer_ceiling_gradient=0.0009)
 
 
@@ -168,7 +168,7 @@ res<- runserosim(
   observation_times,
   foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,

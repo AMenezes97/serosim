@@ -4,12 +4,17 @@
 \alias{observation_model_continuous_bounded_noise}
 \title{Observation Model For Continuous Assays With Detection Limits And Added Noise}
 \usage{
-observation_model_continuous_bounded_noise(antibody_states, theta, bounds, ...)
+observation_model_continuous_bounded_noise(
+  antibody_states,
+  model_pars,
+  bounds,
+  ...
+)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of observation model parameters}
+\item{model_pars}{Tibble of observation model parameters}
 
 \item{bounds}{A tibble containing the assay lower bound and upper bound for all antigens; column names=antigen_id, name, and value where name is either "lower_bound" or "upper_bound"}
 
@@ -19,5 +24,5 @@ observation_model_continuous_bounded_noise(antibody_states, theta, bounds, ...)
 antibody_states is returned with a new column for observed titers
 }
 \description{
-This observation model observes the latent titer values given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within theta as the “obs_sd” parameter.
+This observation model observes the latent titer values given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter.
 }

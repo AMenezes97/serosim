@@ -7,7 +7,7 @@
 #' @param observation_times A tibble of observation times and antigen for each individual
 #' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time
 #' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
-#' @param theta A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
+#' @param model_pars A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #' @param exposure_model A function which calculates the probability of exposure given the foe_pars array
 #' @param immunity_model A function determining the probability of an exposure leading to successful infection or vaccination for a given individual
 #' @param antibody_model A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)
@@ -27,13 +27,13 @@ runserosim <- function(
     observation_times=NULL, ## tibble of observation times and antigen for each individual
     foe_pars, ## 3D array giving force of infection for each exposure ID, groups and time
     antigen_map, ## Object determining relationship between exposure IDs and antigens
-    theta,
+    model_pars,
     
     ## FUNCTIONS
     exposure_model, ## calculates the probability of infection given the FOI array, foe_pars
     immunity_model, ## function determining probability of infection conditional on foe_pars and individuals immune state
-    antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (theta)
-    observation_model, ## function generating observed titers as a function of latent titers and theta
+    antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (model_pars)
+    observation_model, ## function generating observed titers as a function of latent titers and model_pars
     draw_parameters, ## function to simulate antibody kinetics parameters
     
     ## Pre-specified parameters/events (optional)
@@ -124,17 +124,17 @@ runserosim <- function(
                     ## of successful exposure?
                     prob_success <- immunity_model(i, t, e, exposure_histories, 
                                                    antibody_states, demography, 
-                                                   antigen_map, theta, ...)
+                                                   antigen_map, model_pars, ...)
                     
                     ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
                     
                     ## Simulate kinetics parameters for this exposure event
                     ## Each successful exposure event will create a tibble with parameters
-                    ## for this event, drawn from information given in theta
+                    ## for this event, drawn from information given in model_pars
                     if(successful_exposure == 1){
                         kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                          draw_parameters(i, t, e, ag, demography, antibody_states, theta, ...))
+                                                          draw_parameters(i, t, e, ag, demography, antibody_states, model_pars, ...))
                     }
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
@@ -170,9 +170,9 @@ runserosim <- function(
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
     ## Observation process
     if(!is.null(observation_times)){
-        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), theta, ...)
+        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), model_pars, ...)
     } else {
-        observed_antibody_states <- observation_model(antibody_states, theta, ...)
+        observed_antibody_states <- observation_model(antibody_states, model_pars, ...)
     }
     
     return(list("exposure_histories"=exposure_histories,

@@ -11,7 +11,7 @@ exposure_model_dem_age_mod(
   g,
   foe_pars,
   demography,
-  mod,
+  dem_mod,
   age_mod,
   t_in_year = 1,
   ...
@@ -30,7 +30,7 @@ exposure_model_dem_age_mod(
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
+\item{dem_mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
 
 \item{age_mod}{A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.}
 

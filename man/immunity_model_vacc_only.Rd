@@ -12,7 +12,7 @@ immunity_model_vacc_only(
   antibody_states,
   demography,
   antigen_map,
-  theta,
+  model_pars,
   max_vacc_events,
   vacc_age,
   ...
@@ -33,7 +33,7 @@ immunity_model_vacc_only(
 
 \item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
 
-\item{theta}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{A tibble of parameters needed for the immunity model}
 
 \item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 

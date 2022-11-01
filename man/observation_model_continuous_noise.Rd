@@ -4,12 +4,12 @@
 \alias{observation_model_continuous_noise}
 \title{Observation Model For Continuous Assays With  Added Noise}
 \usage{
-observation_model_continuous_noise(antibody_states, theta, ...)
+observation_model_continuous_noise(antibody_states, model_pars, ...)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of observation model parameters}
+\item{model_pars}{Tibble of observation model parameters}
 
 \item{...}{}
 }
@@ -17,5 +17,5 @@ observation_model_continuous_noise(antibody_states, theta, ...)
 antibody_states is returned with a new column for observed titers
 }
 \description{
-This observation model observes the latent titer values given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within theta as the “obs_sd” parameter.
+This observation model observes the latent titer values given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter.
 }

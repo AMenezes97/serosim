@@ -4,12 +4,12 @@
 \alias{observation_model_continuous}
 \title{Observation Model For Continuous Assays With No Added Noise}
 \usage{
-observation_model_continuous(antibody_states, theta, ...)
+observation_model_continuous(antibody_states, model_pars, ...)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of observation model parameters}
+\item{model_pars}{Tibble of observation model parameters}
 
 \item{...}{}
 }

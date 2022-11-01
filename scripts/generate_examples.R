@@ -34,8 +34,8 @@ example_foe_pars <-foe_pars
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
-example_model_pars <- read.csv(file = theta_path, header = TRUE)
+model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
+example_model_pars <- read.csv(file = model_pars_path, header = TRUE)
 
 
 
@@ -49,7 +49,7 @@ res<- runserosim(
   observation_times=observation_times,
   foe_pars=example_foe_pars,
   antigen_map=example_antigen_map,
-  theta=example_model_pars,
+  model_pars=example_model_pars,
   exposure_model=exposure_model_simple_FOE,
   immunity_model=immunity_model_vacc_ifxn_simple,
   antibody_model=antibody_model_monophasic,

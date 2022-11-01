@@ -10,7 +10,7 @@ runserosim(
   observation_times = NULL,
   foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,
@@ -32,7 +32,7 @@ runserosim(
 
 \item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
 
-\item{theta}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
+\item{model_pars}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
 
 \item{exposure_model}{A function which calculates the probability of exposure given the foe_pars array}
 

@@ -4,7 +4,16 @@
 \alias{draw_parameters_fixed_fx}
 \title{Draw Parameters Fixed Effects}
 \usage{
-draw_parameters_fixed_fx(i, t, e, ag, demography, antibody_states, theta, ...)
+draw_parameters_fixed_fx(
+  i,
+  t,
+  e,
+  ag,
+  demography,
+  antibody_states,
+  model_pars,
+  ...
+)
 }
 \arguments{
 \item{i}{Individual}
@@ -19,7 +28,7 @@ draw_parameters_fixed_fx(i, t, e, ag, demography, antibody_states, theta, ...)
 
 \item{antibody_states}{An array of true antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of antibody kinetics parameters}
+\item{model_pars}{Tibble of antibody kinetics parameters}
 
 \item{...}{}
 }
@@ -27,5 +36,5 @@ draw_parameters_fixed_fx(i, t, e, ag, demography, antibody_states, theta, ...)
 A tibble with the parameters drawn is returned
 }
 \description{
-This function draws parameters directly from theta for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
+This function draws parameters directly from model_pars for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 }

@@ -12,7 +12,7 @@ immunity_model_all_successful(
   antibody_states,
   demography,
   antigen_map,
-  theta,
+  model_pars,
   ...
 )
 }
@@ -31,7 +31,7 @@ immunity_model_all_successful(
 
 \item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
 
-\item{theta}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{A tibble of parameters needed for the immunity model}
 
 \item{...}{}
 }

@@ -1,5 +1,6 @@
 ## This script will run various combinations of models and measure the run time for each 
 ## Note: This file was before the observation models were updated. Boundary needs to be restructured and changed to bounds
+## max_vacc_events might also need to change to max_events
 
 
 ## Set up generic variables needed 
@@ -33,16 +34,16 @@ demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_
 antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
 
 ## Create an empty array to store the force of infection for all exposure types
-lambdas <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
 
 ## Assign arbitrary forces of infection/vaccination
 ## Specify the force of vaccination for exposure ID 1 which represents measles natural infection
-lambdas[1,,1] <- 0.2 ## Group 1 (aka Location 1)
-lambdas[2,,1] <- 0.3 ## Group 2 (aka Location 2)
+foe_pars[1,,1] <- 0.2 ## Group 1 (aka Location 1)
+foe_pars[2,,1] <- 0.3 ## Group 2 (aka Location 2)
 
 ## Specify the force of infection for exposure ID 2 which represents measles vaccination
-lambdas[1,,2] <- 0.4 ## Group 1 (aka Location 1)
-lambdas[2,,2] <- 0.3 ## Group 2 (aka Location 2)
+foe_pars[1,,2] <- 0.4 ## Group 1 (aka Location 1)
+foe_pars[2,,2] <- 0.3 ## Group 2 (aka Location 2)
 
 
 ## Specify which exposure IDs represent vaccination events 
@@ -69,8 +70,8 @@ age_mod
 ## Here, individuals who are of low nutritional status are twice as likely of being exposed to diphtheria and pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
 ## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 1 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 1 (vaccination) that individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
-mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
-mod
+dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
+dem_mod
 
 ## Specify the number of time steps within a year 
 ## We are simulating on the monthly scale
@@ -79,8 +80,8 @@ t_in_year=12
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model, the titer-ceiling parameters needed for draw_parameters and the observation error needed for the observation model are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "theta_cs1.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
+model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
 
 
 ## Limits of detection for continuous assays
@@ -101,9 +102,9 @@ res1<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
+  foe_pars,
   antigen_map,
-  theta,
+  model_pars,
   exposure_model=exposure_model_simple_FOI,
   immunity_model=immunity_model_all_successful,
   antibody_model=antibody_model_biphasic,

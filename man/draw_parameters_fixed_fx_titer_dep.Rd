@@ -11,7 +11,7 @@ draw_parameters_fixed_fx_titer_dep(
   ag,
   demography,
   antibody_states,
-  theta,
+  model_pars,
   ...
 )
 }
@@ -28,7 +28,7 @@ draw_parameters_fixed_fx_titer_dep(
 
 \item{antibody_states}{An array of true antibody titers for all individuals across all time steps and antigens}
 
-\item{theta}{Tibble of antibody kinetics parameters}
+\item{model_pars}{Tibble of antibody kinetics parameters}
 
 \item{...}{}
 }

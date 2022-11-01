@@ -30,38 +30,38 @@ exposure_model_simple_FOE <- function(i, t, e, g, foe_pars, demography, ...){
 #' @param g group
 #' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
+#' @param dem_mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param ... 
 #'  
 #' @return A probability of exposure is returned
 #' @export
 #'
 #' @examples
-exposure_model_dem_mod <- function(i, t, e, g, foe_pars, demography, mod, ...){
+exposure_model_dem_mod <- function(i, t, e, g, foe_pars, demography, dem_mod, ...){
   ## Find the force of exposure
   p <- foe_pars[g, t, e]
   
   ## Find which exposure events have modifiers
-  exps<-mod$exposure_id %>% unique()
+  exps<-dem_mod$exposure_id %>% unique()
   
   ## If there are defined modifiers for this exposure then
   if(e  %in% exps){ 
   
-  ## Pull out unique columns (demography variables) in mod 
-  cols<-mod$column %>% unique()
+  ## Pull out unique columns (demography variables) in dem_mod 
+  cols<-dem_mod$column %>% unique()
   
   ## Pull individual's information within demography 
   individualnum<-i
   demography_tmp<-data.table(demography)
   demography_tmp<-demography_tmp[i==individualnum & times==t,]
   
-  for (col in seq_along(cols)){ ## For each unique column entry in mod 
+  for (col in seq_along(cols)){ ## For each unique column entry in dem_mod 
     ## Pull the column name
     colname<-cols[col] 
     ## Pull the individual's column entry within demography 
     entry<-demography_tmp[[colname]]
     ## Find the modifier within mod tibble 
-    mod2<-data.table(mod)
+    mod2<-data.table(dem_mod)
     modifier<-mod2$modifier[mod2$exposure_id==e & mod2$column==colname & mod2$value==entry]
     ## Multiply modifier by p 
     p <- p*modifier
@@ -132,7 +132,7 @@ exposure_model_age_mod <- function(i, t, e, g, foe_pars, demography, age_mod, t_
 #' @param g group
 #' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
+#' @param dem_mod A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. 
 #' @param age_mod A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.
 #' @param t_in_year The number of time steps in a year; defaults to 1 
 #' @param ... 
@@ -141,12 +141,12 @@ exposure_model_age_mod <- function(i, t, e, g, foe_pars, demography, age_mod, t_
 #' @export
 #'
 #' @examples
-exposure_model_dem_age_mod <- function(i, t, e, g, foe_pars, demography, mod, age_mod, t_in_year=1, ...){
+exposure_model_dem_age_mod <- function(i, t, e, g, foe_pars, demography, dem_mod, age_mod, t_in_year=1, ...){
   ## Find the force of exposure 
   p <- foe_pars[g, t, e]
   
   ## Find which exposure events have modifiers
-  exps<-mod$exposure_id %>% unique()
+  exps<-dem_mod$exposure_id %>% unique()
   
   ## Pull individual's information within demography 
   individualnum<-i
@@ -156,16 +156,16 @@ exposure_model_dem_age_mod <- function(i, t, e, g, foe_pars, demography, mod, ag
   ## If there are defined modifiers for this exposure then
   if(e  %in% exps){ 
     
-    ## Pull out unique columns in mod 
-    cols<-mod$column %>% unique()
+    ## Pull out unique columns in den_mod 
+    cols<-dem_mod$column %>% unique()
     
-    for (column in seq_along(cols)){ ## For each unique column entry in mod 
+    for (column in seq_along(cols)){ ## For each unique column entry in dem_mod 
       ## Pull the column name
       colname<-cols[column] 
       ## Pull the individual's column entry within demography 
       entry<-demography_tmp[[colname]]
       ## Find the modifier within mod tibble 
-      mod2<-data.table(mod)
+      mod2<-data.table(dem_mod)
       modifier<-mod2$modifier[mod2$exposure_id==e & mod2$column==colname & mod2$value==entry]
       ## Multiply modifier by p
       p <- p*modifier
