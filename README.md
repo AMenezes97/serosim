@@ -47,7 +47,8 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 
 # 1.2 Population Demography
 
-For this case study, we are not interested in tracking any demography
+For this case study, we will be simulating a population with 100
+individuals and we are not interested in tracking any demography
 information other than an individual’s birth time. We will use the
 generate_pop_demography function to create the demography tibble needed
 for runserosim.
@@ -67,33 +68,46 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  4.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 37.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 61.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 61.21   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 89.25   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 26.75   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 58.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 57.46   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 87.00   3rd Qu.: NA    
+    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
     ##                                                     NA's   :12000
 
 # 1.3 Antigen Map
 
 Set up the exposure IDs and antigen IDs for the simulation which will
 determine which infection or vaccination events are occurring. Here, we
-will simulate one circulating pathogen (exposure_ID=1) and one vaccine
-(exposure_ID=2)both of which will boost titers to the same
-antigen(antigen_ID=1). This antigen map can be used for any simulations
-of vaccine preventable diseases like measles vaccination and measles
-natural infection.
+will simulate one circulating pathogen (exposure_ID=ifxn) and one
+vaccine (exposure_ID=vacc) both of which will boost titers to the same
+antigen(antigen_ID=IgG_titer). This antigen map can be used for any
+simulations of vaccine preventable diseases like measles vaccination and
+measles natural infection. runserosim requires that exposure_id and
+antigen_id are numeric so we will use the reformat_antigen_map function
+to create a new version of the antigen map. Users can go directly to
+numeric antigen_map if they wish
 
 ``` r
 ## Create antigen map
-antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
-antigen_map
+antigen_map_original <- tibble(exposure_id=c("ifxn","vacc"),antigen_id=c("IgG_titer","IgG_titer"))
+antigen_map_original
 ```
 
     ## # A tibble: 2 × 2
     ##   exposure_id antigen_id
-    ##         <dbl>      <dbl>
+    ##   <chr>       <chr>     
+    ## 1 ifxn        IgG_titer 
+    ## 2 vacc        IgG_titer
+
+``` r
+## Reformat antigen_map for runserosim
+antigen_map <-reformat_antigen_map(antigen_map_original)
+antigen_map
+```
+
+    ##   exposure_id antigen_id
     ## 1           1          1
     ## 2           2          1
 
@@ -128,12 +142,12 @@ exposure_model<-exposure_model_simple_FOE
 
 Here, we specify the immunity model which will determine whether an
 exposure event is successful or not. We will use a simple immunity
-model(immunity_model_vacc_ifxn_simple) where successful exposure in only
-conditional on the total number of previos exposure events. . With this
+model(immunity_model_vacc_ifxn_simple) where successful exposure is only
+conditional on the total number of previous exposure events. With this
 model, the probability of successful vaccination exposure depends on the
 number of vaccines received prior to time t and age at time t while the
 probability of successful infection is dependent on the number of
-infections priot to time t.
+infections prior to time t.
 
 ``` r
 ## Specify immunity model within runserosim function below 
@@ -162,7 +176,10 @@ kinetics parameters are simulated from the antibody kinetics parameters
 tibble (model_pars). We will use a function which draws parameters
 directly from model_pars for the antibody model with random effects.
 Parameters are drawn randomly from a distribution with mean and standard
-deviation specified within model_pars.
+deviation specified within model_pars. runserosim requires that
+exposure_id and antigen_id are numeric so we will use the
+reformat_model_pars function to create a new version of model_pars.
+Users can go directly to numeric model_pars if they wish.
 
 ``` r
 ## Specify the antibody model 
@@ -170,9 +187,21 @@ antibody_model<-antibody_model_monophasic
 
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the observation error parameter needed for the observation model (Section 1.7) is defined here too.
-## Also note that these are all arbitrary parameter values loosely informed by plausible values.
 model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
-model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
+model_pars_original 
+```
+
+    ##   exposure_id antigen_id   name   mean     sd distribution
+    ## 1        ifxn  IgG_titer  boost 4.0000 2.0000   log-normal
+    ## 2        ifxn  IgG_titer   wane 0.0033 0.0005   log-normal
+    ## 3        <NA>  IgG_titer obs_sd     NA 0.2500       normal
+    ## 4        vacc  IgG_titer  boost 2.0000 1.0000   log-normal
+    ## 5        vacc  IgG_titer   wane 0.0016 0.0005   log-normal
+
+``` r
+## Reformat model_pars for runserosim
+model_pars<-reformat_model_pars(antigen_map_original,model_pars_original )
 model_pars
 ```
 
@@ -194,7 +223,7 @@ Now we specify how observed antibody titers are generated as a
 probabilistic function of the true, latent antibody titer and when to
 observe these titers. In this step, we specify the sampling design and
 assay choice for their serological survey.We will take samples of all
-individuals the end of the simulation (t=120).
+individuals at the end of the simulation (t=120).
 
 Our chosen observation model observes the latent titer values given a
 continuous assay with added noise. The added noise represents assay
@@ -293,10 +322,17 @@ head(res$kinetics_parameters)
 
     ## # A tibble: 6 × 7
     ##       i     t     e    ag name    value realized_value
-    ##   <int> <dbl> <dbl> <int> <chr>   <dbl>          <dbl>
-    ## 1     1    40     1     1 boost 5.44           5.44   
-    ## 2     1    40     1     1 wane  0.00377        0.00377
-    ## 3     1    40     2     1 boost 1.94           1.94   
-    ## 4     1    40     2     1 wane  0.00180        0.00180
-    ## 5     2    61     1     1 boost 4.82           4.82   
-    ## 6     2    61     1     1 wane  0.00295        0.00295
+    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
+    ## 1     1    34     1     1 boost 3.05           3.05   
+    ## 2     1    34     1     1 wane  0.00296        0.00296
+    ## 3     1    41     2     1 boost 2.40           2.40   
+    ## 4     1    41     2     1 wane  0.00121        0.00121
+    ## 5     2    44     1     1 boost 4.48           4.48   
+    ## 6     2    44     1     1 wane  0.00300        0.00300
+
+``` r
+## Plots for the paper 
+# library(cowplot)
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+```

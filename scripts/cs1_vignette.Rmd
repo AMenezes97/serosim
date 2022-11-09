@@ -63,15 +63,16 @@ summary(demography)
 Now, we have to set up the exposure IDs and antigen IDs for our desired simulation. 
 Individuals can be measles seropositive either by natural infection or by 
 vaccination and we want to track both exposure types separately. 
-In this case, we need two exposure IDs and 1 antigen ID. Exposure ID 1 will 
-represent natural infection while exposure ID 2 will represent vaccination.
-If you wanted to track other antigens like mumps and rubella which are commonly delivered jointly with 
-measles vaccination, then you have to add 2 more antigen IDs to the exposure ID representing vaccination. 
+Here, we will simulate measles natural infection(exposure_ID=measles_ifxn) and one vaccine (exposure_ID=measles_vacc) both of which will boost titers to the same antigen(antigen_ID=measles_IgG). 
 Since we are only interested in tracking measles antibody levels across time, we only need 
-one antigen ID. 
+one antigen ID. runserosim requires that exposure_id and antigen_id are numeric so we will use the reformat_antigen_map function to create a new version of the antigen map. Users can go directly to numeric antigen_map if they wish.
 ```{r}
 ## Create antigen map
-antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
+antigen_map_original <- tibble(exposure_id=c("measles_ifxn","measles_vacc"),antigen_id=c("measles_IgG","measles_IgG"))
+antigen_map_original
+
+## Reformat antigen_map for runserosim
+antigen_map <-reformat_antigen_map(antigen_map_original)
 antigen_map
 ```
 
@@ -140,7 +141,8 @@ short-term boost waning parameters. This model incorporates titer-dependent boos
 by taking an individual's realized boost which is adjusted by draw_parameters.
 The antibody kinetics parameters are pre-loaded within a csv file. 
 Users can edit the csv file to modify any parameters. All parameters needed for 
-the antibody model, must be specified within model_pars. Lastly, we define
+the antibody model, must be specified within model_pars. runserosim requires that exposure_id and antigen_id are numeric within model_pars so we will use the reformat_model_pars function to create a new version of model_pars similarly to what we did with the antigen_map argument. 
+Users can go directly to numeric model_pars if they wish. Lastly, we define
 the draw_parameters function which determines how each individual’s antibody kinetics 
 parameters are simulated from the antibody kinetics parameters tibble (model_pars). 
 We will use a function which draws parameters directly from model_pars for the antibody 
@@ -156,7 +158,11 @@ antibody_model<-antibody_model_biphasic
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
 model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
-model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
+model_pars_original 
+
+## Reformat model_pars for runserosim
+model_pars<-reformat_model_pars(antigen_map_original,model_pars_original )
 model_pars
 
 ## Specify the draw_parameters function to use 
