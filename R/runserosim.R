@@ -4,9 +4,9 @@
 #' 
 #' @param simulation_settings A list of parameters governing the simulation time step settings
 #' @param demography A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals. 
-#' @param observation_times A tibble of observation times and antigen for each individual
+#' @param observation_times A tibble of observation times and biomarkers measured for each individual
 #' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time
-#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #' @param exposure_model A function which calculates the probability of exposure given the foe_pars array
 #' @param immunity_model A function determining the probability of an exposure leading to successful infection or vaccination for a given individual
@@ -24,9 +24,9 @@ runserosim <- function(
     ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings
     demography=NULL, ## tibble of demographic information for each individual
-    observation_times=NULL, ## tibble of observation times and antigen for each individual
+    observation_times=NULL, ## tibble of observation times and biomarkers measured for each individual
     foe_pars, ## 3D array giving force of infection for each exposure ID, groups and time
-    antigen_map, ## Object determining relationship between exposure IDs and antigens
+    biomarker_map, ## Object determining relationship between exposure IDs and biomarkers
     model_pars,
     
     ## FUNCTIONS
@@ -70,16 +70,16 @@ runserosim <- function(
     groups <- demography %>% select(i, group) %>% distinct()
     
     ## Extract information on number of exposure types
-    exposure_ids <- unique(antigen_map$exposure_id)
-    antigen_ids <- unique(antigen_map$antigen_id)
+    exposure_ids <- unique(biomarker_map$exposure_id)
+    biomarker_ids <- unique(biomarker_map$biomarker_id)
     N_exposure_ids <- length(exposure_ids)
-    N_antigen_ids <- length(antigen_ids)
+    N_biomarker_ids <- length(biomarker_ids)
     
     
     ## Create empty arrays to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
-    antibody_states <- array(0, dim=c(N, length(times), N_antigen_ids))
+    antibody_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
     kinetics_parameters <- vector(mode="list",length=N)
 
     ## Merge in any pre-specified exposure history information
@@ -105,12 +105,12 @@ runserosim <- function(
             ## Pull group for this individual at this time 
             g <- as.numeric(demography$group[demography$i==i & demography$times==t]) 
            
-            ## Work out antibody state for each antigen
+            ## Work out antibody state for each biomarker
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
-            for(ag in antigen_ids){
+            for(ag in biomarker_ids){
                 antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
-                                                          antibody_states, kinetics_parameters, antigen_map, ...)
+                                                          antibody_states, kinetics_parameters, biomarker_map, ...)
             }
             
             ## Work out exposure result for each exposure ID
@@ -124,7 +124,7 @@ runserosim <- function(
                     ## of successful exposure?
                     prob_success <- immunity_model(i, t, e, exposure_histories, 
                                                    antibody_states, demography, 
-                                                   antigen_map, model_pars, ...)
+                                                   biomarker_map, model_pars, ...)
                     
                     ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
@@ -139,9 +139,9 @@ runserosim <- function(
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in antigen_ids){
+                        for(ag in biomarker_ids){
                             antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
-                                                                      antibody_states, kinetics_parameters, antigen_map, ...)
+                                                                      antibody_states, kinetics_parameters, biomarker_map, ...)
                         }
                     }
                 }

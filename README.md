@@ -68,48 +68,48 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 26.75   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 58.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 57.46   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 87.00   3rd Qu.: NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  2.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 25.50   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 49.50   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 52.44   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 78.25   3rd Qu.: NA    
     ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
     ##                                                     NA's   :12000
 
-# 1.3 Antigen Map
+# 1.3 Biomarker Map
 
-Set up the exposure IDs and antigen IDs for the simulation which will
+Set up the exposure IDs and biomarker IDs for the simulation which will
 determine which infection or vaccination events are occurring. Here, we
 will simulate one circulating pathogen (exposure_ID=ifxn) and one
 vaccine (exposure_ID=vacc) both of which will boost titers to the same
-antigen(antigen_ID=IgG_titer). This antigen map can be used for any
-simulations of vaccine preventable diseases like measles vaccination and
-measles natural infection. runserosim requires that exposure_id and
-antigen_id are numeric so we will use the reformat_antigen_map function
-to create a new version of the antigen map. Users can go directly to
-numeric antigen_map if they wish
+biomarker(biomarker_ID=IgG_titer). This biomarker map can be used for
+any simulations of vaccine preventable diseases like measles vaccination
+and measles natural infection. runserosim requires that exposure_id and
+biomarker_id are numeric so we will use the reformat_biomarker_map
+function to create a new version of the biomarker map. Users can go
+directly to numeric biomarker_map if they wish
 
 ``` r
-## Create antigen map
-antigen_map_original <- tibble(exposure_id=c("ifxn","vacc"),antigen_id=c("IgG_titer","IgG_titer"))
-antigen_map_original
+## Create biomarker map
+biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
+biomarker_map_original
 ```
 
     ## # A tibble: 2 × 2
-    ##   exposure_id antigen_id
-    ##   <chr>       <chr>     
-    ## 1 ifxn        IgG_titer 
+    ##   exposure_id biomarker_id
+    ##   <chr>       <chr>       
+    ## 1 ifxn        IgG_titer   
     ## 2 vacc        IgG_titer
 
 ``` r
-## Reformat antigen_map for runserosim
-antigen_map <-reformat_antigen_map(antigen_map_original)
-antigen_map
+## Reformat biomarker_map for runserosim
+biomarker_map <-reformat_biomarker_map(biomarker_map_original)
+biomarker_map
 ```
 
-    ##   exposure_id antigen_id
-    ## 1           1          1
-    ## 2           2          1
+    ##   exposure_id biomarker_id
+    ## 1           1            1
+    ## 2           2            1
 
 # 1.4 Force of Exposure and Exposure Model
 
@@ -128,7 +128,7 @@ match real world settings.
 
 ``` r
 ## Create an empty array to store the force of infection for all exposure types
-foe_pars <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
 foe_pars[,,1] <- 0.2
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
@@ -177,7 +177,7 @@ tibble (model_pars). We will use a function which draws parameters
 directly from model_pars for the antibody model with random effects.
 Parameters are drawn randomly from a distribution with mean and standard
 deviation specified within model_pars. runserosim requires that
-exposure_id and antigen_id are numeric so we will use the
+exposure_id and biomarker_id are numeric so we will use the
 reformat_model_pars function to create a new version of model_pars.
 Users can go directly to numeric model_pars if they wish.
 
@@ -192,25 +192,25 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 ```
 
-    ##   exposure_id antigen_id   name   mean     sd distribution
-    ## 1        ifxn  IgG_titer  boost 4.0000 2.0000   log-normal
-    ## 2        ifxn  IgG_titer   wane 0.0033 0.0005   log-normal
-    ## 3        <NA>  IgG_titer obs_sd     NA 0.2500       normal
-    ## 4        vacc  IgG_titer  boost 2.0000 1.0000   log-normal
-    ## 5        vacc  IgG_titer   wane 0.0016 0.0005   log-normal
+    ##   exposure_id biomarker_id   name   mean     sd distribution
+    ## 1        ifxn    IgG_titer  boost 4.0000 2.0000   log-normal
+    ## 2        ifxn    IgG_titer   wane 0.0033 0.0005   log-normal
+    ## 3        <NA>    IgG_titer obs_sd     NA 0.2500       normal
+    ## 4        vacc    IgG_titer  boost 2.0000 1.0000   log-normal
+    ## 5        vacc    IgG_titer   wane 0.0016 0.0005   log-normal
 
 ``` r
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(antigen_map_original,model_pars_original )
+model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
 model_pars
 ```
 
-    ##   exposure_id antigen_id   name   mean     sd distribution
-    ## 1           1          1  boost 4.0000 2.0000   log-normal
-    ## 2           1          1   wane 0.0033 0.0005   log-normal
-    ## 3          NA          1 obs_sd     NA 0.2500       normal
-    ## 4           2          1  boost 2.0000 1.0000   log-normal
-    ## 5           2          1   wane 0.0016 0.0005   log-normal
+    ##   exposure_id biomarker_id   name   mean     sd distribution
+    ## 1           1            1  boost 4.0000 2.0000   log-normal
+    ## 2           1            1   wane 0.0033 0.0005   log-normal
+    ## 3          NA            1 obs_sd     NA 0.2500       normal
+    ## 4           2            1  boost 2.0000 1.0000   log-normal
+    ## 5           2            1   wane 0.0016 0.0005   log-normal
 
 ``` r
 ## Specify the draw_parameters function
@@ -236,7 +236,7 @@ are defined within model_pars as the “obs_sd” parameter.
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
 
-## Specify observation_times (serological survey sampling design) to observe antigen 1 across all individuals at the end of the simulation (t=120)
+## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(demography$i),t=120, ag=1)
 ```
 
@@ -258,7 +258,7 @@ res<- runserosim(
   demography,
   observation_times,
   foe_pars,
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model,
   immunity_model,
@@ -323,12 +323,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     e    ag name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    34     1     1 boost 3.05           3.05   
-    ## 2     1    34     1     1 wane  0.00296        0.00296
-    ## 3     1    41     2     1 boost 2.40           2.40   
-    ## 4     1    41     2     1 wane  0.00121        0.00121
-    ## 5     2    44     1     1 boost 4.48           4.48   
-    ## 6     2    44     1     1 wane  0.00300        0.00300
+    ## 1     1   110     2     1 boost 3.64           3.64   
+    ## 2     1   110     2     1 wane  0.00123        0.00123
+    ## 3     1   111     1     1 boost 7.17           7.17   
+    ## 4     1   111     1     1 wane  0.00330        0.00330
+    ## 5     2    22     2     1 boost 2.42           2.42   
+    ## 6     2    22     2     1 wane  0.00186        0.00186
 
 ``` r
 ## Plots for the paper 

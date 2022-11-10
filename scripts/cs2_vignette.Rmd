@@ -63,8 +63,8 @@ head(demography)
 tail(demography)
 ```
 
-# 1.3 Antigen Map 
-Now, we have to set up the exposure IDs and antigen IDs for our desired simulation. 
+# 1.3 Biomarker Map 
+Now, we have to set up the exposure IDs and biomarker IDs for our desired simulation. 
 Individuals can be seropositive either by natural infection or by vaccination 
 and we want to track both exposure types separately. 
 In this case, we need three exposure IDs:
@@ -73,19 +73,19 @@ In this case, we need three exposure IDs:
 2. Diphtheria natural infection
 3. Pertussis natural infection 
 
-And two antigen IDs:
+And two biomarker IDs:
 
-1. Diphtheria
-2. Pertussis
-runserosim requires that exposure_id and antigen_id are numeric so we will use the reformat_antigen_map function to create a new version of the antigen map. Users can go directly to numeric antigen_map if they wish.
+1. Diphtheria IgG
+2. Pertussis IgG
+runserosim requires that exposure_id and biomarker_id are numeric so we will use the reformat_biomarker_map function to create a new version of the biomarker map. Users can go directly to numeric biomarker_map if they wish.
 ```{r}
-## Create antigen map
-antigen_map_original <- tibble(exposure_id=c("DP_vacc","DP_vacc","diphtheria_ifxn","pertussis_ifxn"),antigen_id=c("diphtheria_IgG","pertussis_IgG","diphtheria_IgG","pertussis_IgG"))
-antigen_map_original
+## Create biomarker map
+biomarker_map_original <- tibble(exposure_id=c("DP_vacc","DP_vacc","diphtheria_ifxn","pertussis_ifxn"),biomarker_id=c("diphtheria_IgG","pertussis_IgG","diphtheria_IgG","pertussis_IgG"))
+biomarker_map_original
 
-## Reformat antigen_map for runserosim
-antigen_map <-reformat_antigen_map(antigen_map_original)
-antigen_map
+## Reformat biomarker_map for runserosim
+biomarker_map <-reformat_biomarker_map(biomarker_map_original)
+biomarker_map
 ```
 
 # 1.4 Force of Exposure and Exposure Model
@@ -99,7 +99,7 @@ group g modulated by relevant demographic elements (mod) and age (age_mod)
 Since we have two groups, there are 2 rows in the first foe_pars dimension.
 ```{r}
 ## Create an empty array to store the force of exposure for all exposure types
-foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))
 
 ## Note that we can specify a different force of exposure for each group, time and exposure ID
 ## We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
@@ -174,10 +174,10 @@ vacc_age<-c(2,NA,NA)
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(3,NA,NA)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for antigen 1 (diphtheria) which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1 (diphtheria) which will be loaded in section 1.6
 plot_titer_mediated_protection(0:20, titer_prot_midpoint=7, titer_prot_width=.5)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for antigen 2 (pertussis) which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 2 (pertussis) which will be loaded in section 1.6
 plot_titer_mediated_protection(0:100, titer_prot_midpoint=50, titer_prot_width=.1)
 ```
 
@@ -189,7 +189,7 @@ short-term boost waning parameters. This model incorporates titer dependent boos
 by taking an individual's realized boost which is adjusted by draw_parameters.
 The antibody kinetics parameters are pre loaded within a csv file. 
 Users can edit the csv file to adjust any parameters. All parameters needed for 
-the antibody model, must be specified within model_pars. runserosim requires that exposure_id and antigen_id are numeric within model_pars so we will use the reformat_model_pars function to create a new version of model_pars similarly to what we did with the antigen_map argument. 
+the antibody model, must be specified within model_pars. runserosim requires that exposure_id and biomarker_id are numeric within model_pars so we will use the reformat_model_pars function to create a new version of model_pars similarly to what we did with the biomarker_map argument. 
 Users can go directly to numeric model_pars if they wish. Lastly, we define
 the draw_parameters function which determines how each individual’s antibody kinetics 
 parameters are simulated from the antibody kinetics parameters tibble (model_pars). 
@@ -210,18 +210,18 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(antigen_map_original,model_pars_original )
+model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
 model_pars
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for antigen 1 (diphtheria)
+## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1 (diphtheria)
 plot_titer_dependent_boosting(start=0, end=4, by=1, titer_ceiling_threshold=2, titer_ceiling_gradient=0.45)
 
 ## These parameters indicate that any individual with a diphtheria titer level above 2 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for antigen 1 (pertussis)
+## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1 (pertussis)
 plot_titer_dependent_boosting(start=0, end=30, by=1, titer_ceiling_threshold=20, titer_ceiling_gradient=0.045)
 
 ## These parameters indicate that any individual with a pertussis titer level above 1000 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
@@ -240,15 +240,15 @@ with user-specified lower and upper limits and added noise. The added noise
 represents assay variability and is done by sampling from a distribution with 
 the latent antibody titer as the mean and the measurement error as the standard deviation. The 
 observation standard deviation and distribution is defined within model_pars as the 
-“obs_sd” parameter for each antigen.
+“obs_sd” parameter for each biomarker.
 ```{r}
-## Specify the limits of detection for each antigen for the continuous assays
-bounds<-tibble(antigen_id=c(1,1,2,2),name=rep(c("lower_bound","upper_bound"),2),value=c(2,50,4,100))
+## Specify the limits of detection for each biomarker for the continuous assays
+bounds<-tibble(biomarker_id=c(1,1,2,2),name=rep(c("lower_bound","upper_bound"),2),value=c(2,50,4,100))
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
 
-## Specify observation_times to observe both antigens (aka diphtheria and pertussis antibody titer) across all individuals at the end of the simulation (t=120)
+## Specify observation_times to observe both biomarkers (aka diphtheria and pertussis antibody titer) across all individuals at the end of the simulation (t=120)
 obs1 <- tibble(i=1:N,t=120, ag=1)
 obs2 <- tibble(i=1:N,t=120, ag=2)
 observation_times<-rbind(obs1,obs2)
@@ -266,7 +266,7 @@ res<- runserosim(
   demography,
   observation_times,
   foe_pars,
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model,
   immunity_model,

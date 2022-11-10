@@ -22,11 +22,11 @@ draw_parameters_fixed_fx_titer_dep(
 
 \item{e}{exposure}
 
-\item{ag}{antigen}
+\item{ag}{biomarker}
 
 \item{demography}{Demography information}
 
-\item{antibody_states}{An array of true antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{An array of true antibody titers for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of antibody kinetics parameters}
 

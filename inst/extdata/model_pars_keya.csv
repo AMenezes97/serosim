@@ -1,4 +1,4 @@
-exposure_id,antigen_id,name,mean,sd,distribution
+exposure_id,biomarker_id,name,mean,sd,distribution
 1,1,boost_long,4000,250,log-normal
 1,1,boost_short,2000,250,log-normal
 1,1,wane_long,0.000083,0.000005,log-normal

@@ -163,46 +163,46 @@ update <- function(VERBOSE, i){
   }
 }
 
-#' Reformat antigen_map to numeric exposure and antigen format needed for runserosim 
+#' Reformat biomarker_map to numeric exposure and biomarker format needed for runserosim 
 #' 
-#' #' @description This function will reformat the antigen_map argument so that exposure_ID and antigen_ID are both numeric
+#' @description This function will reformat the biomarker_map argument so that exposure_ID and biomarker_ID are both numeric
 #' 
-#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #'
-#' @return antigen_map is returned with unique numeric inputs for exposure and antigen IDs
+#' @return biomarker_map is returned with unique numeric inputs for exposure and biomarker IDs
 #' @export
 #'
 #' @examples
-reformat_antigen_map<-function(antigen_map){
-  ei<-tibble(code=seq(1,length(unique(as.factor(antigen_map$exposure_id))),1),exposure_id=unique(antigen_map$exposure_id))
-  ai<-tibble(code=seq(1,length(unique(as.factor(antigen_map$antigen_id))),1),antigen_id=unique(antigen_map$antigen_id))
+reformat_biomarker_map<-function(biomarker_map){
+  ei<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$exposure_id))),1),exposure_id=unique(biomarker_map$exposure_id))
+  ai<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$biomarker_id))),1),biomarker_id=unique(biomarker_map$biomarker_id))
   key<-full_join(ei,ai,by="code")
   
-  antigen_map_tmp<-antigen_map
+  biomarker_map_tmp<-biomarker_map
   
-  for(i in seq(nrow(antigen_map_tmp))){
-    antigen_map_tmp$exposure_id[i]<- key$code[!is.na(key$exposure_id) & key$exposure_id==antigen_map_tmp$exposure_id[i]]
-    antigen_map_tmp$antigen_id[i]<- key$code[!is.na(key$antigen_id) & key$antigen_id==antigen_map_tmp$antigen_id[i]]
+  for(i in seq(nrow(biomarker_map_tmp))){
+    biomarker_map_tmp$exposure_id[i]<- key$code[!is.na(key$exposure_id) & key$exposure_id==biomarker_map_tmp$exposure_id[i]]
+    biomarker_map_tmp$biomarker_id[i]<- key$code[!is.na(key$biomarker_id) & key$biomarker_id==biomarker_map_tmp$biomarker_id[i]]
   }
-  df<-transform(antigen_map_tmp,exposure_id=as.numeric(exposure_id))
-  df<-transform(df,antigen_id=as.numeric(antigen_id))
+  df<-transform(biomarker_map_tmp,exposure_id=as.numeric(exposure_id))
+  df<-transform(df,biomarker_id=as.numeric(biomarker_id))
   return(df)
 }
 
-#' Reformat model_pars to numeric exposure and antigen format needed for runserosim 
+#' Reformat model_pars to numeric exposure and biomarker format needed for runserosim 
 #'
-#' @description This function will reformat the model_pars argument so that exposure_ID and antigen_ID are both numeric
+#' @description This function will reformat the model_pars argument so that exposure_ID and biomarker_ID are both numeric
 #' 
-#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #'
-#' @return antigen_map is returned with unique numeric inputs for exposure and antigen IDs
+#' @return biomarker_map is returned with unique numeric inputs for exposure and biomarker IDs
 #' @export
 #'
 #' @examples
-reformat_model_pars<-function(antigen_map,model_pars){
-  ei<-tibble(code=seq(1,length(unique(as.factor(antigen_map$exposure_id))),1),exposure_id=unique(antigen_map$exposure_id))
-  ai<-tibble(code=seq(1,length(unique(as.factor(antigen_map$antigen_id))),1),antigen_id=unique(antigen_map$antigen_id))
+reformat_model_pars<-function(biomarker_map,model_pars){
+  ei<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$exposure_id))),1),exposure_id=unique(biomarker_map$exposure_id))
+  ai<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$biomarker_id))),1),biomarker_id=unique(biomarker_map$biomarker_id))
   key<-full_join(ei,ai,by="code")
   
   model_pars_tmp<-model_pars
@@ -211,11 +211,11 @@ reformat_model_pars<-function(antigen_map,model_pars){
     if(!is.na(model_pars_tmp$exposure_id[i])){
       model_pars_tmp$exposure_id[i]<- key$code[!is.na(key$exposure_id) & key$exposure_id==model_pars_tmp$exposure_id[i]]
     }
-    if(!is.na(model_pars_tmp$antigen_id[i])){
-      model_pars_tmp$antigen_id[i]<- key$code[!is.na(key$antigen_id) & key$antigen_id==model_pars_tmp$antigen_id[i]]
+    if(!is.na(model_pars_tmp$biomarker_id[i])){
+      model_pars_tmp$biomarker_id[i]<- key$code[!is.na(key$biomarker_id) & key$biomarker_id==model_pars_tmp$biomarker_id[i]]
     }
   }
   df<-transform(model_pars_tmp,exposure_id=as.numeric(exposure_id))
-  df<-transform(df,antigen_id=as.numeric(antigen_id))
+  df<-transform(df,biomarker_id=as.numeric(biomarker_id))
   return(df)
 }

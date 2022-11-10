@@ -20,11 +20,13 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 ## Create an example demography tibble
 example_demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal_max=120, prob_removal=0)
 
-## Create an example antigen map for 2 exposures with the same antigen
-example_antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
+## Create example numerical biomarker map for 2 exposures with the same biomarker
+example_biomarker_map <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
+## Create an example numerical biomarker map for 2 exposures with the same biomarker
+example_biomarker_map_numeric <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1)) 
 
 ## Create an example foe_pars array
-foe_pars <- array(0, dim=c(1,max(times),n_distinct(example_antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(example_biomarker_map$exposure_id)))
 foe_pars[,,1] <- 0.2
 foe_pars[,,2] <- 0.4
 example_foe_pars <-foe_pars
@@ -37,9 +39,12 @@ example_foe_pars <-foe_pars
 model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
 example_model_pars <- read.csv(file = model_pars_path, header = TRUE)
 
+## Reformat model_pars for runserosim
+example_model_pars_numeric<-reformat_model_pars(example_biomarker_map,example_model_pars)
 
 
-## Specify observation_times (serological survey sampling design) to observe antigen 1 across all individuals at the end of the simulation (t=120)
+
+## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(example_demography$i),t=120, ag=1)
 
 
@@ -48,8 +53,8 @@ res<- runserosim(
   demography=example_demography,
   observation_times=observation_times,
   foe_pars=example_foe_pars,
-  antigen_map=example_antigen_map,
-  model_pars=example_model_pars,
+  biomarker_map=example_biomarker_map_numeric,
+  model_pars=example_model_pars_numeric,
   exposure_model=exposure_model_simple_FOE,
   immunity_model=immunity_model_vacc_ifxn_simple,
   antibody_model=antibody_model_monophasic,
@@ -74,9 +79,11 @@ example_observed_antibody_states<-res$observed_antibody_states
 
 ## Save all generated data
 save(example_demography, 
-     example_antigen_map,
+     example_biomarker_map,
+     example_biomarker_map_numeric,
      example_foe_pars,
      example_model_pars,
+     example_model_pars_numeric,
      example_exposure_histories,
      example_exposure_probabilities,
      example_antibody_states,

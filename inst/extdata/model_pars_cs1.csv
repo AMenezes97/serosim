@@ -1,4 +1,4 @@
-exposure_id,antigen_id,name,mean,sd,distribution
+exposure_id,biomarker_id,name,mean,sd,distribution
 measles_ifxn,measles_IgG,boost_long,4000,250,log-normal
 measles_ifxn,measles_IgG,boost_short,2000,250,log-normal
 measles_ifxn,measles_IgG,wane_long,0.000083,0.000005,log-normal

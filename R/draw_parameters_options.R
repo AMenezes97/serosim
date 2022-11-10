@@ -5,9 +5,9 @@
 #' @param i Individual
 #' @param t time
 #' @param e exposure
-#' @param ag antigen
+#' @param ag biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
 #' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
@@ -26,7 +26,7 @@ draw_parameters_fixed_fx <- function(i, t, e, ag, demography, antibody_states, m
     par_names[par] <- model_pars_tmp$name[par]
   }
   # all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$antigen_id, name=par_names, value=pars, realized_value=pars) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 #' Draw Parameters Random Effects
@@ -36,9 +36,9 @@ draw_parameters_fixed_fx <- function(i, t, e, ag, demography, antibody_states, m
 #' @param i Individual
 #' @param t time
 #' @param e exposure
-#' @param ag antigen
+#' @param ag biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
 #' @param model_pars Tibble of antibody kinetics parameters  
 #' @param ... 
 #'
@@ -81,7 +81,7 @@ draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, m
     }
   }
   # all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$antigen_id, name=par_names, value=pars, realized_value=pars) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 
@@ -92,9 +92,9 @@ draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, m
 #' @param i Individual
 #' @param t time
 #' @param e exposure
-#' @param ag antigen
+#' @param ag biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
 #' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
@@ -115,14 +115,14 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, ag, demography, antibody
     par_names[par] <- model_pars_tmp$name[par]
     
     if(par_names[par] %in% c("boost_short","boost_long")){
-      ## Pull out all antigen
-      Antigen<-model_pars_tmp$antigen_id[par]
-      titer_threshold <- min(antibody_states[i,t,Antigen], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$antigen_id==Antigen, "mean"])
+      ## Pull out all biomarker
+      biomarker<-model_pars_tmp$biomarker_id[par]
+      titer_threshold <- min(antibody_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
       ## Replace realized titer value for boost parameters
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$antigen_id==Antigen, "mean"]*titer_threshold)
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$antigen_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 
@@ -133,9 +133,9 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, ag, demography, antibody
 #' @param i Individual
 #' @param t time
 #' @param e exposure
-#' @param ag antigen
+#' @param ag biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
 #' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
@@ -178,18 +178,18 @@ draw_parameters_random_fx_titer_dep <- function(i, t, e, ag, demography, antibod
       par_names[par] <- model_pars_tmp$name[par]
     }
     if(par_names[par] %in% c("boost_short","boost_long")){
-      ## Pull out all antigen
-      Antigen<-model_pars_tmp$antigen_id[par]
+      ## Pull out all biomarker
+      biomarker<-model_pars_tmp$biomarker_id[par]
       t1<-t-1
-      titer_threshold <- min(antibody_states[i,t1,Antigen], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$antigen_id==Antigen, "mean"])
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$antigen_id==Antigen, "mean"]*titer_threshold)
+      titer_threshold <- min(antibody_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
     if(!(par_names[par] %in% c("boost_short","boost_long"))){
       ## Non boost Realized parameters don't get affected by titer ceiling
       realized[par] <- pars[par]
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$antigen_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), ag=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 

@@ -4,20 +4,20 @@
 #'
 #' @param i Individual
 #' @param t1 time
-#' @param ag antigen
+#' @param ag biomarker
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
-#' @param antibody_states An array of antibody states across all individuals, time steps and antigen IDs
-#' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all antigens 
-#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param antibody_states An array of antibody states across all individuals, time steps and biomarker IDs
+#' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all biomarkers 
+#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param ... 
 #'
 #' @return A titer value is returned 
 #' @export
 #'
 #' @examples
-antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map, ...){
-  ## Find which successful exposures correspond to this antigen 
-  exposure_id_tmp<-antigen_map$exposure_id[antigen_map$antigen_id==ag]
+antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map, ...){
+  ## Find which successful exposures correspond to this biomarker 
+  exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==ag]
   
   ## Find all exposures up until current time for this individual and exposure type
   exp_history <- exposure_histories[i,1:t1,exposure_id_tmp]
@@ -30,7 +30,7 @@ antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_s
     return(0)
   }
   if(sum(exp_history,na.rm = TRUE)>0){
-    ## Extract all kinetics_parameters for antigen 
+    ## Extract all kinetics_parameters for biomarker 
     a_tmp<-ag
     
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
@@ -55,20 +55,20 @@ antibody_model_monophasic <-  function(i, t1, ag, exposure_histories, antibody_s
 #'
 #' @param i Individual
 #' @param t1 time
-#' @param ag antigen
+#' @param ag biomarker
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
-#' @param antibody_states An array of antibody states across all individuals, time steps and antigen IDs
+#' @param antibody_states An array of antibody states across all individuals, time steps and biomarker IDs
 #' @param kinetics_parameters An object of all kinetics parameters for all exposures
-#' @param antigen_map A table specifying the relationship between exposure IDs and antigen IDs
+#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param ... 
 #'
 #' @return A titer value is returned 
 #' @export
 #'
 #' @examples
-antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map, ...){
-  ## Find which successful exposures correspond to this antigen 
-  exposure_id_tmp<-antigen_map$exposure_id[antigen_map$antigen_id==ag]
+antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map, ...){
+  ## Find which successful exposures correspond to this biomarker 
+  exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==ag]
   
   ## Find all exposures up until current time for this individual and exposure type
   exp_history <- exposure_histories[i,1:t1,exposure_id_tmp]
@@ -81,7 +81,7 @@ antibody_model_biphasic <-  function(i, t1, ag, exposure_histories, antibody_sta
     return(0)
   }
   if(sum(exp_history,na.rm = TRUE)>0){
-    ## Extract all kinetics_parameters for antigen 
+    ## Extract all kinetics_parameters for biomarker 
     ag_tmp<-ag
     
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])

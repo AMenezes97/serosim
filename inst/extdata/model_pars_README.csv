@@ -1,4 +1,4 @@
-exposure_id,antigen_id,name,mean,sd,distribution
+exposure_id,biomarker_id,name,mean,sd,distribution
 ifxn,IgG_titer,boost,4,2,log-normal
 ifxn,IgG_titer,wane,0.0033,0.0005,log-normal
 NA,IgG_titer,obs_sd,,0.25,normal

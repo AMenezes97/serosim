@@ -5,7 +5,7 @@ t_start<-1
 t_end<-10
 times<-t_start:t_end
 N_exposure_ids <- 2
-N_antigen_ids <-2
+N_biomarker_ids <-2
 
 ## Create demography 
 aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)),"NS"=list("name"="NS","options"=c("low", "high"), "distribution"=c(0.5,0.5)) )
@@ -19,8 +19,8 @@ foe_pars<-array(data=1, dim=c(n_distinct(groups$group),max(times),N_exposure_ids
 foe_pars[1,1,1]<-3
 foe_pars[2,2,2]<-2
 
-## Create antigen map 
-antigen_map<-tibble(exposure_id=1,antigen_id=1:2)
+## Create biomarker map 
+biomarker_map<-tibble(exposure_id=1,biomarker_id=1:2)
 
 ## Create a tibble with any relevant demographic elements that affect exposure probability 
 dem_mod<-tibble(column=c("sex", "sex","NS","NS"), value=c("male","female","low", "high"), modifier=c(1,2,3,4))
@@ -52,8 +52,8 @@ exposure_model_age_mod(i,t,e, g, foe_pars, demography, age_mod)
 exposure_model_dem_age_mod(i,t,e, g, foe_pars, demography, dem_mod, age_mod)
 
 ## Create dummy arguments to be used for immunity models
-N_antigen_ids <-1
-antibody_states=array(data=sample(1:10,100,replace=TRUE), dim = c(N,max(times),N_antigen_ids))
+N_biomarker_ids <-1
+antibody_states=array(data=sample(1:10,100,replace=TRUE), dim = c(N,max(times),N_biomarker_ids))
 vacc_exposures<-c(1,3,5) ## Specify which exposure IDs represent vaccination events 
 max_vacc_events<-c(2,1,1,NA,1) ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 exposure_histories<-array(data=0, dim=c(N,max(times),N_exposure_ids))
@@ -65,12 +65,12 @@ library(readr)
 # model_pars <- read.csv("Documents/GitHub/serosim/inst/extdata/model_pars_V1.csv")
 
 ## Test immunity models
-model_pars_immunity <-tibble(exposure_id=1, antigen_id=1,name=c("titer_prot_midpoint","titer_prot_width"), mean=c(8,1.5), sd=NA, distribution=NA)
+model_pars_immunity <-tibble(exposure_id=1, biomarker_id=1,name=c("titer_prot_midpoint","titer_prot_width"), mean=c(8,1.5), sd=NA, distribution=NA)
 immunity_model_all_successful()
-immunity_model_vacc_only(i, t, e, exposure_histories, antibody_states, demography, antigen_map, max_vacc_events)
-immunity_model_vacc_successful_ifxn(i, t, e, exposure_histories, antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures)
-immunity_model_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, antigen_map, model_pars=model_pars_immunity)
-immunity_model_vacc_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, antigen_map, max_vacc_events, vacc_exposures, model_pars=model_pars_immunity)
+immunity_model_vacc_only(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events)
+immunity_model_vacc_successful_ifxn(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures)
+immunity_model_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, model_pars=model_pars_immunity)
+immunity_model_vacc_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures, model_pars=model_pars_immunity)
 
 
 ## Test draw_parameters
@@ -89,12 +89,12 @@ kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
                                       draw_parameters_fixed_fx(i, 2, e, ag, demography, antibody_states, model_pars))
 
 ## Test antibody models
-antibody_model_biphasic(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)
-antibody_model_test(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map)
+antibody_model_biphasic(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
+antibody_model_test(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
 
 
-microbenchmark(antibody_model_biphasic(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map),
-               antibody_model_test(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, antigen_map))
+microbenchmark(antibody_model_biphasic(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map),
+               antibody_model_test(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map))
 
 
 ## Reshape antibody_states to test observation model 
@@ -106,7 +106,7 @@ antibody_states <- antibody_states %>% arrange(i, t, ag)
 observation_times <- tibble(i=1:5,t=3, ag=1)
 discrete<-c(0,5,8,10) ## Cut offs for discrete assays
 boundary<-c(2,10)
-model_pars_obs <-tibble(exposure_id=NA, antigen_id=1:2,name="obs_sd", mean= NA, sd=0.5, distribution="normal")
+model_pars_obs <-tibble(exposure_id=NA, biomarker_id=1:2,name="obs_sd", mean= NA, sd=0.5, distribution="normal")
 ## Test out observation models
 observation_model_continuous_bounded_no_noise(antibody_states, model_pars=model_pars_obs, demography, boundary)
 observation_model_discrete_no_noise(antibody_states, model_pars=model_pars_obs, demography, discrete)

@@ -2,18 +2,18 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_titers}
 \alias{plot_titers}
-\title{Plot Titers Across Time For All Individuals And Antigens}
+\title{Plot Titers Across Time For All Individuals And biomarkers}
 \usage{
 plot_titers(titers)
 }
 \arguments{
-\item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each antigen ID}
+\item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID}
 }
 \value{
-A plot of titers across all time steps for all individuals and antigens is returned
+A plot of titers across all time steps for all individuals and biomarkers is returned
 }
 \description{
-Plot Titers Across Time For All Individuals And Antigens
+Plot Titers Across Time For All Individuals And biomarkers
 }
 \examples{
 plot_titers(example_antibody_states)

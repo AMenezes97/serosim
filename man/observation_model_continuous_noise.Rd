@@ -7,7 +7,7 @@
 observation_model_continuous_noise(antibody_states, model_pars, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 

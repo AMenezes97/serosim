@@ -39,7 +39,7 @@ demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_
 
 
 ##*****************Component 3: Force of Infection and Exposure Model***********
-## Specify the number of exposures (eventually, this won't be needed because the serosim function can extract this from the antigen_map)
+## Specify the number of exposures (eventually, this won't be needed because the serosim function can extract this from the biomarker_map)
 N_exposure_ids <- 2
 
 ## Specify the force of infection array (different format)
@@ -58,9 +58,9 @@ foe_pars <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_expos
 
 
 
-##***********************Component 4: Antigen Map*******************************
-## Specify which antigens are present in each exposure type
-antigen_map <- tibble(exposure_id=c(1,1,2),antigen_id=c(1,2,1)) 
+##***********************Component 4: Biomarker Map*******************************
+## Specify which biomarkers are present in each exposure type
+biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1)) 
 
 
 
@@ -116,7 +116,7 @@ res<- runserosim(
   demography, 
   observation_times,
   foe_pars, 
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model=exposure_model_simple_FOI, 
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 

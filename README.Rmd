@@ -52,17 +52,17 @@ demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal
 summary(demography)
 ```
 
-# 1.3 Antigen Map 
-Set up the exposure IDs and antigen IDs for the simulation which will determine which 
-infection or vaccination events are occurring. Here, we will simulate one circulating pathogen (exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both of which will boost titers to the same antigen(antigen_ID=IgG_titer). This antigen map can be used for any simulations of vaccine preventable diseases like measles vaccination and measles natural infection. runserosim requires that exposure_id and antigen_id are numeric so we will use the reformat_antigen_map function to create a new version of the antigen map. Users can go directly to numeric antigen_map if they wish
+# 1.3 Biomarker Map 
+Set up the exposure IDs and biomarker IDs for the simulation which will determine which 
+infection or vaccination events are occurring. Here, we will simulate one circulating pathogen (exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both of which will boost titers to the same biomarker(biomarker_ID=IgG_titer). This biomarker map can be used for any simulations of vaccine preventable diseases like measles vaccination and measles natural infection. runserosim requires that exposure_id and biomarker_id are numeric so we will use the reformat_biomarker_map function to create a new version of the biomarker map. Users can go directly to numeric biomarker_map if they wish
 ```{r}
-## Create antigen map
-antigen_map_original <- tibble(exposure_id=c("ifxn","vacc"),antigen_id=c("IgG_titer","IgG_titer"))
-antigen_map_original
+## Create biomarker map
+biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
+biomarker_map_original
 
-## Reformat antigen_map for runserosim
-antigen_map <-reformat_antigen_map(antigen_map_original)
-antigen_map
+## Reformat biomarker_map for runserosim
+biomarker_map <-reformat_biomarker_map(biomarker_map_original)
+biomarker_map
 ```
 
 # 1.4 Force of Exposure and Exposure Model
@@ -76,7 +76,7 @@ automatically be assigned group 1. Therefore, we only need 1 row for dimension
 specify a location specific force of exposure. We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
 ```{r}
 ## Create an empty array to store the force of infection for all exposure types
-foe_pars <- array(0, dim=c(1,max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
 foe_pars[,,1] <- 0.2
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
@@ -113,7 +113,7 @@ Lastly, we define the draw_parameters function which determines how each individ
 parameters are simulated from the antibody kinetics parameters tibble (model_pars). 
 We will use a function which draws parameters directly from model_pars for the antibody 
 model with random effects. Parameters are drawn randomly from a distribution 
-with mean and standard deviation specified within model_pars.  runserosim requires that exposure_id and antigen_id 
+with mean and standard deviation specified within model_pars.  runserosim requires that exposure_id and biomarker_id 
 are numeric so we will use the reformat_model_pars function to create a new version of model_pars. Users can go directly to numeric model_pars if they wish.
 ```{r}
 ## Specify the antibody model 
@@ -126,7 +126,7 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(antigen_map_original,model_pars_original )
+model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
 model_pars
 
 
@@ -148,7 +148,7 @@ observation standard deviation and distribution are defined within model_pars as
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
 
-## Specify observation_times (serological survey sampling design) to observe antigen 1 across all individuals at the end of the simulation (t=120)
+## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(demography$i),t=120, ag=1)
 ```
 
@@ -164,7 +164,7 @@ res<- runserosim(
   demography,
   observation_times,
   foe_pars,
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model,
   immunity_model,

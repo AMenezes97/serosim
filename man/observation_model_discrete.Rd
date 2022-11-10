@@ -7,11 +7,11 @@
 observation_model_discrete(antibody_states, model_pars, cutoffs, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 
-\item{cutoffs}{A matrix containing the assay cutoffs for each antigen. Each row contains all of the cutoffs for that antigen starting with 0. For example, all of the cutoffs for the assay measuring antigen 1 specific antibodies are in the first row of this matrix.}
+\item{cutoffs}{A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 specific antibodies are in the first row of this matrix.}
 
 \item{...}{}
 }

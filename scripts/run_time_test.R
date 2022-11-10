@@ -6,7 +6,7 @@
 ## Set up generic variables needed 
 ## This script will follow some of the same charcteristic of case study 1:
 ## 1,000 individuals across 120 time steps
-## 2 exposure IDs for 1 antigen ID with 2 observation times 
+## 2 exposure IDs for 1 biomarker ID with 2 observation times 
 
 
 
@@ -30,11 +30,11 @@ aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribut
             "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
 demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0, aux=aux)
 
-## Set antigen map 
-antigen_map <- tibble(exposure_id=c(1,2),antigen_id=c(1,1)) 
+## Set biomarker map 
+biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1)) 
 
 ## Create an empty array to store the force of infection for all exposure types
-foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(biomarker_map$exposure_id)))
 
 ## Assign arbitrary forces of infection/vaccination
 ## Specify the force of vaccination for exposure ID 1 which represents measles natural infection
@@ -87,7 +87,7 @@ model_pars <- read.csv(file = model_pars_path, header = TRUE)
 ## Limits of detection for continuous assays
 boundary<-c(20,20000)
 
-## Specify observation_times to observe antigen 1 (aka Measles antibody titer) across all individuals at the midpoint and the end of the simulation (t=60 and t=120)
+## Specify observation_times to observe biomarker 1 (aka Measles antibody titer) across all individuals at the midpoint and the end of the simulation (t=60 and t=120)
 obs1 <- tibble(i=1:N,t=60, a=1)
 obs2 <- tibble(i=1:N,t=120, a=1)
 observation_times<-rbind(obs1,obs2)
@@ -103,7 +103,7 @@ res1<- runserosim(
   demography,
   observation_times,
   foe_pars,
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model=exposure_model_simple_FOI,
   immunity_model=immunity_model_all_successful,

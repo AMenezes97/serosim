@@ -1,4 +1,4 @@
-exposure_id,antigen_id,name,mean,sd,distribution
+exposure_id,biomarker_id,name,mean,sd,distribution
 DP_vacc,diphtheria_IgG,boost_long,6,2,log-normal
 DP_vacc,diphtheria_IgG,boost_short,4,2,log-normal
 DP_vacc,diphtheria_IgG,wane_long,0.000083,0.000005,log-normal

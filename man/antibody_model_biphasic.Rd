@@ -11,7 +11,7 @@ antibody_model_biphasic(
   exposure_histories,
   antibody_states,
   kinetics_parameters,
-  antigen_map,
+  biomarker_map,
   ...
 )
 }
@@ -20,15 +20,15 @@ antibody_model_biphasic(
 
 \item{t1}{time}
 
-\item{ag}{antigen}
+\item{ag}{biomarker}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
-\item{antibody_states}{An array of antibody states across all individuals, time steps and antigen IDs}
+\item{antibody_states}{An array of antibody states across all individuals, time steps and biomarker IDs}
 
 \item{kinetics_parameters}{An object of all kinetics parameters for all exposures}
 
-\item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
 
 \item{...}{}
 }

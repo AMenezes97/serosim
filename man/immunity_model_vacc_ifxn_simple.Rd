@@ -11,7 +11,7 @@ immunity_model_vacc_ifxn_simple(
   exposure_histories,
   antibody_states,
   demography,
-  antigen_map,
+  biomarker_map,
   model_pars,
   max_events,
   vacc_exposures,
@@ -28,11 +28,11 @@ immunity_model_vacc_ifxn_simple(
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
-\item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 

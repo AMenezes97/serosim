@@ -21,10 +21,12 @@ Example force of exposure parameters required (foe_pars) as an input for runsero
 \seealso{
 Other example_data: 
 \code{\link{example_antibody_states}},
-\code{\link{example_antigen_map}},
+\code{\link{example_biomarker_map_numeric}},
+\code{\link{example_biomarker_map}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
+\code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}},
 \code{\link{example_observed_antibody_states}}
 }

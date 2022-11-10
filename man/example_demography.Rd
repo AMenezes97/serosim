@@ -22,10 +22,12 @@ Example of a demography tibble produced by generate_pop_demography and required 
 \seealso{
 Other example_data: 
 \code{\link{example_antibody_states}},
-\code{\link{example_antigen_map}},
+\code{\link{example_biomarker_map_numeric}},
+\code{\link{example_biomarker_map}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}},
 \code{\link{example_observed_antibody_states}}
 }

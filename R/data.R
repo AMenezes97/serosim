@@ -15,20 +15,35 @@
 #' @family example_data
 "example_demography"
 
-#' Example antigen map
+#' Example biomarker map
 #'
-#' Example antigen map required as an input for runserosim. This antigen map is for a simulation with two different exposure events both containing the same antigen.
+#' Example biomarker map. This biomarker map must be converted to the numeric version (example_biomarker_map_numeric) before being input into runserosim. This biomarker map is for a simulation with two different exposure events(infection and vaccination) both containing the same biomarker(IgG titer).
 #' 
 #' @docType data
-#' @name example_antigen_map
-#' @usage data(example_antigen_map)
+#' @name example_biomarker_map
+#' @usage data(example_biomarker_map)
+#' @format A data frame with 2 rows and 2 variables:
+#' \describe{
+#'     \item{exposure_ID}{name of each exposure type}
+#'     \item{biomarker_ID}{name of each biomarkers present within each exposure type}
+#' }
+#' @family example_data
+"example_biomarker_map"
+
+#' Example numeric biomarker map
+#'
+#' Example numeric biomarker map required as an input for runserosim. This biomarker map is for a simulation with two different exposure events both containing the same biomarker.
+#' 
+#' @docType data
+#' @name example_biomarker_map_numeric
+#' @usage data(example_biomarker_map_numeric)
 #' @format A data frame with 2 rows and 2 variables:
 #' \describe{
 #'     \item{exposure_ID}{numeric values for each exposure type}
-#'     \item{antigen_ID}{numeric values for each antigen type present within each exposure type}
+#'     \item{biomarker_ID}{numeric values for each biomarker present within each exposure type}
 #' }
 #' @family example_data
-"example_antigen_map"
+"example_biomarker_map_numeric"
 
 #' Example force of exposure parameters (foe_pars) 
 #'
@@ -48,7 +63,7 @@
 
 #' Example model parameters (model_pars)
 #'
-#' Example model parameters (model_pars) required as an input for runserosim. This example model_pars is for a simulation two different exposure events both containing the same antigen. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
+#' Example model parameters (model_pars). This model_pars input must be converted to the numeric version (example_model_pars_numeric) before being input into runserosim. This example model_pars is for a simulation two different exposure events both containing the same biomarker. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
 #' In this example, model_pars has parameters for a monophasic antibody model and for an observational model with noise.
 #'  
 #' 
@@ -57,8 +72,8 @@
 #' @usage data(example_model_pars)
 #' @format A data frame with 5 rows and 6 variables:
 #' \describe{
-#'     \item{exposure_ID}{numeric values for each exposure type present in example antigen_map}
-#'     \item{antigen_ID}{numeric values for each antigen type present within each exposure type present in example antigen_map}
+#'     \item{exposure_ID}{name of each exposure type present in example biomarker_map}
+#'     \item{biomarker_ID}{name of each biomarker present within each exposure type present in example biomarker_map}
 #'     \item{name}{names of model parameters}
 #'     \item{mean}{numeric values for the true paramter means}
 #'     \item{sd}{numeric values for the true paramter standard deviation}
@@ -66,6 +81,27 @@
 #' }
 #' @family example_data
 "example_model_pars"
+
+#' Example numeric model parameters (model_pars)
+#'
+#' Example numeric model parameters (model_pars) required as an input for runserosim. This example model_pars is for a simulation two different exposure events both containing the same biomarker. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
+#' In this example, model_pars has parameters for a monophasic antibody model and for an observational model with noise.
+#'  
+#' 
+#' @docType data
+#' @name example_model_pars_numeric
+#' @usage data(example_model_pars_numeric)
+#' @format A data frame with 5 rows and 6 variables:
+#' \describe{
+#'     \item{exposure_ID}{numeric values for each exposure type present in example biomarker_map}
+#'     \item{biomarker_ID}{numeric values for each biomarker type present within each exposure type present in example biomarker_map}
+#'     \item{name}{names of model parameters}
+#'     \item{mean}{numeric values for the true paramter means}
+#'     \item{sd}{numeric values for the true paramter standard deviation}
+#'     \item{distribution}{distribution type from which the draw_paramaters function will be sampling a parameter }
+#' }
+#' @family example_data
+"example_model_pars_numeric"
 
 #' Example exposure histories 
 #'
@@ -103,7 +139,7 @@
 
 #' Example antibody states
 #'
-#' Example antibody states runserosim output. This example data set output contains antibody titers for individuals at all time steps for all antigens listed in example_antigen_map
+#' Example antibody states runserosim output. This example data set output contains antibody titers for individuals at all time steps for all biomarkers listed in example_biomarker_map
 #' 
 #' @docType data
 #' @name example_antibody_states
@@ -112,7 +148,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step in the simulation}
-#'     \item{ag}{numeric values for each antigen type; this example only has 1 antigen type}
+#'     \item{ag}{numeric values for each biomarker type; this example only has 1 biomarker type}
 #'     \item{value}{numeric values indicating antibody titer}
 #' }
 #' @family example_data
@@ -120,7 +156,7 @@
 
 #' Example observed antibody states
 #'
-#' Example observed antibody states runserosim output. This example data set output contains observed antibody titers for all individuals at the time of observation (t=120) for all antigen 1
+#' Example observed antibody states runserosim output. This example data set output contains observed antibody titers for all individuals at the time of observation (t=120) for all biomarker 1
 #' 
 #' @docType data
 #' @name example_observed_antibody_states
@@ -129,7 +165,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step observed}
-#'     \item{ag}{numeric values for each antigen type; this example only has 1 antigen type}
+#'     \item{ag}{numeric values for each biomarker type; this example only has 1 biomarker type}
 #'     \item{value}{numeric values indicating antibody titer}
 #'     \item{observed}{numeric values indicating observed antibody titer}
 #' }

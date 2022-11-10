@@ -9,7 +9,7 @@ A data frame with 100 rows and 5 variables:
 \describe{
 \item{i}{string numeric values for each individual}
 \item{t}{string numeric values for each time step observed}
-\item{ag}{numeric values for each antigen type; this example only has 1 antigen type}
+\item{ag}{numeric values for each biomarker type; this example only has 1 biomarker type}
 \item{value}{numeric values indicating antibody titer}
 \item{observed}{numeric values indicating observed antibody titer}
 }
@@ -18,16 +18,18 @@ A data frame with 100 rows and 5 variables:
 data(example_observed_antibody_states)
 }
 \description{
-Example observed antibody states runserosim output. This example data set output contains observed antibody titers for all individuals at the time of observation (t=120) for all antigen 1
+Example observed antibody states runserosim output. This example data set output contains observed antibody titers for all individuals at the time of observation (t=120) for all biomarker 1
 }
 \seealso{
 Other example_data: 
 \code{\link{example_antibody_states}},
-\code{\link{example_antigen_map}},
+\code{\link{example_biomarker_map_numeric}},
+\code{\link{example_biomarker_map}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}}
 }
 \concept{example_data}

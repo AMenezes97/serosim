@@ -7,11 +7,11 @@
 observation_model_continuous_bounded(antibody_states, model_pars, bounds, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 
-\item{bounds}{A tibble containing the assay lower bound and upper bound for all antigens; column names=antigen_id, name, and value where name is either "lower_bound" or "upper_bound"}
+\item{bounds}{A tibble containing the assay lower bound and upper bound for all biomarkers; column names=biomarker_id, name, and value where name is either "lower_bound" or "upper_bound"}
 
 \item{...}{}
 }

@@ -9,7 +9,7 @@ runserosim(
   demography = NULL,
   observation_times = NULL,
   foe_pars,
-  antigen_map,
+  biomarker_map,
   model_pars,
   exposure_model,
   immunity_model,
@@ -26,11 +26,11 @@ runserosim(
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
 
-\item{observation_times}{A tibble of observation times and antigen for each individual}
+\item{observation_times}{A tibble of observation times and biomarkers measured for each individual}
 
 \item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time}
 
-\item{antigen_map}{A table specifying the relationship between exposure IDs and antigen IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
 
 \item{model_pars}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
 

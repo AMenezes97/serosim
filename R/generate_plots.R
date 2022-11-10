@@ -111,11 +111,11 @@ plot_exposure_histories <- function(exposure_histories){
   return(p)
 }
 
-#' Plot Titers Across Time For All Individuals And Antigens
+#' Plot Titers Across Time For All Individuals And biomarkers
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each antigen ID
+#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID
 #'
-#' @return A plot of titers across all time steps for all individuals and antigens is returned
+#' @return A plot of titers across all time steps for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples
@@ -146,9 +146,9 @@ plot_titers<- function(titers){
 #' 
 #' @description This function should be used when there was only one time step in which titers were observed
 #'
-#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each antigen
+#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each biomarker
 #'
-#' @return A plot of observed titers for all individuals and antigens is returned
+#' @return A plot of observed titers for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples
@@ -164,10 +164,10 @@ plot_obs_titers_one_sample<-function(observed_titers){
   ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
     ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
     ggplot2::labs(title="Observed Antibody Titers",
-                  x="Antigen",
+                  x="Biomarker",
                   y="Observed Titer") + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
-    suppressWarnings(ggplot2::scale_x_discrete(name ="Antigen", 
+    suppressWarnings(ggplot2::scale_x_discrete(name ="Biomarker", 
                      limits=c(unique(observed_titers$ag)), expand = c(0.1, 0.1))) +
     theme(legend.position="bottom")
 return(p)
@@ -177,9 +177,9 @@ return(p)
 #' 
 #' @description This function should be used when there were multiple time step in which titers were observed
 #'
-#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each antigen
+#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each biomarker
 #'
-#' @return A plot of observed titers for all individuals and antigens is returned
+#' @return A plot of observed titers for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples 
@@ -194,7 +194,7 @@ p<- ggplot2::ggplot(observed_titers, aes(x = t, y = observed, group = i)) +
         panel.grid = element_blank(),
         axis.line.y = element_line(size = .5)) +
   ggplot2::labs(title="Observed Paired Antibody Titers",
-                x="Antigen",
+                x="Biomarker",
                 y="Observed Titer") + 
   ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
   ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
@@ -209,7 +209,7 @@ return(p)
 
 #' Plot Antibody States and Exposure Histories For A Subset Of Individuals
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each antigen ID
+#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID
 #' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure ID
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
@@ -221,7 +221,7 @@ return(p)
 #' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
 plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography){
   exposure_histories$e <- paste0("Exposure: ", exposure_histories$e)
-  titers$ag <- paste0("Antigen: ", titers$ag)
+  titers$ag <- paste0("Biomarker: ", titers$ag)
   
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
   removal_subset <- demography %>% filter(times==1)
