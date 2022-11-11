@@ -7,7 +7,7 @@
 draw_parameters_random_fx_titer_dep(
   i,
   t,
-  e,
+  x,
   b,
   demography,
   antibody_states,
@@ -20,7 +20,7 @@ draw_parameters_random_fx_titer_dep(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{b}{biomarker}
 

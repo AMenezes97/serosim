@@ -114,15 +114,15 @@ runserosim <- function(
             }
             
             ## Work out exposure result for each exposure ID
-            for(e in exposure_ids){
+            for(x in exposure_ids){
                 ## Only update if exposure history entry is NA here. If not NA, then pre-specified
-                if(is.na(exposure_histories[i,t,e])){
+                if(is.na(exposure_histories[i,t,x])){
                     ## What is the probability that exposure occurred?
-                    prob_exposed <- exposure_model(i, t, e, g, foe_pars, demography, ...)
+                    prob_exposed <- exposure_model(i, t, x, g, foe_pars, demography, ...)
                     
                     ## If an exposure event occurred, what's the probability 
                     ## of successful exposure?
-                    prob_success <- immunity_model(i, t, e, exposure_histories, 
+                    prob_success <- immunity_model(i, t, x, exposure_histories, 
                                                    antibody_states, demography, 
                                                    biomarker_map, model_pars, ...)
                     
@@ -134,10 +134,10 @@ runserosim <- function(
                     ## for this event, drawn from information given in model_pars
                     if(successful_exposure == 1){
                         kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                          draw_parameters(i, t, e, b, demography, antibody_states, model_pars, ...))
+                                                          draw_parameters(i, t, x, b, demography, antibody_states, model_pars, ...))
                     }
-                    exposure_histories[i,t,e] <- successful_exposure
-                    exposure_probabilities[i,t,e] <- prob_success*prob_exposed
+                    exposure_histories[i,t,x] <- successful_exposure
+                    exposure_probabilities[i,t,x] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
                         for(b in biomarker_ids){
                             antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
@@ -159,15 +159,15 @@ runserosim <- function(
     exposure_histories_long <- NULL
     if(sum(exposure_histories, na.rm = TRUE) > 0){
         exposure_histories_long <- reshape2::melt(exposure_histories)
-        colnames(exposure_histories_long) <- c("i","t","e","value")
+        colnames(exposure_histories_long) <- c("i","t","x","value")
         # exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
-        exposure_histories_long <- exposure_histories_long %>% arrange(i, t, e)
+        exposure_histories_long <- exposure_histories_long %>% arrange(i, t, x)
     }
     
     ## Reshape exposure probabilities
     exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
-    colnames(exposure_probabilities_long) <- c("i","t","e","value")
-    exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
+    colnames(exposure_probabilities_long) <- c("i","t","x","value")
+    exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, x)
     ## Observation process
     if(!is.null(observation_times)){
         observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), model_pars, ...)

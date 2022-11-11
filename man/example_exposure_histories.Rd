@@ -9,7 +9,7 @@ A data frame with 24000 rows and 4 variables:
 \describe{
 \item{i}{string numeric values for each individual}
 \item{t}{string numeric values for each time step in the simulation}
-\item{e}{numeric values for each exposure type}
+\item{x}{numeric values for each exposure type}
 \item{value}{binary value indicating if an exposure occured 1 or not 0}
 }
 }

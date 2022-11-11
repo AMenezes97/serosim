@@ -69,11 +69,11 @@ summary(demography)
 
     ##        i              times            birth           removal     
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 35.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 59.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.78   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 85.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 33.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 56.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.27   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 92.25   3rd Qu.: NA    
+    ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
     ##                                                     NA's   :12000
 
 # 1.3 Biomarker Map
@@ -321,14 +321,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     e     b name    value realized_value
+    ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    50     1     1 boost 7.27           7.27   
-    ## 2     1    50     1     1 wane  0.00397        0.00397
-    ## 3     1    56     2     1 boost 1.33           1.33   
-    ## 4     1    56     2     1 wane  0.00155        0.00155
-    ## 5     2    69     1     1 boost 3.60           3.60   
-    ## 6     2    69     1     1 wane  0.00463        0.00463
+    ## 1     2    58     1     1 boost 2.24           2.24   
+    ## 2     2    58     1     1 wane  0.00337        0.00337
+    ## 3     2    67     2     1 boost 1.99           1.99   
+    ## 4     2    67     2     1 wane  0.00114        0.00114
+    ## 5     3    29     1     1 boost 2.60           2.60   
+    ## 6     3    29     1     1 wane  0.00376        0.00376
 
 ``` r
 ## Plots for the paper 

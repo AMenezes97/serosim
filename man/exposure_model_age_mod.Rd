@@ -7,7 +7,7 @@
 exposure_model_age_mod(
   i,
   t,
-  e,
+  x,
   g,
   foe_pars,
   demography,
@@ -21,7 +21,7 @@ exposure_model_age_mod(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{g}{group}
 

@@ -4,14 +4,14 @@
 \alias{exposure_model_simple_FOE}
 \title{Exposure Model Simple- Force of Exposure (FOE)}
 \usage{
-exposure_model_simple_FOE(i, t, e, g, foe_pars, demography, ...)
+exposure_model_simple_FOE(i, t, x, g, foe_pars, demography, ...)
 }
 \arguments{
 \item{i}{Individual}
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{g}{group}
 

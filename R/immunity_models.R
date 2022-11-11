@@ -4,7 +4,7 @@
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-immunity_model_all_successful <- function(i, t, e, exposure_histories, 
+immunity_model_all_successful <- function(i, t, x, exposure_histories, 
                            antibody_states, demography, biomarker_map, model_pars, ...){
   return(1)
 }
@@ -27,7 +27,7 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
@@ -41,7 +41,7 @@ immunity_model_all_successful <- function(i, t, e, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_vacc_only <- function(i, t, e, exposure_histories, 
+immunity_model_vacc_only <- function(i, t, x, exposure_histories, 
                               antibody_states, demography, biomarker_map, 
                               model_pars, max_vacc_events, vacc_age,...){
   ## Calculate the individual's current age
@@ -49,11 +49,11 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
   curr_age<- t-birth_time
   
   ## If the individual is above the minimum age of vaccination 
-  if(curr_age>=vacc_age[e]){
+  if(curr_age>=vacc_age[x]){
   ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
+    curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
-    if(curr_vacc_events<max_vacc_events[e]){
+    if(curr_vacc_events<max_vacc_events[x]){
       return(1)
     }else{
       return(0)
@@ -70,14 +70,14 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars A tibble of parameters needed for the immunity model
 #' @param max_events A vector of the maximum number of successful exposure events possible for each exposure type; If an exposure type is not a vaccination event then input NA
-#' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
+#' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
 #'
@@ -85,33 +85,33 @@ immunity_model_vacc_only <- function(i, t, e, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_vacc_ifxn_simple <- function(i, t, e, exposure_histories, 
+immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories, 
                                      antibody_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
-  if(e %in% c(vacc_exposures)){  	
+  if(x %in% c(vacc_exposures)){  	
     ## Calculate the individual's current age
     birth_time<-unique(demography$birth[demography$i==i])
     curr_age<- t-birth_time
     
     ## If the individual is above the minimum age of vaccination 
-    if(curr_age>=vacc_age[e]){
+    if(curr_age>=vacc_age[x]){
          ## Count the total number of successful exposures to e thus far 
-          curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
+          curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
         ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
-        if(curr_vacc_events<max_events[e]){
+        if(curr_vacc_events<max_events[x]){
            return(1)
              }else{
              return(0)
               }
     }
-    if(curr_age<vacc_age[e]){
+    if(curr_age<vacc_age[x]){
       return(0)
     }
   }
   else{ ## If the exposure event is an infection event
     ## Count the total number of successful exposures to e thus far 
-    curr_ifx_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
-    if(curr_ifx_events<max_events[e]){
+    curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+    if(curr_ifx_events<max_events[x]){
       return(1)
     }else{
       return(0)
@@ -127,7 +127,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, e, exposure_histories,
 #'    
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
@@ -139,18 +139,18 @@ immunity_model_vacc_ifxn_simple <- function(i, t, e, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories, 
+immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories, 
                               antibody_states, demography, biomarker_map, model_pars, ...){
     ## Find biomarkers which are boosted by this exposure type
     ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
-    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
+    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
     ## Find current titer to all relevant biomarkers
     curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
     curr_t <- sum(curr_t)
     
     ## Pull out necessary variables 
-    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==e & model_pars$name=="titer_prot_midpoint"] ## Would each biomarker have it's own value?
-    titer_prot_width <- model_pars$mean[model_pars$exposure_id==e  & model_pars$name=="titer_prot_width"]
+    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"] ## Would each biomarker have it's own value?
+    titer_prot_width <- model_pars$mean[model_pars$exposure_id==x  & model_pars$name=="titer_prot_width"]
     
     ## Create a function to calculate the risk of infection at a given titer
     titer_protection <- function(titer, alpha1, beta1){
@@ -170,14 +170,14 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #' 
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars A tibble of parameters needed for the immunity model
 #' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
-#' @param vacc_exposures A vector of exposure IDs (e) which represents vaccination events
+#' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
 #' @param ... 
 #'
@@ -185,40 +185,40 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories,
+immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
                            antibody_states, demography, biomarker_map, model_pars, max_vacc_events, vacc_exposures, vacc_age=1, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
-  if(e %in% c(vacc_exposures)){  
+  if(x %in% c(vacc_exposures)){  
     ## Calculate the individual's current age
     birth_time<-unique(demography$birth[demography$i==i])
     curr_age<- t-birth_time
     
     ## If the individual is above the minimum age of vaccination 
-    if(curr_age>=vacc_age[e]){
+    if(curr_age>=vacc_age[x]){
     ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,e], na.rm=TRUE)
+    curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
-    if(curr_vacc_events<max_vacc_events[e]){
+    if(curr_vacc_events<max_vacc_events[x]){
       return(1)
     }else{
       return(0)
     }
     }
-    if(curr_age<vacc_age[e]){
+    if(curr_age<vacc_age[x]){
       return(0)
     }
   } 
   else {
     ## Find biomarkers which are boosted by this exposure type
     ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
-    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
+    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
     ## Find current titer to all relevant biomarkers
     curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
     curr_t <- sum(curr_t)
     
     ## Pull out necessary variables 
-    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==e & model_pars$name=="titer_prot_midpoint"]
-    titer_prot_width <- model_pars$mean[model_pars$exposure_id==e & model_pars$name=="titer_prot_width"]
+    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"]
+    titer_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_width"]
     
     ## Create a function to calculate the risk of infection at a given titer
     titer_protection <- function(titer, alpha1, beta1){

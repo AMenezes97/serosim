@@ -114,7 +114,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step in the simulation}
-#'     \item{e}{numeric values for each exposure type}
+#'     \item{x}{numeric values for each exposure type}
 #'     \item{value}{binary value indicating if an exposure occured 1 or not 0}
 #' }
 #' @family example_data
@@ -131,7 +131,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step in the simulation}
-#'     \item{e}{numeric values for each exposure type}
+#'     \item{x}{numeric values for each exposure type}
 #'     \item{value}{numeric values indicating exposure probability}
 #' }
 #' @family example_data

@@ -64,7 +64,7 @@ plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshol
 plot_exposure_prob<-function(exposure_probabilities_long){
   p <- ggplot2::ggplot(exposure_probabilities_long) + 
     ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
-    ggplot2::facet_wrap(~e,nrow=2) + 
+    ggplot2::facet_wrap(~x,nrow=2) + 
     ggplot2::theme_bw() + 
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
@@ -96,7 +96,7 @@ plot_exposure_histories <- function(exposure_histories){
   exposure_histories$value <- ifelse(!is.na(exposure_histories$value),
                                      ifelse(exposure_histories$value==1,"Succesful Exposure","No Exposure"), "NA")
   
-  p <- ggplot2::ggplot(exposure_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~e,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
+  p <- ggplot2::ggplot(exposure_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
     ggplot2::labs(title="Exposure History",
                   x="Time",
                   y="Individual")   + 
@@ -220,7 +220,7 @@ return(p)
 #' @examples
 #' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
 plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography){
-  exposure_histories$e <- paste0("Exposure: ", exposure_histories$e)
+  exposure_histories$x <- paste0("Exposure: ", exposure_histories$x)
   titers$b <- paste0("Biomarker: ", titers$b)
   
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
@@ -229,7 +229,7 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
   sample_indivs <- sample(1:max(demography$i), size=subset)
   
   g<-  ggplot() +
-    geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=e),linetype="dotted") +
+    geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
     # geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
     geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
     facet_wrap(~i) + theme_bw() +

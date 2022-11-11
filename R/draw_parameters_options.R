@@ -4,7 +4,7 @@
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
 #' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
@@ -15,9 +15,9 @@
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx <- function(i, t, e, b, demography, antibody_states, model_pars, ...){
+draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == e)
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
   pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
@@ -25,8 +25,8 @@ draw_parameters_fixed_fx <- function(i, t, e, b, demography, antibody_states, mo
     pars[par] <- model_pars_tmp$mean[par]
     par_names[par] <- model_pars_tmp$name[par]
   }
-  # all_pars <- tibble(i=i, t=t, e=e, b=b, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
+  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 #' Draw Parameters Random Effects
@@ -35,7 +35,7 @@ draw_parameters_fixed_fx <- function(i, t, e, b, demography, antibody_states, mo
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
 #' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
@@ -46,9 +46,9 @@ draw_parameters_fixed_fx <- function(i, t, e, b, demography, antibody_states, mo
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx<- function(i, t, e, b, demography, antibody_states, model_pars, ...){
+draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == e)
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
   pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
@@ -80,8 +80,8 @@ draw_parameters_random_fx<- function(i, t, e, b, demography, antibody_states, mo
       par_names[par] <- model_pars_tmp$name[par]
     }
   }
-  # all_pars <- tibble(i=i, t=t, e=e, b=b, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
+  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 
@@ -91,7 +91,7 @@ draw_parameters_random_fx<- function(i, t, e, b, demography, antibody_states, mo
 #' 
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
 #' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
@@ -102,9 +102,9 @@ draw_parameters_random_fx<- function(i, t, e, b, demography, antibody_states, mo
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx_titer_dep <- function(i, t, e, b, demography, antibody_states, model_pars, ...){
+draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == e)
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
   pars <- numeric(nrow(model_pars_tmp))
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
@@ -122,7 +122,7 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, b, demography, antibody_
       realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 
@@ -132,7 +132,7 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, b, demography, antibody_
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
+#' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
 #' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
@@ -143,9 +143,9 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, b, demography, antibody_
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx_titer_dep <- function(i, t, e, b, demography, antibody_states, model_pars, ...){
+draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == e)
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
   pars <- numeric(nrow(model_pars_tmp))
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
@@ -189,7 +189,7 @@ draw_parameters_random_fx_titer_dep <- function(i, t, e, b, demography, antibody
       realized[par] <- pars[par]
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), e=rep(e,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 

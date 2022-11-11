@@ -31,25 +31,25 @@ age_mod<-tibble(age=0:10, modifier=1:11)
 ## Establish which part of the loop to work on 
 i<-1
 t<-1
-e<-1
+x<-1
 b<-1
 
 i<-2
 t<-2
-e<-2
+x<-2
 g<-2
 
 ## Test exposure models
-exposure_model_simple_FOI(i,t,e, g, foe_pars, demography)
-exposure_model_dem_mod(i,t,e, g, foe_pars, demography, dem_mod=dem_mod)
+exposure_model_simple_FOI(i,t,x, g, foe_pars, demography)
+exposure_model_dem_mod(i,t,x, g, foe_pars, demography, dem_mod=dem_mod)
 
 ## The following code gets run earlier within runserosim but it's outputs are needed for the following exposure_model versions
 birth_time <- birth_times$birth[i] 
 removal_time <- t_end
 # simulation_times_tmp <- times[times >= birth_time &  times <= removal_time]
 
-exposure_model_age_mod(i,t,e, g, foe_pars, demography, age_mod)
-exposure_model_dem_age_mod(i,t,e, g, foe_pars, demography, dem_mod, age_mod)
+exposure_model_age_mod(i,t,x, g, foe_pars, demography, age_mod)
+exposure_model_dem_age_mod(i,t,x, g, foe_pars, demography, dem_mod, age_mod)
 
 ## Create dummy arguments to be used for immunity models
 N_biomarker_ids <-1
@@ -67,15 +67,15 @@ library(readr)
 ## Test immunity models
 model_pars_immunity <-tibble(exposure_id=1, biomarker_id=1,name=c("titer_prot_midpoint","titer_prot_width"), mean=c(8,1.5), sd=NA, distribution=NA)
 immunity_model_all_successful()
-immunity_model_vacc_only(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events)
-immunity_model_vacc_successful_ifxn(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures)
-immunity_model_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, model_pars=model_pars_immunity)
-immunity_model_vacc_ifxn_titer_prot(i, t, e, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures, model_pars=model_pars_immunity)
+immunity_model_vacc_only(i, t, x, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events)
+immunity_model_vacc_successful_ifxn(i, t, x, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures)
+immunity_model_ifxn_titer_prot(i, t, x, exposure_histories, antibody_states, demography, biomarker_map, model_pars=model_pars_immunity)
+immunity_model_vacc_ifxn_titer_prot(i, t, x, exposure_histories, antibody_states, demography, biomarker_map, max_vacc_events, vacc_exposures, model_pars=model_pars_immunity)
 
 
 ## Test draw_parameters
-draw_parameters_fixed_fx(i, t, e, demography, model_pars, antibody_states)
-draw_parameters_random_fx_boost_wane(i, t, e, demography, model_pars, antibody_states)
+draw_parameters_fixed_fx(i, t, x, demography, model_pars, antibody_states)
+draw_parameters_random_fx_boost_wane(i, t, x, demography, model_pars, antibody_states)
 
 
 ## Create kinetics_parameters to test out antibody models
@@ -86,7 +86,7 @@ draw_parameters_random_fx_boost_wane(i, t, e, demography, model_pars, antibody_s
 kinetics_parameters <- vector(mode="list",length=N)
 ## Draw parameters for an exposure event at time 2
 kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                      draw_parameters_fixed_fx(i, 2, e, b, demography, antibody_states, model_pars))
+                                      draw_parameters_fixed_fx(i, 2, x, b, demography, antibody_states, model_pars))
 
 ## Test antibody models
 antibody_model_biphasic(i, 3, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
@@ -122,13 +122,13 @@ left_join(observation_times,antibody_states)
 exposure_histories_long <- NULL
 if(sum(exposure_histories) > 0){
   exposure_histories_long <- reshape2::melt(exposure_histories)
-  colnames(exposure_histories_long) <- c("i","t","e","value")
+  colnames(exposure_histories_long) <- c("i","t","x","value")
   exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
-  exposure_histories_long <- exposure_histories_long %>% arrange(i, t, e)
+  exposure_histories_long <- exposure_histories_long %>% arrange(i, t, x)
 }
 
 ## Reshape exposure probabilities
 exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
-colnames(exposure_probabilities_long) <- c("i","t","e","value")
-exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, e)
+colnames(exposure_probabilities_long) <- c("i","t","x","value")
+exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, x)
 

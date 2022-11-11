@@ -4,14 +4,14 @@
 \alias{exposure_model_dem_mod}
 \title{Exposure Model Modified By Relevant Demographic Elements}
 \usage{
-exposure_model_dem_mod(i, t, e, g, foe_pars, demography, dem_mod, ...)
+exposure_model_dem_mod(i, t, x, g, foe_pars, demography, dem_mod, ...)
 }
 \arguments{
 \item{i}{Individual}
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{g}{group}
 

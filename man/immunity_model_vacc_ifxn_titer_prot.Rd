@@ -7,7 +7,7 @@
 immunity_model_vacc_ifxn_titer_prot(
   i,
   t,
-  e,
+  x,
   exposure_histories,
   antibody_states,
   demography,
@@ -24,7 +24,7 @@ immunity_model_vacc_ifxn_titer_prot(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
@@ -38,7 +38,7 @@ immunity_model_vacc_ifxn_titer_prot(
 
 \item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 
-\item{vacc_exposures}{A vector of exposure IDs (e) which represents vaccination events}
+\item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
 
 \item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA}
 

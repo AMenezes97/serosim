@@ -7,7 +7,7 @@
 immunity_model_ifxn_titer_prot(
   i,
   t,
-  e,
+  x,
   exposure_histories,
   antibody_states,
   demography,
@@ -21,7 +21,7 @@ immunity_model_ifxn_titer_prot(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 

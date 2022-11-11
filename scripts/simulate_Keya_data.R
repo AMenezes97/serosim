@@ -218,9 +218,9 @@ df <- df %>%  mutate(age_yr=floor(age)) %>% mutate(titer=ifelse(observed>0,log10
 
 ## Pull true vaccination and infection times from runserosim exposure history output
 exp_hist <- res$exposure_histories_long %>%  filter(value==1)
-inf_hist <- exp_hist %>% filter(e==1) %>% select(i,t) %>% rename(inf_time=t)
-MCV1_hist <- exp_hist %>% filter(e==2) %>% select(i,t)  %>% rename(MCV1=t)
-MCV2_hist <- exp_hist %>% filter(e==3) %>% select(i,t)  %>% rename(MCV2=t)
+inf_hist <- exp_hist %>% filter(x==1) %>% select(i,t) %>% rename(inf_time=t)
+MCV1_hist <- exp_hist %>% filter(x==2) %>% select(i,t)  %>% rename(MCV1=t)
+MCV2_hist <- exp_hist %>% filter(x==3) %>% select(i,t)  %>% rename(MCV2=t)
 
 ## Add vacc time to df 
 df$MCV1<-NA
