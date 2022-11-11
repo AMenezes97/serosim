@@ -157,7 +157,7 @@ bounds<-tibble(biomarker_id=c(1,1),name=c("lower_bound","upper_bound"),value=c(8
 observation_model<-observation_model_continuous_bounded_noise
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 (aka measles antibody titer) across all individuals at the end of the simulation
-observation_times<-tibble(i=1:N,t=max(times), ag=1)
+observation_times<-tibble(i=1:N,t=max(times), b=1)
 
 
 

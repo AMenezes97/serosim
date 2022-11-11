@@ -148,7 +148,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step in the simulation}
-#'     \item{ag}{numeric values for each biomarker type; this example only has 1 biomarker type}
+#'     \item{b}{numeric values for each biomarker type; this example only has 1 biomarker type}
 #'     \item{value}{numeric values indicating antibody titer}
 #' }
 #' @family example_data
@@ -165,7 +165,7 @@
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step observed}
-#'     \item{ag}{numeric values for each biomarker type; this example only has 1 biomarker type}
+#'     \item{b}{numeric values for each biomarker type; this example only has 1 biomarker type}
 #'     \item{value}{numeric values indicating antibody titer}
 #'     \item{observed}{numeric values indicating observed antibody titer}
 #' }

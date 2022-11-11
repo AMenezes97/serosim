@@ -101,10 +101,10 @@ model_pars <- read.csv("Documents/GitHub/serosim/inst/extdata/model_pars_test_1.
 boundary<-c(2,20)
 
 ## Set observation settings 
-obs1 <- tibble(i=1:N,t=60, ag=1)
-obs2 <- tibble(i=1:N,t=60, ag=2)
-obs3 <- tibble(i=1:N,t=120, ag=1)
-obs4 <- tibble(i=1:N,t=120, ag=2)
+obs1 <- tibble(i=1:N,t=60, b=1)
+obs2 <- tibble(i=1:N,t=60, b=2)
+obs3 <- tibble(i=1:N,t=120, b=1)
+obs4 <- tibble(i=1:N,t=120, b=2)
 observation_times<-rbind(obs1,obs2,obs3,obs4)
 
     
@@ -138,11 +138,11 @@ res<- runserosim(
 
 
 # # ## Generate Plots 
-# ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
+# ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~b)
 plot_titers(res$antibody_states)
 # ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
 plot_exposure_prob(res$exposure_probabilities_long)
-# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
+# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~b) + scale_x_continuous(limits=range(times))
 plot_obs_titers_one_sample(res$observed_antibody_states)
 plot_obs_titers_paired_sample(res$observed_antibody_states)
 plot_exposure_histories(res$exposure_histories_long)

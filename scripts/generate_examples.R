@@ -45,7 +45,7 @@ example_model_pars_numeric<-reformat_model_pars(example_biomarker_map,example_mo
 
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
-observation_times<- tibble(i=1:max(example_demography$i),t=120, ag=1)
+observation_times<- tibble(i=1:max(example_demography$i),t=120, b=1)
 
 
 res<- runserosim(

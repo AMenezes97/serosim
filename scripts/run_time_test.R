@@ -55,7 +55,7 @@ vacc_age<-c(NA,9)
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 max_vacc_events<-c(NA,1)
 
-## Specify aguements needed for select exposure models
+## Specify arguments needed for select exposure models
 ## Create a tibble with any relevant age modifiers that affect exposure probability 
 ## Individuals who are less than one years old are 3 times more likely be naturally infected
 age_mod_1<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
@@ -88,8 +88,8 @@ model_pars <- read.csv(file = model_pars_path, header = TRUE)
 boundary<-c(20,20000)
 
 ## Specify observation_times to observe biomarker 1 (aka Measles antibody titer) across all individuals at the midpoint and the end of the simulation (t=60 and t=120)
-obs1 <- tibble(i=1:N,t=60, a=1)
-obs2 <- tibble(i=1:N,t=120, a=1)
+obs1 <- tibble(i=1:N,t=60, b=1)
+obs2 <- tibble(i=1:N,t=120, b=1)
 observation_times<-rbind(obs1,obs2)
 
 

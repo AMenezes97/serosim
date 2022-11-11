@@ -32,7 +32,7 @@ age_mod<-tibble(age=0:10, modifier=1:11)
 i<-1
 t<-1
 e<-1
-ag<-1
+b<-1
 
 i<-2
 t<-2
@@ -86,24 +86,24 @@ draw_parameters_random_fx_boost_wane(i, t, e, demography, model_pars, antibody_s
 kinetics_parameters <- vector(mode="list",length=N)
 ## Draw parameters for an exposure event at time 2
 kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                      draw_parameters_fixed_fx(i, 2, e, ag, demography, antibody_states, model_pars))
+                                      draw_parameters_fixed_fx(i, 2, e, b, demography, antibody_states, model_pars))
 
 ## Test antibody models
-antibody_model_biphasic(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
-antibody_model_test(i, 3, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
+antibody_model_biphasic(i, 3, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
+antibody_model_test(i, 3, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map)
 
 
-microbenchmark(antibody_model_biphasic(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map),
-               antibody_model_test(i, 10, ag, exposure_histories, antibody_states, kinetics_parameters, biomarker_map))
+microbenchmark(antibody_model_biphasic(i, 10, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map),
+               antibody_model_test(i, 10, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map))
 
 
 ## Reshape antibody_states to test observation model 
 antibody_states <- reshape2::melt(antibody_states)
-colnames(antibody_states) <- c("i","t","ag","value")
-antibody_states <- antibody_states %>% arrange(i, t, ag)
+colnames(antibody_states) <- c("i","t","b","value")
+antibody_states <- antibody_states %>% arrange(i, t, b)
 
 ## Create dummy arguments needed for observation models
-observation_times <- tibble(i=1:5,t=3, ag=1)
+observation_times <- tibble(i=1:5,t=3, b=1)
 discrete<-c(0,5,8,10) ## Cut offs for discrete assays
 boundary<-c(2,10)
 model_pars_obs <-tibble(exposure_id=NA, biomarker_id=1:2,name="obs_sd", mean= NA, sd=0.5, distribution="normal")
