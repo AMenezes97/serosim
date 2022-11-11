@@ -68,11 +68,11 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  2.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 25.50   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 49.50   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 52.44   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 78.25   3rd Qu.: NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 35.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 59.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.78   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 85.00   3rd Qu.: NA    
     ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
     ##                                                     NA's   :12000
 
@@ -237,7 +237,7 @@ are defined within model_pars as the “obs_sd” parameter.
 observation_model<-observation_model_continuous_noise
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
-observation_times<- tibble(i=1:max(demography$i),t=120, ag=1)
+observation_times<- tibble(i=1:max(demography$i),t=120, b=1)
 ```
 
 # 1.8 Optional Arguments
@@ -321,14 +321,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     e    ag name    value realized_value
+    ##       i     t     e     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1   110     2     1 boost 3.64           3.64   
-    ## 2     1   110     2     1 wane  0.00123        0.00123
-    ## 3     1   111     1     1 boost 7.17           7.17   
-    ## 4     1   111     1     1 wane  0.00330        0.00330
-    ## 5     2    22     2     1 boost 2.42           2.42   
-    ## 6     2    22     2     1 wane  0.00186        0.00186
+    ## 1     1    50     1     1 boost 7.27           7.27   
+    ## 2     1    50     1     1 wane  0.00397        0.00397
+    ## 3     1    56     2     1 boost 1.33           1.33   
+    ## 4     1    56     2     1 wane  0.00155        0.00155
+    ## 5     2    69     1     1 boost 3.60           3.60   
+    ## 6     2    69     1     1 wane  0.00463        0.00463
 
 ``` r
 ## Plots for the paper 

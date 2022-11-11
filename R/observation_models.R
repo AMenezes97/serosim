@@ -31,13 +31,13 @@ observation_model_continuous<-function(antibody_states,model_pars, ...){
 observation_model_continuous_bounded<-function(antibody_states,model_pars, bounds, ...){
   antibody_states$observed<-antibody_states$value
   antibody_states_new<-NULL
-  for(ags in unique(antibody_states$ag)){ ## For each biomarker
+  for(bs in unique(antibody_states$b)){ ## For each biomarker
     ## Pull out lower and upper bound for the assays
-    lower_bound<-bounds$value[bounds$biomarker_id==ags & bounds$name=="lower_bound"]
-    upper_bound<-bounds$value[bounds$biomarker_id==ags & bounds$name=="upper_bound"]
+    lower_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="lower_bound"]
+    upper_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="upper_bound"]
     ## Create a new data table containing only the particular biomarker
     antibody_states<-data.table(antibody_states)
-    antibody_states_tmp<-antibody_states[antibody_states$ag==ags,]
+    antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
     ## Adjust the observed values given the assay upper and lower bounds
     antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<lower_bound,0,antibody_states_tmp$observed)
     antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed>upper_bound,upper_bound,antibody_states_tmp$observed)
@@ -62,12 +62,12 @@ observation_model_continuous_bounded<-function(antibody_states,model_pars, bound
 observation_model_discrete<-function(antibody_states,model_pars, cutoffs, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
-  for(ags in unique(antibody_states$ag)){ ## For each biomarker
+  for(bs in unique(antibody_states$b)){ ## For each biomarker
     ## Pull out the assay cutoffs 
-    cutoffs_ag<-cutoffs[ags,]
-    cutoffs_tmp<-c(cutoffs_ag,Inf)
-    antibody_states_tmp<-antibody_states[antibody_states$ag==ags,]
-    antibody_states_tmp$observed<-cut(antibody_states_tmp$value, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_ag)
+    cutoffs_b<-cutoffs[bs,]
+    cutoffs_tmp<-c(cutoffs_b,Inf)
+    antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
+    antibody_states_tmp$observed<-cut(antibody_states_tmp$value, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
     antibody_states_new<- rbind(antibody_states_new, antibody_states_tmp)
   }
   antibody_states_new
@@ -89,25 +89,25 @@ observation_model_discrete<-function(antibody_states,model_pars, cutoffs, ...){
 observation_model_continuous_bounded_noise<-function(antibody_states,model_pars, bounds, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
-  for(ags in unique(antibody_states$ag)){
-    lower_bound<-bounds$value[bounds$biomarker_id==ags & bounds$name=="lower_bound"]
-    upper_bound<-bounds$value[bounds$biomarker_id==ags & bounds$name=="upper_bound"]
-    antibody_states_tmp<-antibody_states[antibody_states$ag==ags,]
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
+  for(bs in unique(antibody_states$b)){
+    lower_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="lower_bound"]
+    upper_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="upper_bound"]
+    antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
+      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<lower_bound,0,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed>upper_bound,upper_bound,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
     }
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="normal"){
-      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
+      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<lower_bound,0,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed>upper_bound,upper_bound,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
     }
     antibody_states_new<-rbind(antibody_states_new,antibody_states_tmp)
   }
-  observed_states<- antibody_states_new %>% arrange(i, t, ag)
+  observed_states<- antibody_states_new %>% arrange(i, t, b)
   observed_states
 }
 
@@ -126,19 +126,19 @@ observation_model_continuous_bounded_noise<-function(antibody_states,model_pars,
 observation_model_continuous_noise<-function(antibody_states,model_pars, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
-  for(ags in unique(antibody_states$ag)){
-    antibody_states_tmp<-antibody_states[antibody_states$ag==ags,]
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
+  for(bs in unique(antibody_states$b)){
+    antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
+      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
     }
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="normal"){
-      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
+      antibody_states_tmp$observed<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
     }
     antibody_states_new<-rbind(antibody_states_new,antibody_states_tmp)
   }
-  observed_states<- antibody_states_new %>% arrange(i, t, ag)
+  observed_states<- antibody_states_new %>% arrange(i, t, b)
   observed_states
 }
 
@@ -158,23 +158,23 @@ observation_model_continuous_noise<-function(antibody_states,model_pars, ...){
 observation_model_discrete_noise<-function(antibody_states,model_pars, cutoffs, ...){
   antibody_states_new<-NULL
   antibody_states<-data.table(antibody_states)
-  for(ags in unique(antibody_states$ag)){
-    cutoffs_ag<-cutoffs[ags,]
-    cutoffs_tmp<-c(cutoffs_ag,Inf)
-    antibody_states_tmp<-antibody_states[antibody_states$ag==ags,]
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
-      antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_ag)
+  for(bs in unique(antibody_states$b)){
+    cutoffs_b<-cutoffs[bs,]
+    cutoffs_tmp<-c(cutoffs_b,Inf)
+    antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
+      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
+      antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
       antibody_states_tmp$temp<-NULL
     }
-    if(model_pars$distribution[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"]=="normal"){
-      antibody_states_tmp$temp<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==ags & model_pars$name=="obs_sd"])
-      antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_ag)
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
+      antibody_states_tmp$temp<-rnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
+      antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
       antibody_states_tmp$temp<-NULL
     }
     antibody_states_new<-rbind(antibody_states_new,antibody_states_tmp)
   }
-  observed_states<- antibody_states_new %>% arrange(i, t, ag)
+  observed_states<- antibody_states_new %>% arrange(i, t, b)
   observed_states
 }
 

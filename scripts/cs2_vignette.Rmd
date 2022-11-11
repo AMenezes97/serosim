@@ -249,8 +249,8 @@ bounds<-tibble(biomarker_id=c(1,1,2,2),name=rep(c("lower_bound","upper_bound"),2
 observation_model<-observation_model_continuous_bounded_noise
 
 ## Specify observation_times to observe both biomarkers (aka diphtheria and pertussis antibody titer) across all individuals at the end of the simulation (t=120)
-obs1 <- tibble(i=1:N,t=120, ag=1)
-obs2 <- tibble(i=1:N,t=120, ag=2)
+obs1 <- tibble(i=1:N,t=120, b=1)
+obs2 <- tibble(i=1:N,t=120, b=2)
 observation_times<-rbind(obs1,obs2)
 ```
 

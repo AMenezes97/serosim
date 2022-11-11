@@ -8,7 +8,7 @@ draw_parameters_fixed_fx_titer_dep(
   i,
   t,
   e,
-  ag,
+  b,
   demography,
   antibody_states,
   model_pars,
@@ -22,7 +22,7 @@ draw_parameters_fixed_fx_titer_dep(
 
 \item{e}{exposure}
 
-\item{ag}{biomarker}
+\item{b}{biomarker}
 
 \item{demography}{Demography information}
 

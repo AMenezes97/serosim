@@ -8,7 +8,7 @@ draw_parameters_random_fx(
   i,
   t,
   e,
-  ag,
+  b,
   demography,
   antibody_states,
   model_pars,
@@ -22,7 +22,7 @@ draw_parameters_random_fx(
 
 \item{e}{exposure}
 
-\item{ag}{biomarker}
+\item{b}{biomarker}
 
 \item{demography}{Demography information}
 

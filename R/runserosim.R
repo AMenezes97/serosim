@@ -108,8 +108,8 @@ runserosim <- function(
             ## Work out antibody state for each biomarker
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
-            for(ag in biomarker_ids){
-                antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
+            for(b in biomarker_ids){
+                antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
                                                           antibody_states, kinetics_parameters, biomarker_map, ...)
             }
             
@@ -134,13 +134,13 @@ runserosim <- function(
                     ## for this event, drawn from information given in model_pars
                     if(successful_exposure == 1){
                         kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                          draw_parameters(i, t, e, ag, demography, antibody_states, model_pars, ...))
+                                                          draw_parameters(i, t, e, b, demography, antibody_states, model_pars, ...))
                     }
                     exposure_histories[i,t,e] <- successful_exposure
                     exposure_probabilities[i,t,e] <- prob_success*prob_exposed
                     if(successful_exposure == 1){
-                        for(ag in biomarker_ids){
-                            antibody_states[i,t,ag] <- antibody_model(i, t, ag, exposure_histories, 
+                        for(b in biomarker_ids){
+                            antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
                                                                       antibody_states, kinetics_parameters, biomarker_map, ...)
                         }
                     }
@@ -152,8 +152,8 @@ runserosim <- function(
     
     ## Reshape antibody states
     antibody_states <- reshape2::melt(antibody_states)
-    colnames(antibody_states) <- c("i","t","ag","value")
-    antibody_states <- antibody_states %>% arrange(i, t, ag)
+    colnames(antibody_states) <- c("i","t","b","value")
+    antibody_states <- antibody_states %>% arrange(i, t, b)
     
     ## Reshape exposure histories
     exposure_histories_long <- NULL

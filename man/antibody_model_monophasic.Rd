@@ -7,7 +7,7 @@
 antibody_model_monophasic(
   i,
   t1,
-  ag,
+  b,
   exposure_histories,
   antibody_states,
   kinetics_parameters,
@@ -20,7 +20,7 @@ antibody_model_monophasic(
 
 \item{t1}{time}
 
-\item{ag}{biomarker}
+\item{b}{biomarker}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 

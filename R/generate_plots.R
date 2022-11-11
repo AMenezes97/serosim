@@ -123,7 +123,7 @@ plot_exposure_histories <- function(exposure_histories){
 plot_titers<- function(titers){
   p <- ggplot2::ggplot(titers) + 
     ggplot2::geom_tile(aes(x=t,y=i,fill=value)) + 
-    ggplot2::facet_wrap(~ag,nrow=2) + 
+    ggplot2::facet_wrap(~b,nrow=2) + 
     ggplot2::theme_bw() + 
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
@@ -155,7 +155,7 @@ plot_titers<- function(titers){
 #' plot_obs_titers_one_sample(example_observed_antibody_states)
 plot_obs_titers_one_sample<-function(observed_titers){
   p<-ggplot2::ggplot(observed_titers  %>% filter(!is.na(observed))) +
-  ggplot2::geom_jitter(ggplot2::aes(x=ag, y=observed),
+  ggplot2::geom_jitter(ggplot2::aes(x=b, y=observed),
                        height=0,width=0.25) +
   ggplot2::theme_bw() +
     ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
@@ -168,7 +168,7 @@ plot_obs_titers_one_sample<-function(observed_titers){
                   y="Observed Titer") + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
     suppressWarnings(ggplot2::scale_x_discrete(name ="Biomarker", 
-                     limits=c(unique(observed_titers$ag)), expand = c(0.1, 0.1))) +
+                     limits=c(unique(observed_titers$b)), expand = c(0.1, 0.1))) +
     theme(legend.position="bottom")
 return(p)
 }
@@ -187,7 +187,7 @@ plot_obs_titers_paired_sample<-function(observed_titers){
 p<- ggplot2::ggplot(observed_titers, aes(x = t, y = observed, group = i)) + 
   ggplot2::geom_line() + 
   ggplot2:: geom_point(size = 2, aes(color=factor(t))) + 
-  ggplot2:: facet_wrap(~ ag) +
+  ggplot2:: facet_wrap(~ b) +
   ggplot2::scale_x_discrete("") +
   ggplot2::theme_bw() +
   ggplot2::theme(legend.position = "top", 
@@ -221,7 +221,7 @@ return(p)
 #' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
 plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography){
   exposure_histories$e <- paste0("Exposure: ", exposure_histories$e)
-  titers$ag <- paste0("Biomarker: ", titers$ag)
+  titers$b <- paste0("Biomarker: ", titers$b)
   
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
   removal_subset <- demography %>% filter(times==1)
@@ -231,7 +231,7 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
   g<-  ggplot() +
     geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=e),linetype="dotted") +
     # geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
-    geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=ag)) +
+    geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
     facet_wrap(~i) + theme_bw() +
     scale_color_hue("Key", guide=guide_legend(order=3)) +
     ggplot2::labs(title="Individual Antibody Kinetics",

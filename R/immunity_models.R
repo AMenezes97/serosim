@@ -143,9 +143,9 @@ immunity_model_ifxn_titer_prot <- function(i, t, e, exposure_histories,
                               antibody_states, demography, biomarker_map, model_pars, ...){
     ## Find biomarkers which are boosted by this exposure type
     ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
-    ag<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
+    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
     ## Find current titer to all relevant biomarkers
-    curr_t <- antibody_states[i,t,ag] ## How to deal with titers against multiple biomarkers? Should they be added?
+    curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
     curr_t <- sum(curr_t)
     
     ## Pull out necessary variables 
@@ -211,9 +211,9 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, e, exposure_histories,
   else {
     ## Find biomarkers which are boosted by this exposure type
     ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
-    ag<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
+    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==e]
     ## Find current titer to all relevant biomarkers
-    curr_t <- antibody_states[i,t,ag] ## How to deal with titers against multiple biomarkers? Should they be added?
+    curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
     curr_t <- sum(curr_t)
     
     ## Pull out necessary variables 
