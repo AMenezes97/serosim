@@ -68,15 +68,15 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 33.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 56.00   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.27   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 92.25   3rd Qu.: NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  7.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 36.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 60.00   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 63.49   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 95.25   3rd Qu.: NA    
     ##  Max.   :100.00   Max.   :120.00   Max.   :119.00   Max.   : NA    
     ##                                                     NA's   :12000
 
-# 1.3 Biomarker Map
+# 1.3 Exposure to biomarker mapping
 
 Set up the exposure IDs and biomarker IDs for the simulation which will
 determine which infection or vaccination events are occurring. Here, we
@@ -87,7 +87,7 @@ any simulations of vaccine preventable diseases like measles vaccination
 and measles natural infection. runserosim requires that exposure_id and
 biomarker_id are numeric so we will use the reformat_biomarker_map
 function to create a new version of the biomarker map. Users can go
-directly to numeric biomarker_map if they wish
+directly to numeric biomarker_map if they wish.
 
 ``` r
 ## Create biomarker map
@@ -113,18 +113,17 @@ biomarker_map
 
 # 1.4 Force of Exposure and Exposure Model
 
-Now, we specify the foe_pars argument which contains the force of
-exposure for all exposure_IDs across all time steps. We also specify the
-exposure model which will determine whether an individual is exposed to
-a specific exposure event.
-
-Since we did not specify different groups within demography, all
-individuals will automatically be assigned group 1. Therefore, we only
-need 1 row for dimension 1 in foe_pars. Groups can be used as an
-indicator of location if the user wishes to specify a location specific
-force of exposure. We specified the same value for all time steps within
-foe_pars for simplicity but users will likely have varying numbers to
-match real world settings.
+Now, we need to specify the foe_pars argument which contains the force
+of exposure for all exposure_IDs across all time steps. We also specify
+the exposure model which will be called within runserosim later. The
+exposure model will determine the probability that an individual is
+exposed to a specific exposure event. Since we did not specify different
+groups within demography, all individuals will automatically be assigned
+group 1. Therefore, we only need 1 row for dimension 1 in foe_pars.
+Groups can be used as an indicator of location if the user wishes to
+specify a location specific force of exposure. We specified the same
+force of exposure for all time steps within foe_pars for simplicity but
+users will likely have varying numbers to match real world settings.
 
 ``` r
 ## Create an empty array to store the force of infection for all exposure types
@@ -140,25 +139,25 @@ exposure_model<-exposure_model_simple_FOE
 
 # 1.5 Immunity Model
 
-Here, we specify the immunity model which will determine whether an
-exposure event is successful or not. We will use a simple immunity
+Here, we specify the immunity model which will determine the probability
+that an exposure event is successful. We will use a simple immunity
 model(immunity_model_vacc_ifxn_simple) where successful exposure is only
 conditional on the total number of previous exposure events. With this
 model, the probability of successful vaccination exposure depends on the
-number of vaccines received prior to time t and age at time t while the
-probability of successful infection is dependent on the number of
-infections prior to time t.
+number of vaccines received prior to time t and the individual’s age at
+time t while the probability of successful infection is dependent on the
+number of infections prior to time t.
 
 ``` r
 ## Specify immunity model within runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_simple
 
-## Specify 3 additional arguments needed for this immunity model 
+## Create 3 additional arguments needed for this immunity model 
 ## Specify which exposure IDs represent vaccination events 
 vacc_exposures<-2
 ## Specify the age at which an individual is eligible for vaccination (9 months old); note non vaccine exposures are listed as NAs
 vacc_age<-c(NA,9)
-## Specify the maximum number of successful events an individual can receive for each exposure type (1 vaccine and 1 1 infection event)
+## Specify the maximum number of successful events an individual can receive for each exposure type (1 infection event and 1 vaccination event)
 max_events<-c(1,1)
 ```
 
@@ -172,11 +171,11 @@ csv file to specify their own parameters. All parameters needed for the
 user specified antibody model, must be specified within the antibody
 kinetics parameters tibble (model_pars). Lastly, we define the
 draw_parameters function which determines how each individual’s antibody
-kinetics parameters are simulated from the antibody kinetics parameters
-tibble (model_pars). We will use a function which draws parameters
-directly from model_pars for the antibody model with random effects.
-Parameters are drawn randomly from a distribution with mean and standard
-deviation specified within model_pars. runserosim requires that
+kinetics parameters are simulated from the within host processes
+parameters tibble (model_pars). We will use a function which draws
+parameters directly from model_pars for the antibody model with random
+effects. Parameters are drawn randomly from a distribution with mean and
+standard deviation specified within model_pars. runserosim requires that
 exposure_id and biomarker_id are numeric so we will use the
 reformat_model_pars function to create a new version of model_pars.
 Users can go directly to numeric model_pars if they wish.
@@ -222,7 +221,7 @@ draw_parameters<-draw_parameters_random_fx
 Now we specify how observed antibody titers are generated as a
 probabilistic function of the true, latent antibody titer and when to
 observe these titers. In this step, we specify the sampling design and
-assay choice for their serological survey.We will take samples of all
+assay choice for their serological survey. We will take samples of all
 individuals at the end of the simulation (t=120).
 
 Our chosen observation model observes the latent titer values given a
@@ -323,12 +322,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     2    58     1     1 boost 2.24           2.24   
-    ## 2     2    58     1     1 wane  0.00337        0.00337
-    ## 3     2    67     2     1 boost 1.99           1.99   
-    ## 4     2    67     2     1 wane  0.00114        0.00114
-    ## 5     3    29     1     1 boost 2.60           2.60   
-    ## 6     3    29     1     1 wane  0.00376        0.00376
+    ## 1     1    41     1     1 boost 8.45           8.45   
+    ## 2     1    41     1     1 wane  0.00398        0.00398
+    ## 3     1    52     2     1 boost 1.27           1.27   
+    ## 4     1    52     2     1 wane  0.00182        0.00182
+    ## 5     2    82     2     1 boost 1.61           1.61   
+    ## 6     2    82     2     1 wane  0.00165        0.00165
 
 ``` r
 ## Plots for the paper 
