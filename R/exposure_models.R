@@ -53,7 +53,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, ..
   ## Pull individual's information within demography 
   individualnum<-i
   demography_tmp<-data.table(demography)
-  demography_tmp<-demography_tmp[i==individualnum & times==t,]
+  demography_tmp<-demography_tmp[demography_tmp$i==individualnum & times==t,]
   
   for (col in seq_along(cols)){ ## For each unique column entry in dem_mod 
     ## Pull the column name
@@ -107,7 +107,7 @@ exposure_model_age_mod <- function(i, t, x, g, foe_pars, demography, age_mod, t_
     ## Pull individual's information within demography 
     individualnum<-i
     demography_tmp<-data.table(demography)
-    demography_tmp<-demography_tmp[i==individualnum & times==t,]
+    demography_tmp<-demography_tmp[demography_tmp$i==individualnum & times==t,]
     birth_time<-demography_tmp$birth
   curr_age<-floor((t-birth_time)/t_in_year) ## Individual's birth time already gets pulled earlier on within the runserosim code so is it fine to just call it here?
   

@@ -4,7 +4,7 @@
 
 
 ## Set up generic variables needed 
-## This script will follow some of the same charcteristic of case study 1:
+## This script will follow some of the same characteristic of case study 1:
 ## 1,000 individuals across 120 time steps
 ## 2 exposure IDs for 1 biomarker ID with 2 observation times 
 

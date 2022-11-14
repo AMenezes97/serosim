@@ -12,7 +12,7 @@
 #' @examples
 observation_model_continuous<-function(antibody_states,model_pars, ...){
   antibody_states$observed<-antibody_states$value
-  antibody_states_new
+  antibody_states
 }
 
 #' Observation Model For Continuous Assays With Detection Limits And No Added Noise
