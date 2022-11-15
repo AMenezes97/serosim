@@ -68,12 +68,12 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 16.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 54.50   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 53.82   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 84.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :117.00   Max.   : NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  2.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 26.75   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 62.50   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.94   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 95.25   3rd Qu.: NA    
+    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
     ##                                                     NA's   :12000
 
 # 1.3 Exposure to biomarker mapping
@@ -320,14 +320,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name    value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    36     1     1 boost 8.87           8.87   
-    ## 2     1    36     1     1 wane  0.00279        0.00279
-    ## 3     1    45     2     1 boost 1.59           1.59   
-    ## 4     1    45     2     1 wane  0.00144        0.00144
-    ## 5     2    64     1     1 boost 6.82           6.82   
-    ## 6     2    64     1     1 wane  0.00321        0.00321
+    ##       i     t     x     b name     value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
+    ## 1     1    98     1     1 boost  6.78           6.78   
+    ## 2     1    98     1     1 wane   0.00333        0.00333
+    ## 3     1   103     2     1 boost  3.99           3.99   
+    ## 4     1   103     2     1 wane   0.00197        0.00197
+    ## 5     2     9     1     1 boost 10.5           10.5    
+    ## 6     2     9     1     1 wane   0.00364        0.00364
 
 ``` r
 ## Plots for the paper 

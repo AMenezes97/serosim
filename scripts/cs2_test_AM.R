@@ -28,6 +28,7 @@ t_in_year=12
 vacc_exposures<-1
 vacc_age<-c(2,NA,NA)
 max_vacc_events<-c(1,NA,NA)
+max_events<-c(1,1,1)
 model_pars_path <- system.file("extdata", "model_pars_cs2.csv", package = "serosim")
 model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
@@ -48,10 +49,10 @@ res<- runserosim(
   foe_pars,
   biomarker_map,
   model_pars,
-  exposure_model=exposure_model_age_mod,
+  exposure_model=exposure_model_dem_age_mod,
   immunity_model=immunity_model_vacc_ifxn_titer_prot,
   antibody_model=antibody_model_biphasic,
-  observation_model=observation_model_continuous,
+  observation_model=observation_model_continuous_bounded_noise,
   draw_parameters=draw_parameters_random_fx_titer_dep,
 
   ## Other arguments needed
@@ -62,7 +63,8 @@ res<- runserosim(
   dem_mod=dem_mod,
   age_mod=age_mod,
   t_in_year=t_in_year,
-  cutoffs=cutoffs
+  cutoffs=cutoffs,
+  max_events=max_events
 )
 
 
@@ -78,6 +80,114 @@ plot_exposure_prob(res$exposure_probabilities_long)
 plot_titers(res$antibody_states)
 ## Plot the serosurvey results 
 plot_obs_titers_one_sample(res$observed_antibody_states)
+## Note that the simulated kinetics parameters are also stored
+head(res$kinetics_parameters)
 
+## Now let's test a monophasic boosting model with various simulation models 
+model_pars_path <- system.file("extdata", "model_pars_monophasic_test.csv", package = "serosim")
+model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
+mono_model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+
+res<- runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  foe_pars,
+  biomarker_map,
+  model_pars=mono_model_pars,
+  exposure_model=exposure_model_dem_age_mod,
+  immunity_model=immunity_model_vacc_ifxn_simple,
+  antibody_model=antibody_model_monophasic,
+  observation_model=observation_model_continuous_bounded,
+  draw_parameters=draw_parameters_fixed_fx_titer_dep,
+  
+  ## Other arguments needed
+  bounds=bounds,
+  max_vacc_events=max_vacc_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+  dem_mod=dem_mod,
+  age_mod=age_mod,
+  t_in_year=t_in_year,
+  cutoffs=cutoffs,
+  max_events=max_events
+)
+
+## Plot antibody states and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+## Plot exposure histories for all exposure types
+plot_exposure_histories(res$exposure_histories_long)
+## Plot exposure probabilities for all exposure types
+plot_exposure_prob(res$exposure_probabilities_long)
+## Plot antibody states for all individuals
+plot_titers(res$antibody_states)
+## Plot the serosurvey results 
+plot_obs_titers_one_sample(res$observed_antibody_states)
+## Note that the simulated kinetics parameters are also stored
+head(res$kinetics_parameters)
+
+
+
+
+
+
+
+## Now let's test a monophasic boosting model with various simulation models and all infections
+## immunity_model_ifxn_titer_prot needs to be tested
+biomarker_map_original <- tibble(exposure_id=c("A_ifxn","B_ifxn"),biomarker_id=c("A_antibody","B_antibody"))
+biomarker_map <-reformat_biomarker_map(biomarker_map_original)
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))
+foe_pars[1,,1] <- 0.2 ## Group 1 (aka Group 1)
+foe_pars[2,,1] <- 0.3 ## Group 2 (aka Group 2)
+foe_pars[1,,2] <- 0.4 ## Group 1 (aka Group 1)
+foe_pars[2,,2] <- 0.3 ## Group 2 (aka Group 2)
+age_mod_1<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
+age_mod_2<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+age_mod<-rbind(age_mod_1,age_mod_2)
+dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2), column=rep("NS",times=6), value=rep(c("low","medium", "high"),2), modifier=c(1,2,3,2,1.5,1))
+t_in_year=12
+vacc_exposures<-1
+vacc_age<-c(2,NA)
+max_vacc_events<-c(1,NA)
+max_events<-c(1,1)
+model_pars_path <- system.file("extdata", "model_pars_monophasic_test_ifxn.csv", package = "serosim")
+model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
+mono_model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+
+res<- runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  foe_pars,
+  biomarker_map,
+  model_pars=mono_model_pars,
+  exposure_model=exposure_model_dem_age_mod,
+  immunity_model=immunity_model_ifxn_titer_prot,
+  antibody_model=antibody_model_monophasic,
+  observation_model=observation_model_discrete,
+  draw_parameters=draw_parameters_random_fx_titer_dep,
+  
+  ## Other arguments needed
+  bounds=bounds,
+  max_vacc_events=max_vacc_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+  dem_mod=dem_mod,
+  age_mod=age_mod,
+  t_in_year=t_in_year,
+  cutoffs=cutoffs,
+  max_events=max_events
+)
+
+## Plot antibody states and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+## Plot exposure histories for all exposure types
+plot_exposure_histories(res$exposure_histories_long)
+## Plot exposure probabilities for all exposure types
+plot_exposure_prob(res$exposure_probabilities_long)
+## Plot antibody states for all individuals
+plot_titers(res$antibody_states)
+## Plot the serosurvey results 
+plot_obs_titers_one_sample(res$observed_antibody_states)
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)

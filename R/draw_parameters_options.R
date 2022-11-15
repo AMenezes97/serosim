@@ -114,7 +114,7 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_
     realized[par] <- model_pars_tmp$mean[par]
     par_names[par] <- model_pars_tmp$name[par]
     
-    if(par_names[par] %in% c("boost_short","boost_long")){
+    if(par_names[par] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
       biomarker<-model_pars_tmp$biomarker_id[par]
       titer_threshold <- min(antibody_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
@@ -177,14 +177,14 @@ draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody
       pars[par] <- rnorm(1, model_pars_tmp$mean[par], model_pars_tmp$sd[par])
       par_names[par] <- model_pars_tmp$name[par]
     }
-    if(par_names[par] %in% c("boost_short","boost_long")){
+    if(par_names[par] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
       biomarker<-model_pars_tmp$biomarker_id[par]
       t1<-t-1
       titer_threshold <- min(antibody_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
       realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
-    if(!(par_names[par] %in% c("boost_short","boost_long"))){
+    if(!(par_names[par] %in% c("boost_short","boost_long","boost"))){
       ## Non boost Realized parameters don't get affected by titer ceiling
       realized[par] <- pars[par]
     }
