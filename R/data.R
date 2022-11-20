@@ -137,6 +137,23 @@
 #' @family example_data
 "example_exposure_probabilities"
 
+#' Example force of exposure 
+#'
+#' Example force of exposure runserosim output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID
+#' 
+#' @docType data
+#' @name example_exposure_force
+#' @usage data(example_exposure_force
+#' @format A data frame with 24000 rows and 4 variables:
+#' \describe{
+#'     \item{i}{string numeric values for each individual}
+#'     \item{t}{string numeric values for each time step in the simulation}
+#'     \item{x}{numeric values for each exposure type}
+#'     \item{value}{numeric values indicating force of exposure}
+#' }
+#' @family example_data
+"example_exposure_force"
+
 #' Example antibody states
 #'
 #' Example antibody states runserosim output. This example data set output contains antibody titers for individuals at all time steps for all biomarkers listed in example_biomarker_map

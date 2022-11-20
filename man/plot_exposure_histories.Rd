@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_exposure_histories}
 \alias{plot_exposure_histories}
-\title{Plot Exposure Histories}
+\title{Plot Individual Exposure Histories}
 \usage{
 plot_exposure_histories(exposure_histories)
 }
@@ -10,10 +10,10 @@ plot_exposure_histories(exposure_histories)
 \item{expsoure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure ID}
 }
 \value{
-A plot of exposures histories across time for all individuals and exposures is returned
+A plot of individual exposures histories across time for all individuals and exposures is returned
 }
 \description{
-Plot Exposure Histories
+Plot Individual Exposure Histories
 }
 \examples{
 plot_exposure_histories(example_exposure_histories)

@@ -312,11 +312,14 @@ Now that the simulation is complete, let's plot and examine the simulation outpu
 ## Plot antibody states and exposure histories for 10 individuals 
 plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
 
-## Plot exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual force of exposure for all exposure types
+plot_exposure_force(res$exposure_force_long)
 
-## Plot exposure probabilities for all exposure types
+## Plot individual exposure probability for all exposure types
 plot_exposure_prob(res$exposure_probabilities_long)
+
+## Plot individual exposure histories for all exposure types
+plot_exposure_histories(res$exposure_histories_long)
 
 ## Plot antibody states for all individuals
 plot_titers(res$antibody_states)

@@ -49,7 +49,7 @@ runserosim(
 \item{VERBOSE}{(optional) If an integer is specified; an update message will be printed once the simulation reaches that individual and every multiple thereafter; defaults to NULL}
 }
 \value{
-a list containing the following elements: exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
+a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
 }
 \description{
 Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers.

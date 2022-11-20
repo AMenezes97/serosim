@@ -16,7 +16,7 @@
 #' @param exposure_histories_fixed (optional) A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.
 #' @param VERBOSE (optional) If an integer is specified; an update message will be printed once the simulation reaches that individual and every multiple thereafter; defaults to NULL 
 #' 
-#' @return a list containing the following elements: exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
+#' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' 
 #' @export
 #' @examples
@@ -79,6 +79,7 @@ runserosim <- function(
     ## Create empty arrays to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
+    exposure_force <-array(NA, dim=c(N, length(times), N_exposure_ids))
     antibody_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
     kinetics_parameters <- vector(mode="list",length=N)
 
@@ -138,6 +139,7 @@ runserosim <- function(
                     }
                     exposure_histories[i,t,x] <- successful_exposure
                     exposure_probabilities[i,t,x] <- prob_success*prob_exposed
+                    exposure_force[i,t,x] <- prob_exposed
                     if(successful_exposure == 1){
                         for(b in biomarker_ids){
                             antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
@@ -168,6 +170,12 @@ runserosim <- function(
     exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
     colnames(exposure_probabilities_long) <- c("i","t","x","value")
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, x)
+    
+    ## Reshape exposure probabilities
+    exposure_force_long <- reshape2::melt(exposure_force)
+    colnames(exposure_force_long) <- c("i","t","x","value")
+    exposure_force_long <- exposure_force_long %>% arrange(i, t, x)
+    
     ## Observation process
     if(!is.null(observation_times)){
         observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), model_pars, ...)
@@ -179,6 +187,8 @@ runserosim <- function(
                 "exposure_histories_long"=exposure_histories_long,
                 "exposure_probabilities"=exposure_probabilities,
                 "exposure_probabilities_long"=exposure_probabilities_long,
+                "exposure_force"=exposure_force,
+                "exposure_force_long"=exposure_force_long,
                 "antibody_states"=antibody_states,
                 "observed_antibody_states"=observed_antibody_states,
                 "kinetics_parameters"=all_kinetics_parameters))

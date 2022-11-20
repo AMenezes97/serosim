@@ -71,6 +71,7 @@ res<- runserosim(
 ## Save select runserosim outputs 
 example_exposure_histories<-res$exposure_histories_long
 example_exposure_probabilities<-res$exposure_probabilities_long
+example_exposure_force <- res$exposure_force_long
 example_antibody_states<-res$antibody_states
 example_observed_antibody_states<-res$observed_antibody_states
 
@@ -86,6 +87,7 @@ save(example_demography,
      example_model_pars_numeric,
      example_exposure_histories,
      example_exposure_probabilities,
+     example_exposure_force,
      example_antibody_states,
      example_observed_antibody_states,
      file="~/Documents/GitHub/serosim/data/example.RData")

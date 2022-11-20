@@ -68,11 +68,11 @@ summary(demography)
 ```
 
     ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  2.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 26.75   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 62.50   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 59.94   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 95.25   3rd Qu.: NA    
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 24.00   1st Qu.: NA    
+    ##  Median : 50.50   Median : 60.50   Median : 53.50   Median : NA    
+    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 56.57   Mean   :NaN    
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 88.00   3rd Qu.: NA    
     ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
     ##                                                     NA's   :12000
 
@@ -287,32 +287,40 @@ plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
-## Plot exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual force of exposure for all exposure types
+## Note: All individuals are under the same force of exposure since we specified a simple exposure model
+plot_exposure_force(res$exposure_force_long)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
 
 ``` r
-## Plot exposure probabilities for all exposure types
+## Plot individual exposure probabilities for all exposure types
 plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->
 
 ``` r
+## Plot individual exposure histories for all exposure types
+plot_exposure_histories(res$exposure_histories_long)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
+
+``` r
 ## Plot antibody states for all individuals
 plot_titers(res$antibody_states)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
 
 ``` r
 ## Plot the serosurvey results 
 plot_obs_titers_one_sample(res$observed_antibody_states)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-6.png)<!-- -->
 
 ``` r
 ## Note that the simulated kinetics parameters are also stored
@@ -320,14 +328,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name     value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
-    ## 1     1    98     1     1 boost  6.78           6.78   
-    ## 2     1    98     1     1 wane   0.00333        0.00333
-    ## 3     1   103     2     1 boost  3.99           3.99   
-    ## 4     1   103     2     1 wane   0.00197        0.00197
-    ## 5     2     9     1     1 boost 10.5           10.5    
-    ## 6     2     9     1     1 wane   0.00364        0.00364
+    ##       i     t     x     b name    value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
+    ## 1     1     4     1     1 boost 4.69           4.69   
+    ## 2     1     4     1     1 wane  0.00405        0.00405
+    ## 3     1    12     2     1 boost 2.54           2.54   
+    ## 4     1    12     2     1 wane  0.00183        0.00183
+    ## 5     2    30     1     1 boost 3.98           3.98   
+    ## 6     2    30     1     1 wane  0.00319        0.00319
 
 ``` r
 ## Plots for the paper 

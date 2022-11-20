@@ -52,11 +52,11 @@ plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshol
     return(g)
 }
   
-#' Plot Exposure Probabilities Across Time For All Individuals And Exposure IDs
+#' Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure IDs
 #'
 #' @param exposure_probabilities_long The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID
 #'
-#' @return A plot of exposure probabilities across time for all individuals and exposure IDs is returned
+#' @return A plot of individual exposure probabilities across time for all exposure IDs is returned
 #' @export
 #'
 #' @examples
@@ -69,7 +69,7 @@ plot_exposure_prob<-function(exposure_probabilities_long){
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Exposure Probabilties",
+    ggplot2::labs(title="Individual Exposure Probability",
          x="Time",
          y="Individual",
          fill="Probability")   + 
@@ -83,11 +83,41 @@ plot_exposure_prob<-function(exposure_probabilities_long){
   return(p)
 }
 
-#' Plot Exposure Histories
+#' Plot Force of Exposure for Each Individual Across Time For All Individuals And Exposure IDs
+#'
+#' @param exposure_force_long The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID
+#'
+#' @return A plot of force of exposure for across time for all individuals and exposure IDs is returned
+#' @export
+#'
+#' @examples
+#' plot_exposure_force(example_force_long)
+plot_exposure_force<-function(exposure_force_long){
+  p <- ggplot2::ggplot(exposure_force_long) + 
+    ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
+    ggplot2::facet_wrap(~x,nrow=2) + 
+    ggplot2::theme_bw() + 
+    ggplot2::scale_fill_viridis_c() + 
+    ggplot2::scale_x_continuous(expand=c(0,0)) + 
+    ggplot2::scale_y_continuous(expand=c(0,0)) +
+    ggplot2::labs(title="Individual Force of Exposure",
+                  x="Time",
+                  y="Individual",
+                  fill="Probability")   + 
+    ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
+    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
+    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
+    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
+    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+    theme(legend.position="bottom")
+  return(p)
+}
+#' Plot Individual Exposure Histories
 #'
 #' @param expsoure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure ID
 #'
-#' @return A plot of exposures histories across time for all individuals and exposures is returned
+#' @return A plot of individual exposures histories across time for all individuals and exposures is returned
 #' @export
 #'
 #' @examples
@@ -97,7 +127,7 @@ plot_exposure_histories <- function(exposure_histories){
                                      ifelse(exposure_histories$value==1,"Succesful Exposure","No Exposure"), "NA")
   
   p <- ggplot2::ggplot(exposure_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Exposure History",
+    ggplot2::labs(title="Individual Exposure History",
                   x="Time",
                   y="Individual")   + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +

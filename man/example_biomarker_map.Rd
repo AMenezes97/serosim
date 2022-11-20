@@ -22,6 +22,7 @@ Other example_data:
 \code{\link{example_antibody_states}},
 \code{\link{example_biomarker_map_numeric}},
 \code{\link{example_demography}},
+\code{\link{example_exposure_force}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
