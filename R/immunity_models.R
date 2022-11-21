@@ -5,7 +5,7 @@
 #' @param i Individual
 #' @param t time
 #' @param x exposure
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
@@ -23,18 +23,18 @@ immunity_model_all_successful <- function(i, t, x, exposure_histories,
 
 #' Immunity Model For Vaccination Events Only
 #' 
-#' @description This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure(vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure is 1.
+#' @description This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure(vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure event is 1.
 #'
 #' @param i Individual
 #' @param t time
 #' @param x exposure
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure event
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
+#' @param biomarker_map A table specifying the relationship between exposure event and biomarker 
 #' @param model_pars A tibble of parameters needed for the immunity model
 #' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
-#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return  A probability of successful exposure is returned
@@ -66,19 +66,19 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 
 #' Simple Immunity Model For Vaccination Events and Natural Infection Events
 #' 
-#' @description This immunity model should only be used with vaccines and natural infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time t and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of successful exposure is 1. The probability of a successful natural infection is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of successful exposure is 1. 
+#' @description This immunity model should only be used with vaccines and natural infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time t and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of a successful exposure event is 1. The probability of a successful natural infection event is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of a successful exposure event is 1. 
 #'
 #' @param i Individual
 #' @param t time
 #' @param x exposure
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
+#' @param biomarker_map A table specifying the relationship between exposure events and biomarker 
 #' @param model_pars A tibble of parameters needed for the immunity model
-#' @param max_events A vector of the maximum number of successful exposure events possible for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param max_events A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA
 #' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
-#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return  A probability of successful exposure is returned
@@ -123,15 +123,15 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 
 #' Immunity Model For Natural Infection Events With Titer-Mediated Protection
 #' 
-#' @description  This immunity model should only be used if all exposures are natural infection events. The probability of successful exposure is dependent on the individual’s antibody titer at the time of exposure. 
+#' @description  This immunity model should only be used if all exposures are natural infection events. The probability of a successful exposure event is dependent on the individual’s antibody titer at the time of exposure. 
 #'    
 #' @param i Individual
 #' @param t time
 #' @param x exposure
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
+#' @param biomarker_map A table specifying the relationship between exposure events and biomarker
 #' @param model_pars A tibble of parameters needed for the immunity model
 #' @param ... 
 #'
@@ -166,19 +166,19 @@ immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories,
 
 #' Immunity Model For Vaccination Events and Natural Infection Events With Titer-Mediated Protection
 #' 
-#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of successful vaccination exposure depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure.
+#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure.
 #' 
 #' @param i Individual
 #' @param t time
 #' @param x exposure
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
 #' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
+#' @param biomarker_map A table specifying the relationship between exposure events and biomarkers
 #' @param model_pars A tibble of parameters needed for the immunity model
-#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure event; If an exposure type is not a vaccination event then input NA
 #' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
-#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA
+#' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA
 #' @param ... 
 #'
 #' @return A probability of successful exposure is returned

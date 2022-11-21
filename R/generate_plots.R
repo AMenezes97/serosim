@@ -52,11 +52,12 @@ plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshol
     return(g)
 }
   
-#' Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure IDs
+
+#' Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events
 #'
-#' @param exposure_probabilities_long The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID
+#' @param exposure_probabilities_long TThe reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event
 #'
-#' @return A plot of individual exposure probabilities across time for all exposure IDs is returned
+#' @return A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned
 #' @export
 #'
 #' @examples
@@ -83,11 +84,11 @@ plot_exposure_prob<-function(exposure_probabilities_long){
   return(p)
 }
 
-#' Plot Force of Exposure for Each Individual Across Time For All Individuals And Exposure IDs
+#' Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events
 #'
-#' @param exposure_force_long The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID
+#' @param exposure_force_long The reshaped data set containing the probability of an exposure event for individuals at all time steps for each exposure event
 #'
-#' @return A plot of force of exposure for across time for all individuals and exposure IDs is returned
+#' @return A plot of individual exposure probabilities across time for all exposure events is returned
 #' @export
 #'
 #' @examples
@@ -115,9 +116,9 @@ plot_exposure_force<-function(exposure_force_long){
 }
 #' Plot Individual Exposure Histories
 #'
-#' @param expsoure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure ID
+#' @param expsoure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
 #'
-#' @return A plot of individual exposures histories across time for all individuals and exposures is returned
+#' @return A plot of individual exposures histories across time for all individuals and exposure events is returned
 #' @export
 #'
 #' @examples
@@ -141,9 +142,9 @@ plot_exposure_histories <- function(exposure_histories){
   return(p)
 }
 
-#' Plot Titers Across Time For All Individuals And biomarkers
+#' Plot Titers Across Time For All Individuals And Biomarkers
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID
+#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker 
 #'
 #' @return A plot of titers across all time steps for all individuals and biomarkers is returned
 #' @export
@@ -239,8 +240,8 @@ return(p)
 
 #' Plot Antibody States and Exposure Histories For A Subset Of Individuals
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID
-#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure ID
+#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker 
+#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
 #'

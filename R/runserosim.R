@@ -166,7 +166,7 @@ runserosim <- function(
         exposure_histories_long <- exposure_histories_long %>% arrange(i, t, x)
     }
     
-    ## Reshape exposure probabilities
+    ## Reshape probability of a successful exposure event
     exposure_probabilities_long <- reshape2::melt(exposure_probabilities)
     colnames(exposure_probabilities_long) <- c("i","t","x","value")
     exposure_probabilities_long <- exposure_probabilities_long %>% arrange(i, t, x)
