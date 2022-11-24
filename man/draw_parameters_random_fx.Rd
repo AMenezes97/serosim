@@ -4,22 +4,31 @@
 \alias{draw_parameters_random_fx}
 \title{Draw Parameters Random Effects}
 \usage{
-draw_parameters_random_fx(i, t, e, ag, demography, antibody_states, theta, ...)
+draw_parameters_random_fx(
+  i,
+  t,
+  x,
+  b,
+  demography,
+  antibody_states,
+  model_pars,
+  ...
+)
 }
 \arguments{
 \item{i}{Individual}
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
-\item{ag}{antigen}
+\item{b}{biomarker}
 
 \item{demography}{Demography information}
 
-\item{antibody_states}{An array of true antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{An array of true antibody titers for all individuals across all time steps and biomarkers}
 
-\item{theta}{Tibble of antibody kinetics parameters}
+\item{model_pars}{Tibble of antibody kinetics parameters}
 
 \item{...}{}
 }
@@ -27,5 +36,5 @@ draw_parameters_random_fx(i, t, e, ag, demography, antibody_states, theta, ...)
 A tibble with the parameters drawn is returned
 }
 \description{
-This function draws parameters directly from theta for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within theta.
+This function draws parameters directly from model_pars for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within model_pars.
 }

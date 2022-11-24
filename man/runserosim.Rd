@@ -8,24 +8,49 @@ runserosim(
   simulation_settings,
   demography = NULL,
   observation_times = NULL,
-  lambdas,
-  antigen_map,
-  theta,
+  foe_pars,
+  biomarker_map,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,
   observation_model,
   draw_parameters,
   exposure_histories_fixed = NULL,
+  VERBOSE = NULL,
   ...
 )
 }
 \arguments{
-\item{exposure_histories_fixed}{}
+\item{simulation_settings}{A list of parameters governing the simulation time step settings}
+
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+
+\item{observation_times}{A tibble of observation times and biomarkers measured for each individual}
+
+\item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time}
+
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+
+\item{model_pars}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
+
+\item{exposure_model}{A function which calculates the probability of exposure given the foe_pars array}
+
+\item{immunity_model}{A function determining the probability of an exposure leading to successful infection or vaccination for a given individual}
+
+\item{antibody_model}{A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)}
+
+\item{observation_model}{A function generating observed titers as a function of latent titers and kinetics parameters (model_pars)}
+
+\item{draw_parameters}{A function to simulate parameters antibody kinetics model, immunity model, observation model from model_pars}
+
+\item{exposure_histories_fixed}{(optional) A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.}
+
+\item{VERBOSE}{(optional) If an integer is specified; an update message will be printed once the simulation reaches that individual and every multiple thereafter; defaults to NULL}
 }
 \value{
-a list containing the following elements.
+a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
 }
 \description{
-Simulates a serological survey using custom inputs. The user can specify multiple inputs controlling population demography, simulation timeframe, observation times for each individual, force of infection, and various model functions describing the link between infections and observed antibody titers.
+Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers.
 }

@@ -7,11 +7,11 @@
 exposure_model_dem_age_mod(
   i,
   t,
-  e,
+  x,
   g,
-  lambdas,
+  foe_pars,
   demography,
-  mod,
+  dem_mod,
   age_mod,
   t_in_year = 1,
   ...
@@ -22,15 +22,15 @@ exposure_model_dem_age_mod(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{g}{group}
 
-\item{lambdas}{Force of infection array}
+\item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time.}
 
-\item{demography}{Demography information}
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
+\item{dem_mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
 
 \item{age_mod}{A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.}
 
@@ -42,5 +42,5 @@ exposure_model_dem_age_mod(
 A probability of exposure is returned
 }
 \description{
-Probability of exposure depends on the force of infection at the current time t for group g modulated by relevant demographic elements (mod) and age (age_mod). This model combines exposure_model_V2 and exposure_model_V3
+Probability of exposure depends on the force of exposure at the current time t for group g modulated by relevant demographic elements (mod) and age (age_mod). This model combines exposure_model_V2 and exposure_model_V3
 }

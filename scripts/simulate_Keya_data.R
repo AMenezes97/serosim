@@ -39,7 +39,7 @@ library(ggplot2)
 ##***************************1.1: Simulation Settings**************************** 
 ## Specify the number of time periods to simulate 
 ## Since children in Keya's data set are 0.7 to 14.99, let's simulate 15 years
-## I decided to use monthly time steps since case study 1 theta parameters are 
+## I decided to use monthly time steps since case study 1 model_pars parameters are 
 ## already structured for monthly time steps
 times <- seq(1,180,by=1) 
 
@@ -71,7 +71,7 @@ aux <- list("Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distri
 #   }
 #   birth_times
 # }
-# birth_times<-birth_distributiom(age.dist)
+# birth_times<-birth_distribution(age.dist)
 
 
 ## Let's assume that no individuals are removed from the population and set prob_removal to 0
@@ -81,26 +81,26 @@ demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_
 demography %>% filter(times==1) %>% count(group) 
 
 
-##********************************1.3: Antigen Map*******************************
-## Create antigen map
-## We are only interested in 3 exposure types (MCV1,MCV2 and natural infection) against one antigen 
-antigen_map <- tibble(exposure_id=c(1,2,3),antigen_id=c(1,1,1)) 
+##********************************1.3: Biomarker Map*******************************
+## Create biomarker map
+## We are only interested in 3 exposure types (MCV1,MCV2 and natural infection) against one biomarker 
+biomarker_map <- tibble(exposure_id=c(1,2,3),biomarker_id=c(1,1,1)) 
 
 
 ##***************************1.4: Force of Infection and Exposure Model***********
 ## Create an empty array to store the force of infection for all exposure types
-lambdas <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(antigen_map$exposure_id)))
+foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(biomarker_map$exposure_id)))
 
 ## Specify the force of infection for exposure ID 1 which represents natural infection
-lambdas[,,1] <- 0.2
+foe_pars[,,1] <- 0.2
 
 ## Specify the force of vaccination for exposure ID 2 which represents MCV1 vaccination
-lambdas[,,2] <- 0.4
+foe_pars[,,2] <- 0.4
 
 ## Specify the force of vaccination for exposure ID 3 which represents MCV2 vaccination
-lambdas[,,3] <- 0.05
+foe_pars[,,3] <- 0.05
 
-## I specified the same value for all time steps within lambdas for simplicity but we can change to varying numbers to match real world settings. 
+## I specified the same value for all time steps within foe_pars for simplicity but we can change to varying numbers to match real world settings. 
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
 ## In this selected model, the probability of exposure is 1-exp(-FOI) where FOI is the force of infection at that time.
@@ -115,16 +115,15 @@ immunity_model<-immunity_model_vacc_ifxn_titer_prot
 vacc_exposures<-c(2,3)
 
 ## Specify the age at which an individual is eligible for MCV1 and MCV2 vaccination
-## DOUBLE CHECK WITH KEYA ##
-vacc_age<-c(NA,9,16)
+vacc_age<-c(NA,9,12)
 
 ## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
 ## DOUBLE CHECK WITH KEYA ##
 max_vacc_events<-c(NA,1,1)
 
-## Plot titer-mediated protection curve given parameters specified within theta for antigen 1 which will be loaded in section 1.6
+## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1 which will be loaded in section 1.6
 plot_titer_mediated_protection(0:7500, titer_prot_midpoint=5000, titer_prot_width=.001)
-## These are the current parameters used within theta_cs1
+## These are the current parameters used within model_pars_cs1
 ## Maybe we should start of with simpler versions with high titer-mediated protection and no boosting events?
 
 
@@ -135,14 +134,14 @@ antibody_model<-antibody_model_biphasic
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
 ## Also note that these are all arbitrary parameter values loosely informed by plausible values.
-theta_path <- system.file("extdata", "theta_keya.csv", package = "serosim")
-theta <- read.csv(file = theta_path, header = TRUE)
-theta
+model_pars_path <- system.file("extdata", "model_pars_keya.csv", package = "serosim")
+model_pars <- read.csv(file = model_pars_path, header = TRUE)
+model_pars
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within theta for antigen 1 (measles)
+## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1 (measles)
 plot_titer_dependent_boosting(start=0, end=1500, by=1, titer_ceiling_threshold=1000, titer_ceiling_gradient=0.0009)
 
 
@@ -150,14 +149,15 @@ plot_titer_dependent_boosting(start=0, end=1500, by=1, titer_ceiling_threshold=1
 ##*****************1.7: Observation Model and observation_times*************
 ## Specify observation model to be used within runserosim 
 
-## Specify the limits of detection for continuous assays
-boundary<-c(20,20000)
+## Specify the limits of detection for each biomarker for the continuous assays (lower detection limit is 8IU/I and the upper is 5000 IU/I)
+bounds<-tibble(biomarker_id=c(1,1),name=c("lower_bound","upper_bound"),value=c(8,5000))
+
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
 
-## Specify observation_times (serological survey sampling design) to observe antigen 1 (aka measles antibody titer) across all individuals at the end of the simulation
-observation_times<-tibble(i=1:N,t=max(times), ag=1)
+## Specify observation_times (serological survey sampling design) to observe biomarker 1 (aka measles antibody titer) across all individuals at the end of the simulation
+observation_times<-tibble(i=1:N,t=max(times), b=1)
 
 
 
@@ -166,9 +166,9 @@ res<- runserosim(
   simulation_settings,
   demography,
   observation_times,
-  lambdas,
-  antigen_map,
-  theta,
+  foe_pars,
+  biomarker_map,
+  model_pars,
   exposure_model,
   immunity_model,
   antibody_model,
@@ -176,7 +176,7 @@ res<- runserosim(
   draw_parameters,
   
   ## Other arguments needed
-  boundary=boundary,
+  bounds=bounds,
   max_vacc_events=max_vacc_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
@@ -218,9 +218,9 @@ df <- df %>%  mutate(age_yr=floor(age)) %>% mutate(titer=ifelse(observed>0,log10
 
 ## Pull true vaccination and infection times from runserosim exposure history output
 exp_hist <- res$exposure_histories_long %>%  filter(value==1)
-inf_hist <- exp_hist %>% filter(e==1) %>% select(i,t) %>% rename(inf_time=t)
-MCV1_hist <- exp_hist %>% filter(e==2) %>% select(i,t)  %>% rename(MCV1=t)
-MCV2_hist <- exp_hist %>% filter(e==3) %>% select(i,t)  %>% rename(MCV2=t)
+inf_hist <- exp_hist %>% filter(x==1) %>% select(i,t) %>% rename(inf_time=t)
+MCV1_hist <- exp_hist %>% filter(x==2) %>% select(i,t)  %>% rename(MCV1=t)
+MCV2_hist <- exp_hist %>% filter(x==3) %>% select(i,t)  %>% rename(MCV2=t)
 
 ## Add vacc time to df 
 df$MCV1<-NA

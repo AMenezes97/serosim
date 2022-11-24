@@ -1,0 +1,15 @@
+exposure_id,biomarker_id,name,mean,sd,distribution
+NA,A_antibody,obs_sd,,1,normal
+NA,B_antibody,obs_sd,,3,normal
+A_ifxn,A_antibody,boost,6,2,log-normal
+A_ifxn,A_antibody,wane,0.0083,0.0005,log-normal
+A_ifxn,A_antibody,titer_ceiling_threshold,2,,
+A_ifxn,A_antibody,titer_ceiling_gradient,0.45,,
+A_ifxn,A_antibody,titer_prot_midpoint,7,,
+A_ifxn,A_antibody,titer_prot_width,0.9,,
+B_ifxn,B_antibody,boost,45,5,log-normal
+B_ifxn,B_antibody,wane,0.0083,0.0005,log-normal
+B_ifxn,B_antibody,titer_ceiling_threshold,20,,
+B_ifxn,B_antibody,titer_ceiling_gradient,0.045,,
+B_ifxn,B_antibody,titer_prot_midpoint,50,,
+B_ifxn,B_antibody,titer_prot_width,0.1,,

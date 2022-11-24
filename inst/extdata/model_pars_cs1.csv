@@ -1,0 +1,16 @@
+exposure_id,biomarker_id,name,mean,sd,distribution
+ifxn,IgG,boost_long,4,2,log-normal
+ifxn,IgG,boost_short,2,1,log-normal
+ifxn,IgG,wane_long,0.011,0.005,log-normal
+ifxn,IgG,wane_short,0.0166,0.005,log-normal
+ifxn,IgG,titer_ceiling_threshold,5,,
+ifxn,IgG,titer_ceiling_gradient,0.18,,
+ifxn,IgG,titer_prot_midpoint,2,,
+ifxn,IgG,titer_prot_width,2.5,,
+NA,IgG,obs_sd,,0.5,normal
+vacc,IgG,boost_long,2,1,log-normal
+vacc,IgG,boost_short,1,0.5,log-normal
+vacc,IgG,wane_long,0.011,0.005,log-normal
+vacc,IgG,wane_short,0.0166,0.005,log-normal
+vacc,IgG,titer_ceiling_threshold,5,,
+vacc,IgG,titer_ceiling_gradient,0.18,,

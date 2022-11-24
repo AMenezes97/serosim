@@ -7,9 +7,9 @@
 exposure_model_age_mod(
   i,
   t,
-  e,
+  x,
   g,
-  lambdas,
+  foe_pars,
   demography,
   age_mod,
   t_in_year = 1,
@@ -21,13 +21,13 @@ exposure_model_age_mod(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{g}{group}
 
-\item{lambdas}{Force of infection array}
+\item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time.}
 
-\item{demography}{Demography information}
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
 \item{age_mod}{A tibble specifying the age modifier(how much each age affects probability of exposure); column names are age and modifier. All ages in simulation must have a modifier value within this tibble.}
 
@@ -39,5 +39,5 @@ exposure_model_age_mod(
 A probability of exposure is returned
 }
 \description{
-Probability of exposure depends on the force of infection at the current time t for group g modulated by the individual's age specified within age_mod
+Probability of exposure depends on the force of exposure at the current time t for group g modulated by the individual's age specified within age_mod
 }

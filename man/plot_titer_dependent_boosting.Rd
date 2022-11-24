@@ -29,3 +29,6 @@ A plot displaying titer dependent boosting is returned
 \description{
 Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Titer
 }
+\examples{
+plot_titer_dependent_boosting(0,10,1,4,.14)
+}

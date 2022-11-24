@@ -7,12 +7,12 @@
 immunity_model_vacc_ifxn_titer_prot(
   i,
   t,
-  e,
+  x,
   exposure_histories,
   antibody_states,
   demography,
-  antigen_map,
-  theta,
+  biomarker_map,
+  model_pars,
   max_vacc_events,
   vacc_exposures,
   vacc_age = 1,
@@ -24,21 +24,21 @@ immunity_model_vacc_ifxn_titer_prot(
 
 \item{t}{time}
 
-\item{e}{exposure}
+\item{x}{exposure}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
-\item{antibody_states}{True antibody titers for all individuals across all time steps and antigens}
+\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
-\item{demography}{Demography information}
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{antigen_map}{Object determining relationship between exposure IDs and antigens}
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{theta}{Tibble including titer-mediated protection parameters}
+\item{model_pars}{A tibble of parameters needed for the immunity model}
 
 \item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 
-\item{vacc_exposures}{A vector of exposure IDs (e) which represents vaccination events}
+\item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
 
 \item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA}
 

@@ -1,59 +1,59 @@
 #' Draw Parameters Fixed Effects
 #'  
-#' @description This function draws parameters directly from theta for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
+#' @description This function draws parameters directly from model_pars for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
-#' @param ag antigen
+#' @param x exposure
+#' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx <- function(i, t, e, ag, demography, antibody_states, theta, ...){
+draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  theta_tmp <- theta %>% filter(exposure_id == e)
-  pars <- numeric(nrow(theta_tmp))
-  par_names <- character(nrow(theta_tmp))
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+  pars <- numeric(nrow(model_pars_tmp))
+  par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(theta_tmp)){
-    pars[par] <- theta_tmp$mean[par]
-    par_names[par] <- theta_tmp$name[par]
+  for(par in 1:nrow(model_pars_tmp)){
+    pars[par] <- model_pars_tmp$mean[par]
+    par_names[par] <- model_pars_tmp$name[par]
   }
-  # all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(theta_tmp)),t=rep(t,nrow(theta_tmp)), e=rep(e,nrow(theta_tmp)), ag=theta_tmp$antigen_id, name=par_names, value=pars, realized_value=pars) 
+  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 #' Draw Parameters Random Effects
 #'  
-#' @description This function draws parameters directly from theta for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within theta.
+#' @description This function draws parameters directly from model_pars for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within model_pars.
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
-#' @param ag antigen
+#' @param x exposure
+#' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters  
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of antibody kinetics parameters  
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, theta, ...){
+draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  theta_tmp <- theta %>% filter(exposure_id == e)
-  pars <- numeric(nrow(theta_tmp))
-  par_names <- character(nrow(theta_tmp))
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+  pars <- numeric(nrow(model_pars_tmp))
+  par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(theta_tmp)){
-    if(theta_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+  for(par in 1:nrow(model_pars_tmp)){
+    if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
       
       ## Create functions to convert normal distributions to log-normal distributions
       normal_to_lognormal_mean <- function(normmean, normsd) {
@@ -68,20 +68,20 @@ draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, t
         return(sdlog)
       }
       
-      pars[par] <- rlnorm(1, normal_to_lognormal_mean(theta_tmp$mean[par], theta_tmp$sd[par]), normal_to_lognormal_sd(theta_tmp$mean[par], theta_tmp$sd[par]))
-      par_names[par] <- theta_tmp$name[par]
+      pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
+      par_names[par] <- model_pars_tmp$name[par]
     }
-    if(theta_tmp$distribution[par]==""){
-      pars[par] <- theta_tmp$mean[par]
-      par_names[par] <- theta_tmp$name[par]
+    if(model_pars_tmp$distribution[par]==""){
+      pars[par] <- model_pars_tmp$mean[par]
+      par_names[par] <- model_pars_tmp$name[par]
     }
-    if(theta_tmp$distribution[par]=="normal"){
-      pars[par] <- rnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
-      par_names[par] <- theta_tmp$name[par]
+    if(model_pars_tmp$distribution[par]=="normal"){
+      pars[par] <- rnorm(1, model_pars_tmp$mean[par], model_pars_tmp$sd[par])
+      par_names[par] <- model_pars_tmp$name[par]
     }
   }
-  # all_pars <- tibble(i=i, t=t, e=e, ag=ag, name=par_names, value=pars) ## This line doesn't work
-  all_pars <- tibble(i=rep(i,nrow(theta_tmp)),t=rep(t,nrow(theta_tmp)), e=rep(e,nrow(theta_tmp)), ag=theta_tmp$antigen_id, name=par_names, value=pars, realized_value=pars) 
+  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
 
@@ -91,38 +91,38 @@ draw_parameters_random_fx<- function(i, t, e, ag, demography, antibody_states, t
 #' 
 #' @param i Individual
 #' @param t time
-#' @param e exposure
-#' @param ag antigen
+#' @param x exposure
+#' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx_titer_dep <- function(i, t, e, ag, demography, antibody_states, theta, ...){
+draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  theta_tmp <- theta %>% filter(exposure_id == e)
-  pars <- numeric(nrow(theta_tmp))
-  realized <- numeric(nrow(theta_tmp))
-  par_names <- character(nrow(theta_tmp))
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+  pars <- numeric(nrow(model_pars_tmp))
+  realized <- numeric(nrow(model_pars_tmp))
+  par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(theta_tmp)){
-    pars[par] <- theta_tmp$mean[par]
-    realized[par] <- theta_tmp$mean[par]
-    par_names[par] <- theta_tmp$name[par]
+  for(par in 1:nrow(model_pars_tmp)){
+    pars[par] <- model_pars_tmp$mean[par]
+    realized[par] <- model_pars_tmp$mean[par]
+    par_names[par] <- model_pars_tmp$name[par]
     
-    if(par_names[par] %in% c("boost_short","boost_long")){
-      ## Pull out all antigen
-      Antigen<-theta_tmp$antigen_id[par]
-      titer_threshold <- min(antibody_states[i,t,Antigen], theta_tmp[theta_tmp$name=="titer_ceiling_threshold" & theta_tmp$antigen_id==Antigen, "mean"])
+    if(par_names[par] %in% c("boost_short","boost_long","boost")){
+      ## Pull out all biomarker
+      biomarker<-model_pars_tmp$biomarker_id[par]
+      titer_threshold <- min(antibody_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
       ## Replace realized titer value for boost parameters
-      realized[par] <- pars[par]*(1-theta_tmp[theta_tmp$name=="titer_ceiling_gradient" & theta_tmp$antigen_id==Antigen, "mean"]*titer_threshold)
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(theta_tmp)),t=rep(t,nrow(theta_tmp)), e=rep(e,nrow(theta_tmp)), ag=theta_tmp$antigen_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 
@@ -132,26 +132,26 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, e, ag, demography, antibody
 #'
 #' @param i Individual
 #' @param t time
-#' @param e exposure
-#' @param ag antigen
+#' @param x exposure
+#' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and antigens  
-#' @param theta Tibble of antibody kinetics parameters 
+#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of antibody kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx_titer_dep <- function(i, t, e, ag, demography, antibody_states, theta, ...){
+draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  theta_tmp <- theta %>% filter(exposure_id == e)
-  pars <- numeric(nrow(theta_tmp))
-  realized <- numeric(nrow(theta_tmp))
-  par_names <- character(nrow(theta_tmp))
+  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+  pars <- numeric(nrow(model_pars_tmp))
+  realized <- numeric(nrow(model_pars_tmp))
+  par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(theta_tmp)){
-    if(theta_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+  for(par in 1:nrow(model_pars_tmp)){
+    if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
       
       ## Create functions to convert normal distributions to log-normal distributions
       normal_to_lognormal_mean <- function(normmean, normsd) {
@@ -166,30 +166,30 @@ draw_parameters_random_fx_titer_dep <- function(i, t, e, ag, demography, antibod
         return(sdlog)
       }
       
-      pars[par] <- rlnorm(1, normal_to_lognormal_mean(theta_tmp$mean[par], theta_tmp$sd[par]), normal_to_lognormal_sd(theta_tmp$mean[par], theta_tmp$sd[par]))
-      par_names[par] <- theta_tmp$name[par]
+      pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
+      par_names[par] <- model_pars_tmp$name[par]
     }
-    if(theta_tmp$distribution[par]==""){
-      pars[par] <- theta_tmp$mean[par]
-      par_names[par] <- theta_tmp$name[par]
+    if(model_pars_tmp$distribution[par]==""){
+      pars[par] <- model_pars_tmp$mean[par]
+      par_names[par] <- model_pars_tmp$name[par]
     }
-    if(theta_tmp$distribution[par]=="normal"){
-      pars[par] <- rnorm(1, theta_tmp$mean[par], theta_tmp$sd[par])
-      par_names[par] <- theta_tmp$name[par]
+    if(model_pars_tmp$distribution[par]=="normal"){
+      pars[par] <- rnorm(1, model_pars_tmp$mean[par], model_pars_tmp$sd[par])
+      par_names[par] <- model_pars_tmp$name[par]
     }
-    if(par_names[par] %in% c("boost_short","boost_long")){
-      ## Pull out all antigen
-      Antigen<-theta_tmp$antigen_id[par]
+    if(par_names[par] %in% c("boost_short","boost_long","boost")){
+      ## Pull out all biomarker
+      biomarker<-model_pars_tmp$biomarker_id[par]
       t1<-t-1
-      titer_threshold <- min(antibody_states[i,t1,Antigen], theta_tmp[theta_tmp$name=="titer_ceiling_threshold" & theta_tmp$antigen_id==Antigen, "mean"])
-      realized[par] <- pars[par]*(1-theta_tmp[theta_tmp$name=="titer_ceiling_gradient" & theta_tmp$antigen_id==Antigen, "mean"]*titer_threshold)
+      titer_threshold <- min(antibody_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
     }
-    if(!(par_names[par] %in% c("boost_short","boost_long"))){
+    if(!(par_names[par] %in% c("boost_short","boost_long","boost"))){
       ## Non boost Realized parameters don't get affected by titer ceiling
       realized[par] <- pars[par]
     }
   }
-  all_pars <- tibble(i=rep(i,nrow(theta_tmp)),t=rep(t,nrow(theta_tmp)), e=rep(e,nrow(theta_tmp)), ag=theta_tmp$antigen_id, name=par_names, value=pars, realized_value=realized) 
+  all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 

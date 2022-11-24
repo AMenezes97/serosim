@@ -39,12 +39,12 @@ demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_
 
 
 ##*****************Component 3: Force of Infection and Exposure Model***********
-## Specify the number of exposures (eventually, this won't be needed because the serosim function can extract this from the antigen_map)
+## Specify the number of exposures (eventually, this won't be needed because the serosim function can extract this from the biomarker_map)
 N_exposure_ids <- 2
 
 ## Specify the force of infection array (different format)
 group<-c(1,2,3,4)
-lambdas <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposure_ids))
+foe_pars <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposure_ids))
 
 ## Specify exposure model within serosim function below
 
@@ -58,9 +58,9 @@ lambdas <- array(rep(0.5,length(group)), dim=c(length(group),max(times),N_exposu
 
 
 
-##***********************Component 4: Antigen Map*******************************
-## Specify which antigens are present in each exposure type
-antigen_map <- tibble(exposure_id=c(1,1,2),antigen_id=c(1,2,1)) 
+##***********************Component 4: Biomarker Map*******************************
+## Specify which biomarkers are present in each exposure type
+biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1)) 
 
 
 
@@ -82,7 +82,7 @@ max_vacc_events<-1
 ## Specify antibody model within serosim function below 
 
 ## Specify antibody kinetics parameters 
-theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
+model_pars <- read.csv("Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv")
 
 ## Specify draw_parameters within serosim function below 
 
@@ -101,10 +101,10 @@ theta <- read.csv("Documents/GitHub/serosim/inst/extdata/theta_test_1.csv")
 boundary<-c(2,20)
 
 ## Set observation settings 
-obs1 <- tibble(i=1:N,t=60, ag=1)
-obs2 <- tibble(i=1:N,t=60, ag=2)
-obs3 <- tibble(i=1:N,t=120, ag=1)
-obs4 <- tibble(i=1:N,t=120, ag=2)
+obs1 <- tibble(i=1:N,t=60, b=1)
+obs2 <- tibble(i=1:N,t=60, b=2)
+obs3 <- tibble(i=1:N,t=120, b=1)
+obs4 <- tibble(i=1:N,t=120, b=2)
 observation_times<-rbind(obs1,obs2,obs3,obs4)
 
     
@@ -115,9 +115,9 @@ res<- runserosim(
   simulation_settings,
   demography, 
   observation_times,
-  lambdas, 
-  antigen_map,
-  theta,
+  foe_pars, 
+  biomarker_map,
+  model_pars,
   exposure_model=exposure_model_simple_FOI, 
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 
   antibody_model=antibody_model_biphasic, 
@@ -138,11 +138,11 @@ res<- runserosim(
 
 
 # # ## Generate Plots 
-# ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~ag)
+# ggplot(res$antibody_states) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~b)
 plot_titers(res$antibody_states)
 # ggplot(res$exposure_probabilities_long) + geom_tile(aes(x=t,y=i,fill=value)) + facet_wrap(~e)
 plot_exposure_prob(res$exposure_probabilities_long)
-# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~ag) + scale_x_continuous(limits=range(times))
+# ggplot(res$observed_antibody_states) + geom_jitter(aes(x=t,y=observed),height=0.1,width=0.25) + facet_wrap(~b) + scale_x_continuous(limits=range(times))
 plot_obs_titers_one_sample(res$observed_antibody_states)
 plot_obs_titers_paired_sample(res$observed_antibody_states)
 plot_exposure_histories(res$exposure_histories_long)
