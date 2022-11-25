@@ -1,35 +1,102 @@
+#' Generate Population Demography Data Set 
+#' 
+#' @description This function generates a tibble of relevant demographic information for each individual in the simulation
+#'
+#' @param N The number of individuals in the simulation
+#' @param times A vector of each time step in the simulation
+#' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual
+#' @param age_min A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
+#' @param removal_min The minimum age at which an individual can be removed from the population. Defaults to 0. 
+#' @param removal_max The maximum age at which an individual can be removed from the population. Defaults to max(times).
+#' @param prob_removal The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.
+#' @param aux A list of additional demography columns, the variable options and their distributions; defaults to NULL  
+#'
+#' @return A tibble of relevant demographic information for each individual in the simulation is returned; this output matches the required `demography` input for the \code{\link{runserosim}} function.
+#' @family demography
+#' @export
+#'
+#' @examples 
+#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal_min=0, removal_max=max(times), prob_removal, aux=NULL){
+    if(!is.null(birth_times)){
+        birth_tm<-birth_times} 
+    else{birth_tm=simulate_birth_times(N, times, age_min)}
+    
+    if(is.null(aux)){
+        
+        removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
+        
+        
+        df<- tibble(
+            i=1:N,
+            birth= birth_tm,
+            removal= removal_times)
+        
+        exp<- tidyr::expand_grid(1:N, times)
+        exp<-dplyr::rename(exp,i="1:N")
+        
+        dem<- exp %>% dplyr::left_join(df, by="i")
+        return(dem)
+    }
+    
+    if(!is.null(aux)){
+        removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
+        
+        vars <- NULL
+        for(var in seq_along(aux)){
+            vars[[var]] <- tibble(
+                i=1:N,
+                name=unlist(aux[[var]]["name"]),
+                value=sample(aux[[var]][["options"]],size=N, prob=aux[[var]][["distribution"]],replace=TRUE)
+            )
+        }
+        vars <- do.call("bind_rows",vars)
+        vars <- vars %>% pivot_wider(names_from=name,values_from=value)
+        
+        df<- tibble(
+            i=1:N,
+            birth= birth_tm,
+            removal= removal_times)
+        exp<- tidyr::expand_grid(1:N, times)
+        exp<-dplyr::rename(exp,i="1:N")
+        dem<- exp %>% dplyr::left_join(df, by="i")
+        dem1<- dem %>% left_join(vars, by="i")
+        return(dem1)
+        
+    }
+}
+
 #' Simulate Random Birth Times
 #' 
-#' @description This function simulates random birth times for a specified number of individuals across a range of times
+#' @description This function simulates random birth times for a specified number of individuals from a provided vector
 #' 
-#' @param N The number of individuals in the simulation
-#' @param times  A vector of each time step in the simulation
-#' @param age_min A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
-#'
+#' @inheritParams generate_pop_demography
 #' @return A vector of simulated birth times for each individual is returned
+#' @family demography
 #' @export
 #'
 #' @examples 
 #' ## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
 #' simulate_birth_times(500, 1:100, age_min=9) 
 simulate_birth_times <- function(N, times, age_min=0){
+    if(age_min > max(times)){
+        message("age_min is greater than the final time step. Setting to max(times)-1.")
+        age_min <- max(times)-1
+    }
   birth_times <- sample(times[1:(length(times)-(age_min+1))], N, replace =TRUE)
   return(birth_times)
 }
 
 
-#' Simulate  Removal Times for Individuals 
+#' Simulate Removal Times for Individuals 
 #'
 #' @description This function simulates random removal times for a specified number of individuals across a range of times
 #' 
-#' @param N The number of individuals in the simulation
-#' @param times  A vector of each time step in the simulation
-#' @param birth_times A vector of all individual's birth times
-#' @param removal_min The minimum age at which an individual can be removed from the population 
-#' @param removal_max The maximum age at which an individual can be removed from the population 
-#' @param prob_removal The probability that an individual will be removed from the population
-#'
+#' @inheritParams generate_pop_demography
 #' @return A vector of all individual's removal times is returned 
+#' @family demography
 #' @export
 #'
 #' @examples
@@ -74,75 +141,6 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 }
 
 
-#' Generate A Population Demography Data Set 
-#' 
-#' @description This function generates a tibble of relevant demographic information for each individual in the simulation
-#'
-#' @param N The number of individuals in the simulation
-#' @param times A vector of each time step in the simulation
-#' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual
-#' @param age_min A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
-#' @param removal_min The minimum age at which an individual can be removed from the population 
-#' @param removal_max The maximum age at which an individual can be removed from the population 
-#' @param prob_removal The probability that an individual will be removed from the population
-#' @param aux A list of the demography columns, the variable options and their distributions; defaults to NULL  
-#'
-#' @return A tibble of relevant demographic information for each individual in the simulation is returned;  This output matches the required "demography" input for the runserosi function
-#' @export
-#'
-#' @examples generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
-#' 
-#' @examples 
-#' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
-#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
-generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal_min, removal_max, prob_removal, aux=NULL){
-  if(!is.null(birth_times)){
-    birth_tm<-birth_times} 
-  else{birth_tm=simulate_birth_times(N, times, age_min)}
-  
-  if(is.null(aux)){
-    
-    removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
-    
-    
-    df<- tibble(
-      i=1:N,
-      birth= birth_tm,
-      removal= removal_times)
-    
-    exp<- tidyr::expand_grid(1:N, times)
-    exp<-dplyr::rename(exp,i="1:N")
-    
-    dem<- exp %>% dplyr::left_join(df, by="i")
-    return(dem)
-  }
-  
-  if(!is.null(aux)){
-    removal_times <- simulate_removal_times(N, times, birth_times=birth_tm, removal_min, removal_max, prob_removal)
-    
-    vars <- NULL
-    for(var in seq_along(aux)){
-      vars[[var]] <- tibble(
-        i=1:N,
-        name=unlist(aux[[var]]["name"]),
-        value=sample(aux[[var]][["options"]],size=N, prob=aux[[var]][["distribution"]],replace=TRUE)
-      )
-    }
-    vars <- do.call("bind_rows",vars)
-    vars <- vars %>% pivot_wider(names_from=name,values_from=value)
-    
-    df<- tibble(
-      i=1:N,
-      birth= birth_tm,
-      removal= removal_times)
-    exp<- tidyr::expand_grid(1:N, times)
-    exp<-dplyr::rename(exp,i="1:N")
-    dem<- exp %>% dplyr::left_join(df, by="i")
-    dem1<- dem %>% left_join(vars, by="i")
-    return(dem1)
-    
-  }
-}
 
 #' runserosim function update message
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc_functions.R
 \name{simulate_removal_times}
 \alias{simulate_removal_times}
-\title{Simulate  Removal Times for Individuals}
+\title{Simulate Removal Times for Individuals}
 \usage{
 simulate_removal_times(
   N,
@@ -18,13 +18,13 @@ simulate_removal_times(
 
 \item{times}{A vector of each time step in the simulation}
 
-\item{birth_times}{A vector of all individual's birth times}
+\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual}
 
-\item{removal_min}{The minimum age at which an individual can be removed from the population}
+\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
 
-\item{removal_max}{The maximum age at which an individual can be removed from the population}
+\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
 
-\item{prob_removal}{The probability that an individual will be removed from the population}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
 }
 \value{
 A vector of all individual's removal times is returned
@@ -34,7 +34,13 @@ This function simulates random removal times for a specified number of individua
 }
 \examples{
 ## First, simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
-births<-simulate_birth_times(500, 1:100, limit=9) 
+births<-simulate_birth_times(500, 1:100, age_min=9) 
 ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
 simulate_removal_times(500,1:100,birth_times=births,removal_min=10,removal_max=99, prob_removal=0.4)
 }
+\seealso{
+Other demography: 
+\code{\link{generate_pop_demography}()},
+\code{\link{simulate_birth_times}()}
+}
+\concept{demography}

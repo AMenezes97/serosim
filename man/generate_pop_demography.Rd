@@ -2,15 +2,15 @@
 % Please edit documentation in R/misc_functions.R
 \name{generate_pop_demography}
 \alias{generate_pop_demography}
-\title{Generate A Population Demography Data Set}
+\title{Generate Population Demography Data Set}
 \usage{
 generate_pop_demography(
   N,
   times,
   birth_times = NULL,
-  limit = 0,
-  removal_min,
-  removal_max,
+  age_min = 0,
+  removal_min = 0,
+  removal_max = max(times),
   prob_removal,
   aux = NULL
 )
@@ -22,25 +22,30 @@ generate_pop_demography(
 
 \item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual}
 
-\item{limit}{A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step}
+\item{age_min}{A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step}
 
-\item{removal_min}{The minimum age at which an individual can be removed from the population}
+\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
 
-\item{removal_max}{The maximum age at which an individual can be removed from the population}
+\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
 
-\item{prob_removal}{The probability that an individual will be removed from the population}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
 
-\item{aux}{A list of the demography columns, the variable options and their distributions; defaults to NULL}
+\item{aux}{A list of additional demography columns, the variable options and their distributions; defaults to NULL}
 }
 \value{
-A tibble of relevant demographic information for each individual in the simulation is returned;  This output matches the required "demography" input for the runserosi function
+A tibble of relevant demographic information for each individual in the simulation is returned; this output matches the required \code{demography} input for the \code{\link{runserosim}} function.
 }
 \description{
 This function generates a tibble of relevant demographic information for each individual in the simulation
 }
 \examples{
-generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3)
-
+generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
-generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 }
+\seealso{
+Other demography: 
+\code{\link{simulate_birth_times}()},
+\code{\link{simulate_removal_times}()}
+}
+\concept{demography}
