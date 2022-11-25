@@ -2,16 +2,29 @@
 % Please edit documentation in R/misc_functions.R
 \name{reformat_biomarker_map}
 \alias{reformat_biomarker_map}
-\title{Reformat biomarker_map to numeric exposure and biomarker format needed for runserosim}
+\title{Reformat \code{biomarker_map} or \code{model_pars} exposure and biomarker variables}
 \usage{
-reformat_biomarker_map(biomarker_map)
+reformat_biomarker_map(input_map, exposure_key = NULL, biomarker_key = NULL)
 }
 \arguments{
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{input_map}{A tibble specifying the relationship between exposure IDs and biomarker IDs}
+
+\item{exposure_key}{Optional vector giving the character-index relationship for \code{exposure_id}}
+
+\item{biomarker_key}{Optional vector giving the character-index relationship for \code{biomarker_id}}
 }
 \value{
-biomarker_map is returned with unique numeric inputs for exposure and biomarker IDs
+\code{input_map} is returned with unique numeric or character inputs for exposure and biomarker IDs
 }
 \description{
-This function will reformat the biomarker_map argument so that exposure_ID and biomarker_ID are both numeric
+This function will reformat the \code{biomarker_map} or \code{model_pars} objects so that exposure_ID and biomarker_ID are either both numeric (if passed as characters) or characters (if passed as numeric).
+}
+\examples{
+## Convert characters to numeric
+biomarker_map <- tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
+reformat_biomarker_map(biomarker_map)
+
+## Convert numeric to characters
+biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
+reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
 }

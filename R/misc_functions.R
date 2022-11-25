@@ -125,14 +125,14 @@ update <- function(VERBOSE, i){
   }
 }
 
-#' Reformat `biomarker_map` exposure and biomarker variables
+#' Reformat `biomarker_map` or `model_pars` exposure and biomarker variables
 #' 
-#' @description This function will reformat the `biomarker_map` argument so that exposure_ID and biomarker_ID are either both numeric (if passed as characters) or characters (if passed as numeric).
+#' @description This function will reformat the `biomarker_map` or `model_pars` objects so that exposure_ID and biomarker_ID are either both numeric (if passed as characters) or characters (if passed as numeric).
 #' 
-#' @param biomarker_map A tibble specifying the relationship between exposure IDs and biomarker IDs
+#' @param input_map A tibble specifying the relationship between exposure IDs and biomarker IDs
 #' @param exposure_key Optional vector giving the character-index relationship for `exposure_id`
 #' @param biomarker_key Optional vector giving the character-index relationship for `biomarker_id`
-#' @return `biomarker_map` is returned with unique numeric or character inputs for exposure and biomarker IDs
+#' @return `input_map` is returned with unique numeric or character inputs for exposure and biomarker IDs
 #' @export
 #'
 #' @examples
@@ -143,47 +143,17 @@ update <- function(VERBOSE, i){
 #' ## Convert numeric to characters
 #' biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
 #' reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
-reformat_biomarker_map<-function(biomarker_map, exposure_key=NULL, biomarker_key=NULL){
-    if(any(apply(biomarker_map, 2, class) == "character")){
+reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NULL){
+    if(any(apply(input_map, 2, class) == "character")){
         ## Converting character to numeric
-        biomarker_map <- biomarker_map %>% mutate(across(.fns=as.factor)) %>% mutate(across(.fns=as.numeric))
+        input_map$exposure_id <- as.numeric(as.factor(input_map$exposure_id))
+        input_map$biomarker_id <- as.numeric(as.factor(input_map$biomarker_id))
     } else {
         ## Converting numeric to character
         if(!is.null(exposure_key) & !is.null(biomarker_key)){
-            biomarker_map$exposure_id <- exposure_key[biomarker_map$exposure_id]
-            biomarker_map$biomarker_id <- biomarker_key[biomarker_map$biomarker_id]
+            input_map$exposure_id <- exposure_key[input_map$exposure_id]
+            input_map$biomarker_id <- biomarker_key[input_map$biomarker_id]
         }
     }
-    biomarker_map
-}
-
-#' Reformat model_pars to numeric exposure and biomarker format needed for runserosim 
-#'
-#' @description This function will reformat the model_pars argument so that exposure_ID and biomarker_ID are both numeric
-#' 
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
-#' @param model_pars A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
-#'
-#' @return biomarker_map is returned with unique numeric inputs for exposure and biomarker IDs
-#' @export
-#'
-#' @examples
-reformat_model_pars<-function(biomarker_map,model_pars){
-  ei<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$exposure_id))),1),exposure_id=unique(biomarker_map$exposure_id))
-  ai<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$biomarker_id))),1),biomarker_id=unique(biomarker_map$biomarker_id))
-  key<-full_join(ei,ai,by="code")
-  
-  model_pars_tmp<-model_pars
-  
-  for(i in seq(nrow(model_pars_tmp))){
-    if(!is.na(model_pars_tmp$exposure_id[i])){
-      model_pars_tmp$exposure_id[i]<- key$code[!is.na(key$exposure_id) & key$exposure_id==model_pars_tmp$exposure_id[i]]
-    }
-    if(!is.na(model_pars_tmp$biomarker_id[i])){
-      model_pars_tmp$biomarker_id[i]<- key$code[!is.na(key$biomarker_id) & key$biomarker_id==model_pars_tmp$biomarker_id[i]]
-    }
-  }
-  df<-transform(model_pars_tmp,exposure_id=as.numeric(exposure_id))
-  df<-transform(df,biomarker_id=as.numeric(biomarker_id))
-  return(df)
+    input_map
 }
