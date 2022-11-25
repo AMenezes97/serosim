@@ -7,17 +7,17 @@
 simulate_birth_times(N, times, age_min = 0)
 }
 \arguments{
-\item{N}{The number of individuals in the simulation}
+\item{N}{The number of individuals in the simulation.}
 
-\item{times}{A vector of each time step in the simulation}
+\item{times}{A vector of each time step in the simulation.}
 
-\item{age_min}{A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step}
+\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step.}
 }
 \value{
 A vector of simulated birth times for each individual is returned
 }
 \description{
-This function simulates random birth times for a specified number of individuals from a provided vector
+This function simulates uniformly distributed birth times for a specified number of individuals from a provided vector
 }
 \examples{
 ## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step

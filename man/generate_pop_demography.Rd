@@ -9,20 +9,20 @@ generate_pop_demography(
   times,
   birth_times = NULL,
   age_min = 0,
-  removal_min = 0,
+  removal_min = min(times),
   removal_max = max(times),
   prob_removal,
   aux = NULL
 )
 }
 \arguments{
-\item{N}{The number of individuals in the simulation}
+\item{N}{The number of individuals in the simulation.}
 
-\item{times}{A vector of each time step in the simulation}
+\item{times}{A vector of each time step in the simulation.}
 
-\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual}
+\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector.}
 
-\item{age_min}{A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step}
+\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step.}
 
 \item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
 
@@ -30,17 +30,25 @@ generate_pop_demography(
 
 \item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
 
-\item{aux}{A list of additional demography columns, the variable options and their distributions; defaults to NULL}
+\item{aux}{An optional list of lists describing additional demographic factors. Each list must contain the variable name, a vector of possible factor levels, and their proportions to simulate from. Note that this is intended for categorical, uncorrelated variables. More complex demographic information should be added post-hoc. Defaults to NULL.}
 }
 \value{
 A tibble of relevant demographic information for each individual in the simulation is returned; this output matches the required \code{demography} input for the \code{\link{runserosim}} function.
 }
 \description{
-This function generates a tibble of relevant demographic information for each individual in the simulation
+Generates a tibble of random demographic information for each individual in the simulation. The returned \code{demography} tibble can be modified post-hoc to use user-specified distributions and values.
 }
 \examples{
-generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
-aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
+## Example 1
+generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+
+## Example 2
+birth_times <- rpois(100, 5)
+generate_pop_demography(N=100, times=1:120, birth_times=birth_times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+
+## Example 3
+aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=c(0.5,0.5)),
+            "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "proportion"=c(0.25,0.25,0.25,0.25)) )
 generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 }
 \seealso{

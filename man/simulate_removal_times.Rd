@@ -8,17 +8,17 @@ simulate_removal_times(
   N,
   times,
   birth_times,
-  removal_min,
-  removal_max,
-  prob_removal
+  removal_min = 0,
+  removal_max = max(times),
+  prob_removal = 0
 )
 }
 \arguments{
-\item{N}{The number of individuals in the simulation}
+\item{N}{The number of individuals in the simulation.}
 
-\item{times}{A vector of each time step in the simulation}
+\item{times}{A vector of each time step in the simulation.}
 
-\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual}
+\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector.}
 
 \item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
 
@@ -27,16 +27,14 @@ simulate_removal_times(
 \item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
 }
 \value{
-A vector of all individual's removal times is returned
+A vector of all individual's removal times is returned. NA represents no removal.
 }
 \description{
-This function simulates random removal times for a specified number of individuals across a range of times
+This function simulates uniformly distributed removal times for a specified number of individuals from the provided times vector. This might represent e.g., death or study attrition.
 }
 \examples{
-## First, simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
-births<-simulate_birth_times(500, 1:100, age_min=9) 
 ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
-simulate_removal_times(500,1:100,birth_times=births,removal_min=10,removal_max=99, prob_removal=0.4)
+simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
 }
 \seealso{
 Other demography: 
