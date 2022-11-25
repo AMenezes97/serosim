@@ -7,9 +7,9 @@
 plot_subset_individuals_history(titers, exposure_histories, subset, demography)
 }
 \arguments{
-\item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each biomarker ID}
+\item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each biomarker}
 
-\item{exposure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure ID}
+\item{exposure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt}
 
 \item{subset}{The number of individuals you want to plot}
 

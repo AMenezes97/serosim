@@ -28,7 +28,7 @@ N<-100
 ## Specify options for each demography element and the distribution of each within the population
 aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribution"=c(0.3,0.3,0.4)),
             "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0, aux=aux)
 
 ## Set biomarker map 
 biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1)) 

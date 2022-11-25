@@ -9,7 +9,7 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 N<-10
 aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribution"=c(0.3,0.3,0.4)),
             "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
 biomarker_map_original <- tibble(exposure_id=c("AB_vacc","AB_vacc","A_ifxn","B_ifxn"),biomarker_id=c("A_antibody","B_antibody","A_antibody","B_antibody"))
 biomarker_map <-reformat_biomarker_map(biomarker_map_original)
 foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))

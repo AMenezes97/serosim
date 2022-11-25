@@ -7,10 +7,10 @@
 plot_exposure_histories(exposure_histories)
 }
 \arguments{
-\item{expsoure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure ID}
+\item{expsoure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure event}
 }
 \value{
-A plot of individual exposures histories across time for all individuals and exposures is returned
+A plot of individual exposures histories across time for all individuals and exposure events is returned
 }
 \description{
 Plot Individual Exposure Histories

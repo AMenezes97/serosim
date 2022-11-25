@@ -2,18 +2,18 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_exposure_force}
 \alias{plot_exposure_force}
-\title{Plot Force of Exposure for Each Individual Across Time For All Individuals And Exposure IDs}
+\title{Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events}
 \usage{
 plot_exposure_force(exposure_force_long)
 }
 \arguments{
-\item{exposure_force_long}{The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID}
+\item{exposure_force_long}{The reshaped data set containing the probability of an exposure event for individuals at all time steps for each exposure event}
 }
 \value{
-A plot of force of exposure for across time for all individuals and exposure IDs is returned
+A plot of individual exposure probabilities across time for all exposure events is returned
 }
 \description{
-Plot Force of Exposure for Each Individual Across Time For All Individuals And Exposure IDs
+Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events
 }
 \examples{
 plot_exposure_force(example_force_long)

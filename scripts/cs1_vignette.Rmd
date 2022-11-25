@@ -49,9 +49,9 @@ N<-100
 
 ## Generate the population demography tibble
 ## See help file(?generate_pop_demography) for more information on function arguments.
-## Limit is set to 0 which allows births to occur until the last time step
+## age_min is set to 0 which allows births to occur until the last time step
 ## Let's assume that no individuals are removed from the population and set prob_removal to 0
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0)
 
 ## Examine the generated demography tibble
 summary(demography)

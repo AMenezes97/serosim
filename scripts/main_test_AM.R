@@ -34,7 +34,7 @@ aux <- list("SES"=list("name"="SES","options"=c("low","medium","high"), "distrib
             "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
 
 ## Simulate demography settings 
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 
 
 

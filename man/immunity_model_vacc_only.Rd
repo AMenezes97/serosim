@@ -25,19 +25,19 @@ immunity_model_vacc_only(
 
 \item{x}{exposure}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure event}
 
 \item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure event and biomarker}
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 
 \item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
 
-\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA}
+\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA}
 
 \item{...}{}
 }
@@ -45,5 +45,5 @@ immunity_model_vacc_only(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure(vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure is 1.
+This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure(vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure event is 1.
 }

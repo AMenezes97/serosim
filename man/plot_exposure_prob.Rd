@@ -2,18 +2,18 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_exposure_prob}
 \alias{plot_exposure_prob}
-\title{Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure IDs}
+\title{Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events}
 \usage{
 plot_exposure_prob(exposure_probabilities_long)
 }
 \arguments{
-\item{exposure_probabilities_long}{The reshaped data set containing exposure probability for individuals at all time steps for each exposure ID}
+\item{exposure_probabilities_long}{TThe reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event}
 }
 \value{
-A plot of individual exposure probabilities across time for all exposure IDs is returned
+A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned
 }
 \description{
-Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure IDs
+Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events
 }
 \examples{
 plot_exposure_prob(example_exposure_probabilities)

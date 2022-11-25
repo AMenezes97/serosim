@@ -75,8 +75,8 @@ aux <- list("Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distri
 
 
 ## Let's assume that no individuals are removed from the population and set prob_removal to 0
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=max(times), prob_removal=0, aux=aux)
-# demography <- generate_pop_demography(N, times, birth_times, limit=0, removal_min=0, removal_max=max(times), prob_removal=0, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=max(times), prob_removal=0, aux=aux)
+# demography <- generate_pop_demography(N, times, birth_times, age_min=0, removal_min=0, removal_max=max(times), prob_removal=0, aux=aux)
 ## Count the number of individuals in each group/location
 demography %>% filter(times==1) %>% count(group) 
 
@@ -92,19 +92,19 @@ biomarker_map <- tibble(exposure_id=c(1,2,3),biomarker_id=c(1,1,1))
 foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times),n_distinct(biomarker_map$exposure_id)))
 
 ## Specify the force of infection for exposure ID 1 which represents natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.002
 
 ## Specify the force of vaccination for exposure ID 2 which represents MCV1 vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.004
 
 ## Specify the force of vaccination for exposure ID 3 which represents MCV2 vaccination
-foe_pars[,,3] <- 0.05
+foe_pars[,,3] <- 0.0005
 
 ## I specified the same value for all time steps within foe_pars for simplicity but we can change to varying numbers to match real world settings. 
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of infection at that time step
 ## In this selected model, the probability of exposure is 1-exp(-FOI) where FOI is the force of infection at that time.
-exposure_model<-exposure_model_simple_FOI
+exposure_model<-exposure_model_simple_FOE
 
 
 ##********************************1.5: Immunity Model*****************************
@@ -180,6 +180,7 @@ res<- runserosim(
   max_vacc_events=max_vacc_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
+  VERBOSE=TRUE
 )
 
 

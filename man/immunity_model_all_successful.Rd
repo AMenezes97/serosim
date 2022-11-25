@@ -23,7 +23,7 @@ immunity_model_all_successful(
 
 \item{x}{exposure}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
 
 \item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 

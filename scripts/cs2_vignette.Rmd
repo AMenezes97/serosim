@@ -62,7 +62,7 @@ aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribut
 ## Generate the population demography tibble
 ## Limit is set to 0 which allows births to occur until the last time step
 ## Let's assume that individuals are removed from the population and set prob_removal to 0.2
-demography <- generate_pop_demography(N, times, limit=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
 
 ## Examine the generated demography tibble
 head(demography)

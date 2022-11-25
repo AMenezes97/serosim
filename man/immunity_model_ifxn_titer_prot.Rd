@@ -23,13 +23,13 @@ immunity_model_ifxn_titer_prot(
 
 \item{x}{exposure}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
 
 \item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure events and biomarker}
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 
@@ -39,5 +39,5 @@ immunity_model_ifxn_titer_prot(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used if all exposures are natural infection events. The probability of successful exposure is dependent on the individual’s antibody titer at the time of exposure.
+This immunity model should only be used if all exposures are natural infection events. The probability of a successful exposure event is dependent on the individual’s antibody titer at the time of exposure.
 }

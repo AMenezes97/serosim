@@ -4,16 +4,16 @@
 #' 
 #' @param N The number of individuals in the simulation
 #' @param times  A vector of each time step in the simulation
-#' @param limit A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
+#' @param age_min A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
 #'
 #' @return A vector of simulated birth times for each individual is returned
 #' @export
 #'
 #' @examples 
 #' ## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
-#' simulate_birth_times(500, 1:100, limit=9) 
-simulate_birth_times <- function(N, times, limit=0){
-  birth_times <- sample(times[1:(length(times)-(limit+1))], N, replace =TRUE)
+#' simulate_birth_times(500, 1:100, age_min=9) 
+simulate_birth_times <- function(N, times, age_min=0){
+  birth_times <- sample(times[1:(length(times)-(age_min+1))], N, replace =TRUE)
   return(birth_times)
 }
 
@@ -34,7 +34,7 @@ simulate_birth_times <- function(N, times, limit=0){
 #'
 #' @examples
 #' ## First, simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
-#' births<-simulate_birth_times(500, 1:100, limit=9) 
+#' births<-simulate_birth_times(500, 1:100, age_min=9) 
 #' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
 #' simulate_removal_times(500,1:100,birth_times=births,removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min, removal_max, prob_removal){
@@ -81,7 +81,7 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 #' @param N The number of individuals in the simulation
 #' @param times A vector of each time step in the simulation
 #' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate birth times for each individual
-#' @param limit A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
+#' @param age_min A number indicating the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the second to last time step
 #' @param removal_min The minimum age at which an individual can be removed from the population 
 #' @param removal_max The maximum age at which an individual can be removed from the population 
 #' @param prob_removal The probability that an individual will be removed from the population
@@ -90,15 +90,15 @@ simulate_removal_times <- function(N, times, birth_times, removal_min, removal_m
 #' @return A tibble of relevant demographic information for each individual in the simulation is returned;  This output matches the required "demography" input for the runserosi function
 #' @export
 #'
-#' @examples generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' @examples generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 #' 
 #' @examples 
 #' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2", "3", "4"), "distribution"=c(0.25,0.25,0.25,0.25)) )
-#' generate_pop_demography(10, 1:120, limit=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
-generate_pop_demography<-function(N, times, birth_times=NULL, limit=0, removal_min, removal_max, prob_removal, aux=NULL){
+#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal_min, removal_max, prob_removal, aux=NULL){
   if(!is.null(birth_times)){
     birth_tm<-birth_times} 
-  else{birth_tm=simulate_birth_times(N, times, limit)}
+  else{birth_tm=simulate_birth_times(N, times, age_min)}
   
   if(is.null(aux)){
     

@@ -9,7 +9,7 @@ N_biomarker_ids <-2
 
 ## Create demography 
 aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "distribution"=c(0.5,0.5)),"Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)),"NS"=list("name"="NS","options"=c("low", "high"), "distribution"=c(0.5,0.5)) )
-demography<-generate_pop_demography(N, times, limit=0, removal_min=2, removal_max=10, prob_removal=0.5, aux=aux)
+demography<-generate_pop_demography(N, times, age_min=0, removal_min=2, removal_max=10, prob_removal=0.5, aux=aux)
 groups <- demography %>% select(i, group) %>% distinct()
 birth_times<-demography %>% select(i, birth) %>% distinct() 
 removal_times <- demography %>% select(i, removal) %>% distinct() 

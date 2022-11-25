@@ -26,21 +26,21 @@ immunity_model_vacc_ifxn_simple(
 
 \item{x}{exposure}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
 
 \item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{biomarker_map}{A table specifying the relationship between exposure events and biomarker}
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 
-\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
+\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA}
 
 \item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
 
-\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure type; If an exposure type is not a vaccination event then input NA}
+\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA}
 
 \item{...}{}
 }
@@ -48,5 +48,5 @@ immunity_model_vacc_ifxn_simple(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used with vaccines and natural infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time t and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of successful exposure is 1. The probability of a successful natural infection is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of successful exposure is 1.
+This immunity model should only be used with vaccines and natural infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time t and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of a successful exposure event is 1. The probability of a successful natural infection event is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of a successful exposure event is 1.
 }
