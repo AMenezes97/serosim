@@ -125,30 +125,36 @@ update <- function(VERBOSE, i){
   }
 }
 
-#' Reformat biomarker_map to numeric exposure and biomarker format needed for runserosim 
+#' Reformat `biomarker_map` exposure and biomarker variables
 #' 
-#' @description This function will reformat the biomarker_map argument so that exposure_ID and biomarker_ID are both numeric
+#' @description This function will reformat the `biomarker_map` argument so that exposure_ID and biomarker_ID are either both numeric (if passed as characters) or characters (if passed as numeric).
 #' 
-#' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
-#'
-#' @return biomarker_map is returned with unique numeric inputs for exposure and biomarker IDs
+#' @param biomarker_map A tibble specifying the relationship between exposure IDs and biomarker IDs
+#' @param exposure_key Optional vector giving the character-index relationship for `exposure_id`
+#' @param biomarker_key Optional vector giving the character-index relationship for `biomarker_id`
+#' @return `biomarker_map` is returned with unique numeric or character inputs for exposure and biomarker IDs
 #' @export
 #'
 #' @examples
-reformat_biomarker_map<-function(biomarker_map){
-  ei<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$exposure_id))),1),exposure_id=unique(biomarker_map$exposure_id))
-  ai<-tibble(code=seq(1,length(unique(as.factor(biomarker_map$biomarker_id))),1),biomarker_id=unique(biomarker_map$biomarker_id))
-  key<-full_join(ei,ai,by="code")
-  
-  biomarker_map_tmp<-biomarker_map
-  
-  for(i in seq(nrow(biomarker_map_tmp))){
-    biomarker_map_tmp$exposure_id[i]<- key$code[!is.na(key$exposure_id) & key$exposure_id==biomarker_map_tmp$exposure_id[i]]
-    biomarker_map_tmp$biomarker_id[i]<- key$code[!is.na(key$biomarker_id) & key$biomarker_id==biomarker_map_tmp$biomarker_id[i]]
-  }
-  df<-transform(biomarker_map_tmp,exposure_id=as.numeric(exposure_id))
-  df<-transform(df,biomarker_id=as.numeric(biomarker_id))
-  return(df)
+#' ## Convert characters to numeric
+#' biomarker_map <- tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
+#' reformat_biomarker_map(biomarker_map)
+#' 
+#' ## Convert numeric to characters
+#' biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
+#' reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
+reformat_biomarker_map<-function(biomarker_map, exposure_key=NULL, biomarker_key=NULL){
+    if(any(apply(biomarker_map, 2, class) == "character")){
+        ## Converting character to numeric
+        biomarker_map <- biomarker_map %>% mutate(across(.fns=as.factor)) %>% mutate(across(.fns=as.numeric))
+    } else {
+        ## Converting numeric to character
+        if(!is.null(exposure_key) & !is.null(biomarker_key)){
+            biomarker_map$exposure_id <- exposure_key[biomarker_map$exposure_id]
+            biomarker_map$biomarker_id <- biomarker_key[biomarker_map$biomarker_id]
+        }
+    }
+    biomarker_map
 }
 
 #' Reformat model_pars to numeric exposure and biomarker format needed for runserosim 
