@@ -28,3 +28,4 @@ reformat_biomarker_map(biomarker_map)
 biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
 reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
 }
+\concept{misc}

@@ -1,14 +1,14 @@
 # library(serosim)
 
 ##Source the following: 
-source("~/Documents/GitHub/serosim/R/serosim.R")
-source("~/Documents/GitHub/serosim/R/observation_models.R")
-source("~/Documents/GitHub/serosim/R/antibody_models.R")
-source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
-source("~/Documents/GitHub/serosim/R/immunity_models.R")
-source("~/Documents/GitHub/serosim/R/exposure_models.R")
-source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
-source("~/Documents/GitHub/serosim/R/generate_plots.R")
+#source("~/Documents/GitHub/serosim/R/serosim.R")
+#source("~/Documents/GitHub/serosim/R/observation_models.R")
+#source("~/Documents/GitHub/serosim/R/antibody_models.R")
+#source("~/Documents/GitHub/serosim/R/draw_parameters_options.R")
+#source("~/Documents/GitHub/serosim/R/immunity_models.R")
+#source("~/Documents/GitHub/serosim/R/exposure_models.R")
+#source("~/Documents/GitHub/serosim/R/generate_pop_demography.R")
+#source("~/Documents/GitHub/serosim/R/generate_plots.R")
   
 library(tidyverse)
 library(data.table)
@@ -82,7 +82,7 @@ max_vacc_events<-1
 ## Specify antibody model within serosim function below 
 
 ## Specify antibody kinetics parameters 
-model_pars <- read.csv("Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv")
+model_pars <- read.csv("inst/extdata/model_pars_test_1.csv")
 
 ## Specify draw_parameters within serosim function below 
 
@@ -118,11 +118,11 @@ res<- runserosim(
   foe_pars, 
   biomarker_map,
   model_pars,
-  exposure_model=exposure_model_simple_FOI, 
+  exposure_model=exposure_model_simple_FOE, 
   immunity_model=immunity_model_vacc_ifxn_titer_prot, 
   antibody_model=antibody_model_biphasic, 
   observation_model=observation_model_continuous_bounded_noise,
-  draw_parameters=draw_parameters_random_fx_titer_dep, 
+  draw_parameters=draw_parameters_fixed_fx, 
   
   ## Pre-specified parameters/events
   exposure_histories_fixed=NULL,

@@ -37,7 +37,7 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
     removal_times <- simulate_removal_times(N, times=times,birth_times=birth_times, removal_min=removal_min, removal_max=removal_max, prob_removal)
     
     demog <- tibble(i=1:N,birth=birth_times,removal=removal_times)
-    demog <- demog %>% left_join(expand_grid(i=1:N,time=times))
+    demog <- demog %>% left_join(expand_grid(i=1:N,times=times))
 
     ## If there is additional auxiliary demographic information, merge this with default demography table
     if(!is.null(aux)){
@@ -134,6 +134,7 @@ update <- function(VERBOSE, i){
 #' @param biomarker_key Optional vector giving the character-index relationship for `biomarker_id`
 #' @return `input_map` is returned with unique numeric or character inputs for exposure and biomarker IDs
 #' @export
+#' @family misc
 #'
 #' @examples
 #' ## Convert characters to numeric

@@ -43,6 +43,7 @@ runserosim <- function(
     VERBOSE=NULL,
     ...
                     ){
+
     ## Simulation settings
     t_start <- simulation_settings[["t_start"]]
     t_end <- simulation_settings[["t_end"]]
@@ -126,8 +127,8 @@ runserosim <- function(
                     prob_success <- immunity_model(i, t, x, exposure_histories, 
                                                    antibody_states, demography, 
                                                    biomarker_map, model_pars, ...)
-                    
-                    ## Randomly assign success of exposure event based on immune state
+
+                                        ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
                     
                     ## Simulate kinetics parameters for this exposure event
