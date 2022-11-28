@@ -17,7 +17,7 @@
 #' @examples
 draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+  model_pars_tmp <- model_pars[model_pars$exposure_id == x,]
   pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
@@ -48,8 +48,8 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, mo
 #' @examples
 draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
-  pars <- numeric(nrow(model_pars_tmp))
+    model_pars_tmp <- model_pars[model_pars$exposure_id == x,]
+    pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
   for(par in 1:nrow(model_pars_tmp)){
@@ -104,7 +104,8 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, mo
 #' @examples
 draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
+    model_pars_tmp <- model_pars[model_pars$exposure_id == x,]
+    
   pars <- numeric(nrow(model_pars_tmp))
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
@@ -145,8 +146,8 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_
 #' @examples
 draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
   ## Filter for only exposure stimulated 
-  model_pars_tmp <- model_pars %>% filter(exposure_id == x)
-  pars <- numeric(nrow(model_pars_tmp))
+    model_pars_tmp <- model_pars[model_pars$exposure_id == x,]
+      pars <- numeric(nrow(model_pars_tmp))
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 

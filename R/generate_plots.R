@@ -277,5 +277,51 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
   return(g)
 }
 
-
+#' Plots example trajectories of the provided antibody kinetics model
+#' @export
+plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
+                                demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
+    
+    exposure_ids <- unique(biomarker_map$exposure_id)
+    biomarker_ids <- unique(biomarker_map$biomarker_id)
+    ## Go through for all times and plot random trajectories
+    indivs <- 1:N
+    exposure_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
+    
+    antibody_states_all <- list()
+    for(x in exposure_ids){
+        antibody_states <- array(0, dim=c(N, length(times),length(biomarker_ids)))
+        kinetics_pars_tmp <- list()
+        for(i in indivs){
+            exposure_histories_tmp[i,1,x] <- 1
+            for(b in biomarker_ids){
+                kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, b, demography,antibody_states, model_pars, ...))
+                kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
+                for(t in times){
+                    antibody_states[i,t,b] <- antibody_model(1, t, b, exposure_histories_tmp, 
+                                                             antibody_states, kinetics_pars_tmp, biomarker_map, ...)
+                }
+            }
+        }
+        antibody_states <- reshape2::melt(antibody_states)
+        colnames(antibody_states) <- c("i","t","b","titer")
+        antibody_states$x <- x
+        antibody_states_all[[x]] <- antibody_states
+    }
+    antibody_states_all <- do.call("bind_rows", antibody_states_all)
+    antibody_states_all$x <- paste0("Exposure id: ", antibody_states_all$x)
+    antibody_states_all$b <- paste0("Biomarker id: ", antibody_states_all$b)
+    
+    antibody_states_summ <- antibody_states_all %>% group_by(t,b,x) %>% summarize(mean_titer=mean(titer))
+    
+    ggplot(antibody_states_all) +
+        geom_line(aes(x=t,y=titer,col=b,group=i),alpha=0.25) +
+        geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=b),size=1) +
+        theme_bw() +
+        xlab("Time since infection") +
+        ylab("Titer") +
+        scale_color_viridis_d(name="Biomarker") +
+        facet_wrap(x~b)
+    
+}
 

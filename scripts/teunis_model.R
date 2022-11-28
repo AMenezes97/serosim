@@ -70,4 +70,29 @@ ggplot(melted_trajs) + geom_line(aes(x=t,y=y,group=i),alpha=0.25) +
     geom_line(data=mean_traj,aes(x=t,y=y),col="red") +
     scale_y_log10(limits=c(1,10000))
 
+Rprof(tmp<-tempfile())
+plot_antibody_model(antibody_model_monophasic, 5, model_pars=model_pars, biomarker_map=biomarker_map)
+Rprof(NULL)
+wow <- summaryRprof(tmp)
+wow$by.self %>% arrange(-total.pct)
+
+
+
+f <- function(){
+    draw_parameters_fixed_fx(1,1,1,1,NULL,NULL,model_pars)
+}
+kinetics_pars <- list(draw_parameters_fixed_fx(1,1,1,1,NULL,NULL,model_pars) %>% drop_na())
+exposure_history <- array(0,dim=c(10,50,2))
+exposure_history[1,1,1] <- 1
+f_ab <- function(){
+    antibody_model_monophasic(1,25,1,exposure_history,NULL,kinetics_pars,biomarker_map)
+}
+f_ab()
+microbenchmark::microbenchmark(f(), f_ab())
+
+model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
+draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+antibody_model_biphasic
+y <- plot_antibody_model(antibody_model_biphasic, 5, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+
 

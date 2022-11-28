@@ -33,14 +33,12 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, antibody_st
     ## Extract all kinetics_parameters for biomarker 
     b_tmp<-b
     
-    tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
+    tmp_kinetics_parameters <- kinetics_parameters[[i]]
     tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] ## Since you are going through time, all parameters will only be from the current or previous times?
     
     # setkey(tmp_kinetics_parameters, cols="i","t","e","b","name","value", "realized_value")
     tmp_boost <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",] 
     tmp_wane <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",] 
-    
-    
     
     for(j in seq_along(tmp_boost$realized_value)){
       titer<- titer + tmp_boost$realized_value[j]*max(0,1-tmp_wane$realized_value[j]*(t1-tmp_wane$t[j]))
@@ -75,7 +73,6 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
     return(0)
   }
   if(sum(exp_history,na.rm = TRUE)>0){
-      browser()
     ## Extract all kinetics_parameters for biomarker 
     b_tmp<-b
     
