@@ -74,11 +74,11 @@ summary(demography)
 ```
 
     ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 60.00                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 59.78                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 85.25                  3rd Qu.: 90.25  
+    ##  Min.   :  1.00   Min.   :  2.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 38.50   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 63.00                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 63.62                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.75                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -236,11 +236,17 @@ continuous assay with added noise. The added noise represents assay
 variability and is implemented by sampling from a distribution with the
 true latent antibody titer as the mean and the measurement error as the
 standard deviation. The observation standard deviation and distribution
-are defined within model_pars as the “obs_sd” parameter.
+are defined within model_pars as the “obs_sd” parameter. Within this
+observation model, we can also specify the assay sensitivity and
+specificity.
 
 ``` r
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
+
+## Specify assay sensitivity and specificity needed for the observation model
+sensitivity<-0.85
+specificity<-0.9
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(demography$i),t=120, b=1)
@@ -276,6 +282,8 @@ res<- runserosim(
   max_events=max_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
+  sensitivity=sensitivity,
+  specificity=specificity
 )
 
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
@@ -335,14 +343,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name     value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
-    ## 1     1     6     1     1 boost 11.4           11.4    
-    ## 2     1     6     1     1 wane   0.00224        0.00224
-    ## 3     1    12     2     1 boost  2.52           2.52   
-    ## 4     1    12     2     1 wane   0.00263        0.00263
-    ## 5     2    54     1     1 boost  1.89           1.89   
-    ## 6     2    54     1     1 wane   0.00256        0.00256
+    ##       i     t     x     b name    value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
+    ## 1     1    56     1     1 boost 2.14           2.14   
+    ## 2     1    56     1     1 wane  0.00337        0.00337
+    ## 3     1    69     2     1 boost 2.63           2.63   
+    ## 4     1    69     2     1 wane  0.00158        0.00158
+    ## 5     2   120     2     1 boost 2.12           2.12   
+    ## 6     2   120     2     1 wane  0.00154        0.00154
 
 ``` r
 ## Plots for the paper 
