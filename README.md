@@ -75,10 +75,10 @@ summary(demography)
 
     ##        i              birth        removal            times       
     ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 32.75   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 57.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 60.07                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 85.00                  3rd Qu.: 90.25  
+    ##  1st Qu.: 25.75   1st Qu.: 30.75   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 60.00                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 59.78                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 85.25                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -335,14 +335,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name    value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    83     1     1 boost 3.88           3.88   
-    ## 2     1    83     1     1 wane  0.00288        0.00288
-    ## 3     1    87     2     1 boost 1.05           1.05   
-    ## 4     1    87     2     1 wane  0.00154        0.00154
-    ## 5     2   110     1     1 boost 1.34           1.34   
-    ## 6     2   110     1     1 wane  0.00333        0.00333
+    ##       i     t     x     b name     value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
+    ## 1     1     6     1     1 boost 11.4           11.4    
+    ## 2     1     6     1     1 wane   0.00224        0.00224
+    ## 3     1    12     2     1 boost  2.52           2.52   
+    ## 4     1    12     2     1 wane   0.00263        0.00263
+    ## 5     2    54     1     1 boost  1.89           1.89   
+    ## 6     2    54     1     1 wane   0.00256        0.00256
 
 ``` r
 ## Plots for the paper 

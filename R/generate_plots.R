@@ -244,24 +244,41 @@ return(p)
 #' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
+#' @param removal Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
-plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography){
+plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography, removal=FALSE){
   exposure_histories$x <- paste0("Exposure: ", exposure_histories$x)
   titers$b <- paste0("Biomarker: ", titers$b)
-  
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
-  removal_subset <- demography %>% filter(times==1)
-  
   sample_indivs <- sample(1:max(demography$i), size=subset)
   
+  if(removal==FALSE){
+    removal_subset <- demography %>% filter(times==1)
+    g<-  ggplot() +
+      geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
+      geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
+      facet_wrap(~i) + theme_bw() +
+      scale_color_hue("Key", guide=guide_legend(order=3)) +
+      ggplot2::labs(title="Individual Antibody Kinetics",
+                    x="Time",
+                    y="Antibody Titer") + 
+      ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
+      ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
+      ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
+      ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
+      ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+      theme(legend.position="bottom", legend.box="vertical", legend.margin=margin())
+  }
+  if(removal==TRUE){
+  removal_subset <- demography %>% filter(times==1)
   g<-  ggplot() +
     geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
-    # geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
+    geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
     geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
     facet_wrap(~i) + theme_bw() +
     scale_color_hue("Key", guide=guide_legend(order=3)) +
@@ -274,6 +291,7 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
     ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
     ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
     theme(legend.position="bottom", legend.box="vertical", legend.margin=margin())
+  }
   return(g)
 }
 
