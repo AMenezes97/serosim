@@ -152,7 +152,7 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 
 

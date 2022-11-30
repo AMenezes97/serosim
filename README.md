@@ -62,19 +62,24 @@ individuals are born at the start of the simulation period.
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
 demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal_max=120, prob_removal=0)
+```
 
+    ## removal_min is less than the first time step. Setting to min(times).
+
+    ## Joining, by = "i"
+
+``` r
 ## Examine the generated demography tibble
 summary(demography)
 ```
 
-    ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 24.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 53.50   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 56.57   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 88.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
-    ##                                                     NA's   :12000
+    ##        i              birth        removal            times       
+    ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 32.75   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 57.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 60.07                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 85.00                  3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -107,7 +112,9 @@ biomarker_map <-reformat_biomarker_map(biomarker_map_original)
 biomarker_map
 ```
 
+    ## # A tibble: 2 × 2
     ##   exposure_id biomarker_id
+    ##         <dbl>        <dbl>
     ## 1           1            1
     ## 2           2            1
 
@@ -200,7 +207,7 @@ model_pars_original
 
 ``` r
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 ```
 
@@ -330,12 +337,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1     4     1     1 boost 4.69           4.69   
-    ## 2     1     4     1     1 wane  0.00405        0.00405
-    ## 3     1    12     2     1 boost 2.54           2.54   
-    ## 4     1    12     2     1 wane  0.00183        0.00183
-    ## 5     2    30     1     1 boost 3.98           3.98   
-    ## 6     2    30     1     1 wane  0.00319        0.00319
+    ## 1     1    83     1     1 boost 3.88           3.88   
+    ## 2     1    83     1     1 wane  0.00288        0.00288
+    ## 3     1    87     2     1 boost 1.05           1.05   
+    ## 4     1    87     2     1 wane  0.00154        0.00154
+    ## 5     2   110     1     1 boost 1.34           1.34   
+    ## 6     2   110     1     1 wane  0.00333        0.00333
 
 ``` r
 ## Plots for the paper 
