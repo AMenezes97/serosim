@@ -74,11 +74,11 @@ summary(demography)
 ```
 
     ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  2.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 38.50   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 63.00                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 63.62                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.75                  3rd Qu.: 90.25  
+    ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 33.75   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 66.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 62.79                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 93.00                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -136,9 +136,9 @@ users will likely have varying numbers to match real world settings.
 ## Create an empty array to store the force of infection for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.01
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
@@ -345,12 +345,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    56     1     1 boost 2.14           2.14   
-    ## 2     1    56     1     1 wane  0.00337        0.00337
-    ## 3     1    69     2     1 boost 2.63           2.63   
-    ## 4     1    69     2     1 wane  0.00158        0.00158
-    ## 5     2   120     2     1 boost 2.12           2.12   
-    ## 6     2   120     2     1 wane  0.00154        0.00154
+    ## 1     1    78     2     1 boost 4.26           4.26   
+    ## 2     1    78     2     1 wane  0.00130        0.00130
+    ## 3     2    87     1     1 boost 4.49           4.49   
+    ## 4     2    87     1     1 wane  0.00365        0.00365
+    ## 5     2    96     2     1 boost 1.68           1.68   
+    ## 6     2    96     2     1 wane  0.00130        0.00130
 
 ``` r
 ## Plots for the paper 

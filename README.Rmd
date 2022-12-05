@@ -97,9 +97,9 @@ varying numbers to match real world settings.
 ## Create an empty array to store the force of infection for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.01
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE

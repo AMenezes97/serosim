@@ -188,8 +188,8 @@ vacc_exposures<-2
 ## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for AB vaccine); ; note non vaccine exposures are listed as NAs
 vacc_age<-c(NA,2,NA)
 
-## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
-max_vacc_events<-c(NA,1,NA)
+## Specify the maximum number of successful exposure events an individual can receive for each exposure types
+max_events<-c(3,1,3)
 
 ## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1 (A_antibody) which will be loaded in section 1.6
 ## The immunity model we selected will take into account an individual's current titer to Pathogen A when determining the probability of successful infection. 
@@ -298,7 +298,7 @@ res<- runserosim(
 
   ## Other arguments needed
   bounds=bounds,
-  max_vacc_events=max_vacc_events,
+  max_events=max_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   dem_mod=dem_mod,

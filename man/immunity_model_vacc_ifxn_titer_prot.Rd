@@ -13,7 +13,7 @@ immunity_model_vacc_ifxn_titer_prot(
   demography,
   biomarker_map,
   model_pars,
-  max_vacc_events,
+  max_events,
   vacc_exposures,
   vacc_age = 1,
   ...
@@ -36,7 +36,7 @@ immunity_model_vacc_ifxn_titer_prot(
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 
-\item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure event; If an exposure type is not a vaccination event then input NA}
+\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA}
 
 \item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
 
@@ -48,5 +48,5 @@ immunity_model_vacc_ifxn_titer_prot(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure.
+This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure and the total number of successful infections prior to that point.
 }

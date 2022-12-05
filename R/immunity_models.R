@@ -76,7 +76,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure events and biomarker 
 #' @param model_pars A tibble of parameters needed for the immunity model
-#' @param max_events A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA
+#' @param max_events A vector of the maximum number of successful exposure events possible for each exposure event
 #' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA
 #' @param ... 
@@ -109,7 +109,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
     }
   }
   else{ ## If the exposure event is an infection event
-    ## Count the total number of successful exposures to e thus far 
+    ## Count the total number of successful exposures to x thus far 
     curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
     if(curr_ifx_events<max_events[x]){
       return(1)
@@ -166,7 +166,7 @@ immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories,
 
 #' Immunity Model For Vaccination Events and Natural Infection Events With Titer-Mediated Protection
 #' 
-#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure.
+#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure and the total number of successful infections prior to that point.
 #' 
 #' @param i Individual
 #' @param t time
@@ -176,7 +176,7 @@ immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories,
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure events and biomarkers
 #' @param model_pars A tibble of parameters needed for the immunity model
-#' @param max_vacc_events A vector of the maximum number of vaccination events possible for each exposure event; If an exposure type is not a vaccination event then input NA
+#' @param max_events A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA
 #' @param vacc_exposures A vector of exposure IDs (x) which represents vaccination events
 #' @param vacc_age A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA
 #' @param ... 
@@ -186,7 +186,7 @@ immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
-                           antibody_states, demography, biomarker_map, model_pars, max_vacc_events, vacc_exposures, vacc_age=1, ...){
+                           antibody_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  
     ## Calculate the individual's current age
@@ -198,7 +198,7 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
     ## Count the total number of successful exposures to e thus far 
     curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
-    if(curr_vacc_events<max_vacc_events[x]){
+    if(curr_vacc_events<max_events[x]){
       return(1)
     }else{
       return(0)
@@ -209,26 +209,37 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
     }
   } 
   else {
-    ## Find biomarkers which are boosted by this exposure type
-    ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
-    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
-    ## Find current titer to all relevant biomarkers
-    curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
-    curr_t <- sum(curr_t)
+    ## If the exposure event is an infection event
+    ## Count the total number of successful exposures to x thus far 
+    curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
     
-    ## Pull out necessary variables 
-    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"]
-    titer_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_width"]
+    ## If the current number of successful exposures to x is less than the maximum number of successful exposures
+    if(curr_ifx_events<max_events[x]){
+      
+        ## Find biomarkers which are boosted by this exposure type
+        ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
+         b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
+        ## Find current titer to all relevant biomarkers
+        curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
+        curr_t <- sum(curr_t)
     
-    ## Create a function to calculate the risk of infection at a given titer
-    titer_protection <- function(titer, alpha1, beta1){
-      risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
-      return(risk)
+        ## Pull out necessary variables 
+       titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"]
+        titer_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_width"]
+    
+        ## Create a function to calculate the risk of infection at a given titer
+        titer_protection <- function(titer, alpha1, beta1){
+          risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
+         return(risk)
+       }
+     
+          prob_success<- (1-titer_protection(curr_t, titer_prot_midpoint, titer_prot_width))
+    
+       return(prob_success)
     }
-    
-    prob_success<- (1-titer_protection(curr_t, titer_prot_midpoint, titer_prot_width))
-    
-    return(prob_success)
+    else{
+      return(0)
+    }
   }
 }
 

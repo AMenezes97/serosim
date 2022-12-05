@@ -36,7 +36,7 @@ immunity_model_vacc_ifxn_simple(
 
 \item{model_pars}{A tibble of parameters needed for the immunity model}
 
-\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure event; If an exposure type is not a vaccination event then input NA}
+\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure event}
 
 \item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
 
