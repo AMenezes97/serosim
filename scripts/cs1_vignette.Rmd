@@ -72,7 +72,7 @@ Note: The runserosim function, called later on, only requires a demography tibbl
 with two columns (individuals and times). 
 ```{r}
 ## Specify the number of individuals in the simulation 
-N<-100
+N<-1000
 
 ## Generate the population demography tibble
 ## See help file(?generate_pop_demography) for more information on function arguments.
@@ -130,10 +130,10 @@ simplicity but users will likely have varying numbers to match real world settin
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 
 ## Specify the force of exposure for exposure ID 1 which represents measles natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.02
 
 ## Specify the force of exposure for exposure ID 2 which represents measles vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.04
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step
 exposure_model<-exposure_model_simple_FOE
@@ -369,7 +369,7 @@ res<- runserosim(
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r}
 ## Plot antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=5, demography)
 
 ## Plot individual the probability of exposure for all exposure types.
 ## This is the output of the exposure model.
