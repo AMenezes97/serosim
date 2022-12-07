@@ -62,19 +62,24 @@ individuals are born at the start of the simulation period.
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
 demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal_max=120, prob_removal=0)
+```
 
+    ## removal_min is less than the first time step. Setting to min(times).
+
+    ## Joining, by = "i"
+
+``` r
 ## Examine the generated demography tibble
 summary(demography)
 ```
 
-    ##        i              times            birth           removal     
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :  1.00   Min.   : NA    
-    ##  1st Qu.: 25.75   1st Qu.: 30.75   1st Qu.: 24.00   1st Qu.: NA    
-    ##  Median : 50.50   Median : 60.50   Median : 53.50   Median : NA    
-    ##  Mean   : 50.50   Mean   : 60.50   Mean   : 56.57   Mean   :NaN    
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.25   3rd Qu.: 88.00   3rd Qu.: NA    
-    ##  Max.   :100.00   Max.   :120.00   Max.   :118.00   Max.   : NA    
-    ##                                                     NA's   :12000
+    ##        i              birth        removal            times       
+    ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 33.75   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 66.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 62.79                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 93.00                  3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -107,7 +112,9 @@ biomarker_map <-reformat_biomarker_map(biomarker_map_original)
 biomarker_map
 ```
 
+    ## # A tibble: 2 × 2
     ##   exposure_id biomarker_id
+    ##         <dbl>        <dbl>
     ## 1           1            1
     ## 2           2            1
 
@@ -129,9 +136,9 @@ users will likely have varying numbers to match real world settings.
 ## Create an empty array to store the force of infection for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.01
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
@@ -200,7 +207,7 @@ model_pars_original
 
 ``` r
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 ```
 
@@ -229,11 +236,17 @@ continuous assay with added noise. The added noise represents assay
 variability and is implemented by sampling from a distribution with the
 true latent antibody titer as the mean and the measurement error as the
 standard deviation. The observation standard deviation and distribution
-are defined within model_pars as the “obs_sd” parameter.
+are defined within model_pars as the “obs_sd” parameter. Within this
+observation model, we can also specify the assay sensitivity and
+specificity.
 
 ``` r
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
+
+## Specify assay sensitivity and specificity needed for the observation model
+sensitivity<-0.85
+specificity<-0.9
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(demography$i),t=120, b=1)
@@ -269,6 +282,8 @@ res<- runserosim(
   max_events=max_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
+  sensitivity=sensitivity,
+  specificity=specificity
 )
 
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
@@ -330,12 +345,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1     4     1     1 boost 4.69           4.69   
-    ## 2     1     4     1     1 wane  0.00405        0.00405
-    ## 3     1    12     2     1 boost 2.54           2.54   
-    ## 4     1    12     2     1 wane  0.00183        0.00183
-    ## 5     2    30     1     1 boost 3.98           3.98   
-    ## 6     2    30     1     1 wane  0.00319        0.00319
+    ## 1     1    78     2     1 boost 4.26           4.26   
+    ## 2     1    78     2     1 wane  0.00130        0.00130
+    ## 3     2    87     1     1 boost 4.49           4.49   
+    ## 4     2    87     1     1 wane  0.00365        0.00365
+    ## 5     2    96     2     1 boost 1.68           1.68   
+    ## 6     2    96     2     1 wane  0.00130        0.00130
 
 ``` r
 ## Plots for the paper 

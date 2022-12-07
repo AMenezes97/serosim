@@ -4,7 +4,14 @@
 \alias{observation_model_discrete_noise}
 \title{Observation Model For Discrete Assays With Added Noise}
 \usage{
-observation_model_discrete_noise(antibody_states, model_pars, cutoffs, ...)
+observation_model_discrete_noise(
+  antibody_states,
+  model_pars,
+  cutoffs,
+  sensitivity = 1,
+  specificity = 1,
+  ...
+)
 }
 \arguments{
 \item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
@@ -13,11 +20,15 @@ observation_model_discrete_noise(antibody_states, model_pars, cutoffs, ...)
 
 \item{cutoffs}{A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 specific antibodies are in the first row of this matrix.}
 
+\item{sensitivity}{number between 0 and 1 to describe the assay's sensitivity; defaults to 1}
+
+\item{specificity}{number between 0 and 1 to describe the assay's specificity; defaults to 1}
+
 \item{...}{}
 }
 \value{
 antibody_states is returned with a new column for observed titers
 }
 \description{
-This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter.
+This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent antibody titer as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter.The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity.
 }

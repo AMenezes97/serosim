@@ -85,7 +85,10 @@ And two biomarker IDs:
 2. Pathogen B specific antibodies (B_antibody)
 runserosim requires that exposure_id and biomarker_id are numeric so we will use 
 the reformat_biomarker_map function to create a new version of the biomarker map. 
-Users can go directly to numeric biomarker_map if they wish.
+Users can go directly to numeric biomarker_map if they wish. Note that the 
+reformat_biomarker_map function  will number the exposures and biomarkers in 
+alphabetical order so that the first exposure event or biomarker that is listed
+will not necessarily be labeled as 1.
 ```{r}
 ## Create biomarker map
 biomarker_map_original <- tibble(exposure_id=c("AB_vacc","AB_vacc","A_ifxn","B_ifxn"),biomarker_id=c("A_antibody","B_antibody","A_antibody","B_antibody"))
@@ -110,19 +113,19 @@ Since we have two groups, there are 2 rows in the first foe_pars dimension.
 ## Create an empty array to store the force of exposure for all exposure types across all time steps and groups
 ## Dimension 1: Group
 ## Dimension 2: Times
-## Dimension 3: Exposure ID 
+## Dimension 3: Exposure ID in the numeric order that they appear in the biomarker map
 foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))
 
 ## Note that we can specify a different force of exposure for each group, time and exposure ID
 ## We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
 
 ## Assign arbitrary force of exposure
-## Specify the force of exposure for exposure ID 1 which represents Pathogen A and Pathogen B combined vaccine (AB_vacc)
-foe_pars[1,,1] <- 0.2 ## Group 1 (aka Group 1)
+## Specify the force of exposure for exposure ID 1 which represents Pathogen A natural infection (A_ifxn)
+foe_pars[1,,1] <- 0.4 ## Group 1 (aka Group 1)
 foe_pars[2,,1] <- 0.3 ## Group 2 (aka Group 2)
 
-## Specify the force of exposure for exposure ID 2 which represents Pathogen A natural infection (A_ifxn)
-foe_pars[1,,2] <- 0.4 ## Group 1 (aka Group 1)
+## Specify the force of exposure for exposure ID 2 which represents Pathogen A and Pathogen B combined vaccine (AB_vacc)
+foe_pars[1,,2] <- 0.2 ## Group 1 (aka Group 1)
 foe_pars[2,,2] <- 0.3 ## Group 2 (aka Group 2)
 
 ## Specify the force of exposure for exposure ID 2 which represents Pathogen B natural infection (B_ifxn)
@@ -135,11 +138,11 @@ exposure_model<-exposure_model_dem_age_mod
 ## This exposure model requires age_mod, dem_mod and t_in_year arguments
 
 ## Create a tibble with any relevant age modifiers that affect exposure probability 
-## Individuals who are less than one years old are 3 times more likely be vaccinated than other age classes
-age_mod_1<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
-
 ## Individuals who are 0-3 are 2 times more likely to be exposed to pathogen A
-age_mod_2<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+age_mod_2<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+
+## Individuals who are less than one years old are 3 times more likely be vaccinated than other age classes
+age_mod_1<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
 
 ## Individuals who are 0-3 are 2 times more likely to be exposed to pathogen B
 age_mod_3<-tibble(exposure_id=rep(3,11), age=0:10, modifier=c(1,2,1,1,1,1,1,1,1,1,1))
@@ -148,9 +151,9 @@ age_mod
 
 ## Specify the demography exposure modifiers
 ## Here, individuals who are of low nutritional status are twice as likely of being exposed to pathogen A and pathogen B while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
-## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 1 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 1 (vaccination) than individuals of low nutritional status. 
+## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 2 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 2 (vaccination) than individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
-dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(1,2,3,2,1.5,1,2,1.5,1))
+dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(2,1.5,1,1,2,3,2,1.5,1))
 dem_mod
 
 
@@ -179,14 +182,14 @@ parameters within model_pars.
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
 
 ## Specify which exposure IDs represent vaccination events 
-## In this case, only exposure ID 1 is a vaccination event
-vacc_exposures<-1
+## In this case, only exposure ID 2 is a vaccination event
+vacc_exposures<-2
 
 ## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for AB vaccine); ; note non vaccine exposures are listed as NAs
-vacc_age<-c(2,NA,NA)
+vacc_age<-c(NA,2,NA)
 
-## Specify the maximum number of vaccines an individual can receive for each exposure types; note non vaccine exposures are listed as NAs
-max_vacc_events<-c(1,NA,NA)
+## Specify the maximum number of successful exposure events an individual can receive for each exposure types
+max_events<-c(3,1,3)
 
 ## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1 (A_antibody) which will be loaded in section 1.6
 ## The immunity model we selected will take into account an individual's current titer to Pathogen A when determining the probability of successful infection. 
@@ -230,7 +233,7 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 
 ## Specify the draw_parameters function to use 
@@ -295,7 +298,7 @@ res<- runserosim(
 
   ## Other arguments needed
   bounds=bounds,
-  max_vacc_events=max_vacc_events,
+  max_events=max_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   dem_mod=dem_mod,
@@ -310,7 +313,7 @@ res<- runserosim(
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
 ## Plot antibody states and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography, removal=TRUE)
 
 ## Plot individual force of exposure for all exposure types
 plot_exposure_force(res$exposure_force_long)

@@ -97,9 +97,9 @@ varying numbers to match real world settings.
 ## Create an empty array to store the force of infection for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
-foe_pars[,,1] <- 0.2
+foe_pars[,,1] <- 0.01
 ## Specify the force of exposure for exposure ID 2 which represents vaccination
-foe_pars[,,2] <- 0.4
+foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
@@ -152,7 +152,7 @@ model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
 ## Reformat model_pars for runserosim
-model_pars<-reformat_model_pars(biomarker_map_original,model_pars_original )
+model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 
 
@@ -172,10 +172,15 @@ continuous assay with added noise. The added noise represents assay variability
 and is implemented by sampling from a distribution with the true latent antibody 
 titer as the mean and the measurement error as the standard deviation. The 
 observation standard deviation and distribution are defined within model_pars as 
-the “obs_sd” parameter.
+the “obs_sd” parameter. Within this observation model, we can also specify 
+the assay sensitivity and specificity. 
 ```{r}
 ## Specify the observation model 
 observation_model<-observation_model_continuous_noise
+
+## Specify assay sensitivity and specificity needed for the observation model
+sensitivity<-0.85
+specificity<-0.9
 
 ## Specify observation_times (serological survey sampling design) to observe biomarker 1 across all individuals at the end of the simulation (t=120)
 observation_times<- tibble(i=1:max(demography$i),t=120, b=1)
@@ -207,6 +212,8 @@ res<- runserosim(
   max_events=max_events,
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
+  sensitivity=sensitivity,
+  specificity=specificity
 )
 
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
