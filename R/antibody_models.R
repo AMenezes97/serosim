@@ -108,10 +108,11 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
 #' @examples
 antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
     tmp_pars <- kinetics_parameters[[i]]
-    titer <- tmp_pars[tmp_pars$biomarker_id == b & tmp_pars$name == "y0","value"] 
+    titer <- tmp_pars[tmp_pars$b == b & tmp_pars$name == "y0","value"] 
     ## There will be a distinct set of parameters for each exposure in exposure history
     ## Get exposure parameters relevant to this biomarker
     tmp_pars <- tmp_pars[tmp_pars$b == b & tmp_pars$t <= t,]
+    
     if(nrow(tmp_pars) > 1){
         ## Assume that tmp_pars is in the correct time order
         ##########
@@ -146,6 +147,6 @@ antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_st
     } else {
         y <- titer
     }
-    y
+    as.numeric(y)
     
 }

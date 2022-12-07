@@ -7,7 +7,7 @@
 plot_antibody_model(
   antibody_model,
   N = 100,
-  times = seq(1, 50, by = 0.1),
+  times = seq(1, 50, by = 1),
   model_pars,
   biomarker_map,
   demography = NULL,
