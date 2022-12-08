@@ -75,10 +75,10 @@ summary(demography)
 
     ##        i              birth        removal            times       
     ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 33.75   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 66.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 62.79                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 93.00                  3rd Qu.: 90.25  
+    ##  1st Qu.: 25.75   1st Qu.: 32.00   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 58.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 60.30                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 88.25                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -93,6 +93,10 @@ and measles natural infection. runserosim requires that exposure_id and
 biomarker_id are numeric so we will use the reformat_biomarker_map
 function to create a new version of the biomarker map. Users can go
 directly to numeric biomarker_map if they wish.
+
+Note that the reformat_biomarker_map function will number the exposures
+and biomarkers in alphabetical order so that the first exposure event or
+biomarker that is listed will not necessarily be labeled as 1.
 
 ``` r
 ## Create biomarker map
@@ -345,12 +349,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    78     2     1 boost 4.26           4.26   
-    ## 2     1    78     2     1 wane  0.00130        0.00130
-    ## 3     2    87     1     1 boost 4.49           4.49   
-    ## 4     2    87     1     1 wane  0.00365        0.00365
-    ## 5     2    96     2     1 boost 1.68           1.68   
-    ## 6     2    96     2     1 wane  0.00130        0.00130
+    ## 1     1   114     2     1 boost 2.45           2.45   
+    ## 2     1   114     2     1 wane  0.00201        0.00201
+    ## 3     2    67     2     1 boost 1.94           1.94   
+    ## 4     2    67     2     1 wane  0.00147        0.00147
+    ## 5     3   103     1     1 boost 4.00           4.00   
+    ## 6     3   103     1     1 wane  0.00337        0.00337
 
 ``` r
 ## Plots for the paper 

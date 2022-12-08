@@ -269,7 +269,7 @@ antibody_model<-antibody_model_biphasic
 
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
-model_pars_path <- system.file("extdata", "model_pars_cs1_measles.csv", package = "serosim")
+model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
 model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
