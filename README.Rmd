@@ -55,7 +55,7 @@ are born at the start of the simulation period.
 ## Generate the population demography tibble
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
-demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal_max=120, prob_removal=0)
+demography <- generate_pop_demography(N=100, times=times, removal_min=1, removal_max=120, prob_removal=0)
 
 ## Examine the generated demography tibble
 summary(demography)

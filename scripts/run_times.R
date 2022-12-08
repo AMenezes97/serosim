@@ -111,7 +111,6 @@ for (runs in 1:nrow(run_time)){
     vacc_exposures=vacc_exposures,
     vacc_age=vacc_age,
     dem_mod=dem_mod,
-    age_mod=age_mod,
     t_in_year=t_in_year
   )
   time<-toc()
@@ -121,8 +120,6 @@ for (runs in 1:nrow(run_time)){
 
 cs2_run_time_100<-run_time
 write.csv(cs2_run_time_100,"/Users/arthurmenezes/downloads//cs2_run_time_100.csv", row.names = FALSE)
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
 
 
 

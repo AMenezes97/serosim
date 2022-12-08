@@ -61,10 +61,8 @@ individuals are born at the start of the simulation period.
 ## Generate the population demography tibble
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
-demography <- generate_pop_demography(N=100, times=times, removal_min=0, removal_max=120, prob_removal=0)
+demography <- generate_pop_demography(N=100, times=times, removal_min=1, removal_max=120, prob_removal=0)
 ```
-
-    ## removal_min is less than the first time step. Setting to min(times).
 
     ## Joining, by = "i"
 
@@ -75,11 +73,11 @@ summary(demography)
 
     ##        i              birth        removal            times       
     ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 32.00   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 58.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 60.30                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 88.25                  3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
+    ##  1st Qu.: 25.75   1st Qu.: 27.00   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 58.00                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 58.72                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 92.00                  3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :118.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -349,12 +347,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1   114     2     1 boost 2.45           2.45   
-    ## 2     1   114     2     1 wane  0.00201        0.00201
-    ## 3     2    67     2     1 boost 1.94           1.94   
-    ## 4     2    67     2     1 wane  0.00147        0.00147
-    ## 5     3   103     1     1 boost 4.00           4.00   
-    ## 6     3   103     1     1 wane  0.00337        0.00337
+    ## 1     1    35     2     1 boost 2.44           2.44   
+    ## 2     1    35     2     1 wane  0.00153        0.00153
+    ## 3     2    43     2     1 boost 1.78           1.78   
+    ## 4     2    43     2     1 wane  0.00132        0.00132
+    ## 5     2    52     1     1 boost 4.54           4.54   
+    ## 6     2    52     1     1 wane  0.00342        0.00342
 
 ``` r
 ## Plots for the paper 

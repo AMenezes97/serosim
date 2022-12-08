@@ -19,7 +19,7 @@ exposure_model_dem_mod(i, t, x, g, foe_pars, demography, dem_mod, ...)
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{dem_mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble.}
+\item{dem_mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. Users can also add age modifier(how much each age affects probability of exposure). The column name will be "age" with the entry being individual's ages.}
 
 \item{...}{}
 }
@@ -27,5 +27,5 @@ exposure_model_dem_mod(i, t, x, g, foe_pars, demography, dem_mod, ...)
 A probability of exposure is returned
 }
 \description{
-Probability of exposure depends on the force of exposure at the current time t for group g modulated by relevant demographic elements specified within the mod. Within mod, users can select which demographic elements affect the probability of exposure and by how much.
+Probability of exposure depends on the force of exposure at the current time t for group g modulated by relevant demographic elements specified within the dem_mod. Within dem_mod, users can select which demographic elements affect the probability of exposure and by how much.
 }

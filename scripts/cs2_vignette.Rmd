@@ -164,30 +164,34 @@ foe_pars[1,,2] <- 0.02 ## Group 1 (aka Location 1)
 foe_pars[2,,2] <- 0.03 ## Group 2 (aka Location 2)
 
 ## Specify a simple exposure model which calculates the probability of exposure from the force of exposure modulated by age and demography elements 
-exposure_model<-exposure_model_dem_age_mod
+exposure_model<-exposure_model_dem_mod
 
-## This exposure model requires age_mod, dem_mod and t_in_year arguments
+## This exposure model requires dem_mod and t_in_year arguments
 
-## Create a tibble with any relevant age modifiers that affect exposure probability 
+
+## Create a tibble with any relevant demography modifiers that affect exposure probability 
 ## For simplicity, we selected arbitrary numbers. 
+
+## First, we will specify age modifiers 
 ## Individuals who are 0-3 are 2 times more likely to be exposed to diphtheria
-age_mod_1<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+age_mod_1<-tibble(exposure_id=rep(1,11), column=rep("age",times=11), value=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
 
 ## Individuals who are 0-3 are 2 times more likely to be exposed to Pertussis
-age_mod_2<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(2,2,2,1,1,1,1,1,1,1,1))
+age_mod_2<-tibble(exposure_id=rep(2,11), column=rep("age",times=11), value=0:10, modifier=c(2,2,2,1,1,1,1,1,1,1,1))
 
 ## Individuals who are less than one year old are 3 times more likely be vaccinated than other age classes
-age_mod_3<-tibble(exposure_id=rep(3,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
+age_mod_3<-tibble(exposure_id=rep(3,11), column=rep("age",times=11),  value=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
 age_mod<-rbind(age_mod_1,age_mod_2,age_mod_3)
 age_mod
 
-## Specify the demography exposure modifiers
-## These are also arbitrary numbers selected for this generic example.
+## Now we will  specify additional demography exposure modifiers and combine them with the previous ones
 ## Here, individuals who are of low nutritional status are twice as likely of being exposed to Diphtheria and Pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
 ## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 3 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 3 (vaccination) than individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
-dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(2,1.5,1,2,1.5,1,1,2,3))
-dem_mod
+mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(2,1.5,1,2,1.5,1,1,2,3))
+mod
+## Combine both age modifiers and additional modifiers
+dem_mod<-rbind(age_mod,mod)
 
 ## Specify the number of time steps within a year 
 ## We are simulating on the monthly scale
@@ -417,7 +421,6 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   dem_mod=dem_mod,
-  age_mod=age_mod,
   t_in_year=t_in_year
 )
 
