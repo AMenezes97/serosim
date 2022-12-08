@@ -1,5 +1,6 @@
 setwd("~/Documents/GitHub/serosim")
 library(tidyverse)
+library(data.table)
 devtools::load_all()
 devtools::document()
 
@@ -24,16 +25,17 @@ demography <- generate_pop_demography(N=N,times=times, age_min=180,prob_removal=
 demography <- generate_pop_demography(N=N,times=times, age_min=180,prob_removal=1)
 
 biomarker_map <- tibble(exposure_id=c("infection"),biomarker_id=c("IgG"))
-reformat_biomarker_map(biomarker_map)
+biomarker_map <- reformat_biomarker_map(biomarker_map)
 
 ## 3. FOE models
 foe_pars <- c(beta=0.1,gamma=1/7,I0=1/10000)
 
 model_pars <- list(
     bind_rows(
-        data.frame(i=1, t=10, x=1,biomarker_id=1,name=c("y0","y1","alpha","r","t1"), value=c(10,200, 0.07,2.16,5)),
-        data.frame(i=1, t=60, x=1,biomarker_id=1,name=c("y1","alpha","r","t1"), value=c(250, 0.03,2.16,5))
+        data.frame(i=1, t=10, exposure_id=1,biomarker_id=1,name=c("y0","y1","alpha","r","t1"), value=c(10,200, 0.07,2.16,5)),
+        data.frame(i=1, t=60, exposure_id=1,biomarker_id=1,name=c("y1","alpha","r","t1"), value=c(250, 0.03,2.16,5))
     ))
+model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
 
 y <- sapply(0:720, function(x) antibody_model_typhoid(1, x, 1, NULL, NULL, model_pars, NULL))
 
@@ -58,11 +60,11 @@ alphas <- rlnorm(N, log(0.07),0.75)
 rs <- rlnorm(N, log(2.16), 0.1)
 t1s <- rlnorm(N, log(5.5), 0.75)
 times <- seq(0,365,by=1)
-trajs <- matrix(NA, nrow=length(t), ncol=N)
+trajs <- matrix(NA, nrow=length(times), ncol=N)
 for(i in 1:N){
     trajs[,i] <- sapply(times, function(t) typhoid(t, y0s[i],y1s[i],alphas[i],rs[i],t1s[i]))
 }
-mean_traj <- data.frame(t=t,y=apply(trajs, 1, median))
+mean_traj <- data.frame(t=times,y=apply(trajs, 1, median))
 melted_trajs <- reshape2::melt(trajs)
 colnames(melted_trajs) <- c("t","i","y")
 
@@ -70,8 +72,14 @@ ggplot(melted_trajs) + geom_line(aes(x=t,y=y,group=i),alpha=0.25) +
     geom_line(data=mean_traj,aes(x=t,y=y),col="red") +
     scale_y_log10(limits=c(1,10000))
 
+exposure_histories_tmp[,1,] <- 1
+antibody_model_monophasic(1, 25, 1, exposure_histories_tmp, NULL, model_pars, biomarker_map)
+
+model_pars1 <- model_pars %>% mutate(mean = exp(mean))
+
 Rprof(tmp<-tempfile())
-plot_antibody_model(antibody_model_monophasic, 5, model_pars=model_pars, biomarker_map=biomarker_map)
+x <- plot_antibody_model(antibody_model_typhoid, 100, times=seq(0,365,by=1),model_pars=model_pars1, biomarker_map=biomarker_map,
+                         draw_parameters_fn = draw_parameters_random_fx)
 Rprof(NULL)
 wow <- summaryRprof(tmp)
 wow$by.self %>% arrange(-total.pct)
@@ -81,7 +89,7 @@ wow$by.self %>% arrange(-total.pct)
 f <- function(){
     draw_parameters_fixed_fx(1,1,1,1,NULL,NULL,model_pars)
 }
-kinetics_pars <- list(draw_parameters_fixed_fx(1,1,1,1,NULL,NULL,model_pars) %>% drop_na())
+kinetics_pars <- list(draw_parameters_fixed_fx(1,1,1,1,NULL,NULL,model_pars[[1]]) %>% drop_na())
 exposure_history <- array(0,dim=c(10,50,2))
 exposure_history[1,1,1] <- 1
 f_ab <- function(){
@@ -93,6 +101,7 @@ microbenchmark::microbenchmark(f(), f_ab())
 model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
 draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 antibody_model_biphasic
-y <- plot_antibody_model(antibody_model_biphasic, 5, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+biomarker_map1 <- tibble(exposure_id=c(1,1,2,2),biomarker_id=c(1,2,1,2))
+y <- plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map1)
 
 
