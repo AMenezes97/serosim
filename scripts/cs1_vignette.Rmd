@@ -72,7 +72,7 @@ Note: The runserosim function, called later on, only requires a demography tibbl
 with two columns (individuals and times). 
 ```{r}
 ## Specify the number of individuals in the simulation 
-N<-1000
+N<-100
 
 ## Generate the population demography tibble
 ## See help file(?generate_pop_demography) for more information on function arguments.
@@ -216,7 +216,7 @@ induced boost and waning parameters. From the reported quantitative measles IgG
 titer, we picked the conservative range of 2500-4500 mIU/mL for vaccine acquired 
 full boost. After 10 years, only the long-term boost remains which ranges from 
 900-2000 mIU/mL. Therefore, the short-term boost ranges from 1600-2500 mIU/mL
-[@Berry2017-ci; @Lyamuya1999-nf; @Carryn2019-qv; @Trevisan2021-of].Since we are only simulating a 10 year period, 
+[@Berry2017-ci; @Lyamuya1999-nf; @Carryn2019-qv; @Trevisan2021-of]. Since we are only simulating a 10 year period, 
 assumed that there was minimal waning of the long-term boost for simplicity.
 
 Although there is evidence that titers following measles infection are 
@@ -249,9 +249,8 @@ re-vaccination of children with naturally acquired immunity
 [@Christenson1994-fj]. With this draw parameters function, we incorporated 
 titer-dependent boosting which will take into account an individual's current 
 titer and adjust their realized boost accordingly. We arbitrarily set the 
-titer-dependent boosting effects to only allow for the increase in titer 
-following a secondary successful exposure event to be only 10% of the regular 
-boost which they would have received if their titer level was 0.
+titer-dependent boosting effects following an additional successful exposure 
+event for individuals above 200 IU/mL to be only 10% of the full boost.
 
 Given all of our specified parameters and models, individuals in the 
 simulation can only be vaccinated once and naturally infected once. If an 

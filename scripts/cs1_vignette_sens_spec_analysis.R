@@ -77,7 +77,7 @@ library(ggplot2)
 library(lubridate)
 theme_set(theme_bw())
 
-ggplot(sens_spec, aes(x=threshold)) + 
+p1<-ggplot(sens_spec, aes(x=threshold)) + 
   geom_line(aes(y=sensit, col="Sensitivity")) + 
   geom_line(aes(y=specif, col="Specificity")) + 
   labs(title="Sensitivity and specificity for varying thresholds of seropositivity", 
@@ -143,7 +143,7 @@ library(ggplot2)
 library(lubridate)
 theme_set(theme_bw())
 
-ggplot(sens_spec_serocon, aes(x=serocon_threshold)) + 
+p2<-ggplot(sens_spec_serocon, aes(x=serocon_threshold)) + 
   geom_line(aes(y=sensit, col="Sensitivity")) + 
   geom_line(aes(y=specif, col="Specificity")) + 
   labs(title="Sensitivity and specificity for varying thresholds of seroconversion", 
@@ -160,3 +160,5 @@ ggplot(sens_spec_serocon, aes(x=serocon_threshold)) +
   ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
   theme(legend.position = c(0.8, 0.6)) +
   theme(legend.text = element_text(colour="black", size=15)) + theme(legend.background=element_blank())
+
+plot_grid(p1, p2, nrow=1, ncol=2, align = "hv", scale=c(.98,.98))

@@ -71,6 +71,10 @@ like measles vaccination and measles natural infection. runserosim requires that
 exposure_id and biomarker_id are numeric so we will use the
 reformat_biomarker_map function to create a new version of the biomarker map. 
 Users can go directly to numeric biomarker_map if they wish.
+
+Note that the reformat_biomarker_map function  will number the exposures and 
+biomarkers in alphabetical order so that the first exposure event or biomarker 
+that is listed will not necessarily be labeled as 1.
 ```{r}
 ## Create biomarker map
 biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
