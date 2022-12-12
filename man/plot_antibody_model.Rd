@@ -15,6 +15,31 @@ plot_antibody_model(
   ...
 )
 }
+\arguments{
+\item{antibody_model}{A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)}
+
+\item{N}{Number of trajectories to simulate}
+
+\item{times}{Vector of times to solve model over}
+
+\item{model_pars}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
+
+\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+
+\item{demography}{A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+
+\item{draw_parameters_fn}{Pointer to function used for drawing random kinetics parameters, see \code{\link{draw_parameters_fixed_fx}}}
+}
+\value{
+A ggplot2 object
+}
 \description{
 Plots example trajectories of the provided antibody kinetics model
+}
+\examples{
+model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") \%>\% drop_na()
+draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+biomarker_map <- tibble(exposure_id=c(1,1,2,2),biomarker_id=c(1,2,1,2))
+plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 }

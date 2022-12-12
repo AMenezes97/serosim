@@ -296,7 +296,19 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
 }
 
 #' Plots example trajectories of the provided antibody kinetics model
+#' 
+#' @param N Number of trajectories to simulate
+#' @param times Vector of times to solve model over
+#' @param draw_parameters_fn Pointer to function used for drawing random kinetics parameters, see \code{\link{draw_parameters_fixed_fx}}
+#' @inheritParams runserosim
+#' @return A ggplot2 object
 #' @export
+#' @examples
+#' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
+#' draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+#' biomarker_map <- tibble(exposure_id=c(1,1,2,2),biomarker_id=c(1,2,1,2))
+#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
                                 demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
     exposure_ids <- unique(biomarker_map$exposure_id)
@@ -328,7 +340,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
     
     antibody_states_summ <- antibody_states_all %>% group_by(t,b,x) %>% summarize(mean_titer=mean(titer))
     
-    ggplot(antibody_states_all) +
+    p <- ggplot(antibody_states_all) +
         geom_line(aes(x=t,y=titer,col=b,group=i),alpha=0.25) +
         geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=b),size=1) +
         theme_bw() +
@@ -336,6 +348,73 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         ylab("Titer") +
         scale_color_viridis_d(name="Biomarker") +
         facet_wrap(x~b)
+    return(p)
     
 }
 
+#' Plots the probability of exposure over time for the provided exposure models
+#' 
+#' @inheritParams runserosim
+#' @param times Vector of times to solve model over
+#' @param n_groups Number of groups corresponding to \code{foe_pars}
+#' @param n_exposures Number of exposure types corresponding to \code{foe_pars}
+#' @param foe_pars Generic object containing all parameters needed to solve \code{exposure_model}
+#' @return A ggplot2 object
+#' @export
+#' @examples 
+#' ## Basic exposure model with demography modifier
+#' foe_pars <- array(NA, dim=c(n_groups,length(times),n_exposures))
+#' foe_pars[1,,1] <- 0.01
+#' foe_pars[1,,2] <- 0.005 
+#' demography <- tibble(i = rep(1:n_indiv, each=n_times), t=rep(times,2),
+#'                      SES=rep(c("low","high"),each=n_times))
+#' dem_mod <- tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
+#'                  value=c("low","high","low","high"),modifier=c(1,0.75,1,0.5))
+#' 
+#' plot_exposure_model(exposure_model=exposure_model_dem_mod, 1:365,
+#'                     1,2,foe_pars,demography = demography,dem_mod=dem_mod)
+#'                     
+#' ## SIR model with two groups and two exposure types                 
+#' foe_pars <- bind_rows(
+#'                       tibble(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),value=c(0.3,0.2,0.00001,0,0)),
+#'                       tibble(x=2,g=1,name=c("beta","gamma","I0","R0","t0"),value=c(0.35,0.25,0.00001,0,200)),
+#'                       tibble(x=1,g=2,name=c("beta","gamma","I0","R0","t0"),value=c(0.5,0.2,0.00005,0,0)),
+#'                       tibble(x=2,g=2,name=c("beta","gamma","I0","R0","t0"),value=c(0.27,0.2,0.00001,0,50))
+#'                       )
+#' plot_exposure_model(exposure_model_sir, seq(1,365,by=1),n_groups = 2,n_exposures = 2,foe_pars=foe_pars)
+#'                     
+plot_exposure_model <- function(exposure_model, times, n_groups=1, n_exposures=1, foe_pars, demography=NULL, ...){
+    n_times <- length(times)
+    ## Solve exposure probability for each demographic element
+    if(!is.null(demography)){
+        n_indivs <- length(unique(demography$i))
+    } else {
+        n_indivs <- 1
+    }
+    
+    ## Solve exposure probability for each exposure type, for each group, for each time
+    foe_all <- NULL
+    for(i in 1:n_indivs){
+        foe <- array(NA, dim=c(n_groups,n_times,n_exposures))
+        for(g in 1:n_groups){
+            for(x in 1:n_exposures){
+                foe[g,,x] <- unlist(sapply(times, function(t) exposure_model(i, t, x, g, foe_pars, demography, ...)))
+            }
+        }
+        foe <- reshape2::melt(foe)
+        colnames(foe) <- c("Group","Time","Exposure ID","value")
+        foe$`Exposure ID` <- paste0("Exposure ID: ", foe$`Exposure ID`)
+        foe$Individual <- paste0("Individual: ",i)
+        foe_all[[i]] <- foe
+    }
+    foe_all <- do.call("bind_rows", foe_all)
+    foe_all$Group <- as.factor(foe_all$Group)
+    foe_all$`Exposure ID` <- as.factor(foe_all$`Exposure ID`)
+    p <- ggplot(data=foe_all) + 
+        geom_line(aes(x=Time,col=Group,y=value,group=interaction(Group,`Exposure ID`))) + 
+        ylab("Probability of exposure per unit time") +
+        xlab("Time") +
+        theme_bw() +
+        facet_grid(Individual~`Exposure ID`)
+    return(p)
+}

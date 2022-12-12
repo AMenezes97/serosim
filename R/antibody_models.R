@@ -108,12 +108,25 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
 #' @examples
 antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
     tmp_pars <- kinetics_parameters[[i]]
-    titer <- tmp_pars[tmp_pars$b == b & tmp_pars$name == "y0","value"] 
-    ## There will be a distinct set of parameters for each exposure in exposure history
-    ## Get exposure parameters relevant to this biomarker
-    tmp_pars <- tmp_pars[tmp_pars$b == b & tmp_pars$t <= t,]
+    
+    ## Find which successful exposures correspond to this biomarker 
+    exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==b]
+    
+    ## Find all exposures up until current time for this individual and exposure type
+    exp_history <- exposure_histories[i,1:t,exposure_id_tmp]
+    
+    if(sum(exp_history,na.rm = TRUE)==0){
+        return(0)
+    }
     
     if(nrow(tmp_pars) > 1){
+        tmp_pars <- as.data.frame(tmp_pars)
+        
+        titer <- tmp_pars[tmp_pars$b == b & tmp_pars$name == "y0","value"][1]
+        ## There will be a distinct set of parameters for each exposure in exposure history
+        ## Get exposure parameters relevant to this biomarker
+        tmp_pars <- tmp_pars[tmp_pars$b == b & tmp_pars$t <= t,]
+        
         ## Assume that tmp_pars is in the correct time order
         ##########
         ## Unlike other models, the time order of this one matters.
@@ -141,6 +154,7 @@ antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_st
         if(length(t_inf)>1){
             for(x in 2:length(t_inf)){
                 y0 <- typhoid(t_inf[x]-t_inf[x-1], y0, y1s[x-1], alphas[x-1], rs[x-1], t1s[x-1])
+                if(length(y0) != 1) browser()
             }
         }
         y <- typhoid(t-t_inf[length(t_inf)], y0, y1s[length(t1s)], alphas[length(alphas)],rs[length(rs)],t1s[length(t1s)])

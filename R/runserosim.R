@@ -89,7 +89,6 @@ runserosim <- function(
     if(!is.null(exposure_histories_fixed)){
         exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
     }
-    
     # message(cat("Beginning simulation\n"))
     ## For each individual
     for(i in indivs){

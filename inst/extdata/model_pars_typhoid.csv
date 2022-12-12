@@ -1,6 +1,7 @@
 ﻿exposure_id,biomarker_id,name,mean,sd,distribution
-1,1,y1,5.298317367,1,log-normal
-1,1,y0,2.564949357,0.75,log-normal
-1,1,alpha,-2.659260037,0.75,log-normal
-1,1,r,0.770108222,0.1,log-normal
-1,1,t1,1.704748092,0.75,log-normal
+1,1,y1,200,1,log-normal
+1,1,y0,13,0.75,log-normal
+1,1,alpha,0.07,0.75,log-normal
+1,1,r,2.16,0.1,log-normal
+1,1,t1,5.5,0.75,log-normal
+1,1,obs_sd,10,10,normal
