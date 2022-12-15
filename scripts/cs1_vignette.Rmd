@@ -46,6 +46,8 @@ devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
+library(patchwork)
+library(reshape2)
 ```
 
 

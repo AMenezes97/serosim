@@ -42,18 +42,21 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, ..
   p <- foe_pars[g, t, x]
   
   ## Find which exposure events have modifiers
-  exps<-dem_mod$exposure_id %>% unique()
+  exps<-unique(dem_mod$exposure_id)
   
   ## If there are defined modifiers for this exposure then
   if(x  %in% exps){ 
     
     ## Pull out unique columns (demography variables) in dem_mod 
-    cols<-dem_mod$column %>% unique()
+    cols<-unique(dem_mod$column)
     
     ## Pull individual's information within demography 
     individualnum<-i
     demography_tmp<-data.table(demography)
     demography_tmp<-demography_tmp[demography_tmp$i==individualnum & times==t,]
+    
+    ## Convert dem_mod to data table
+    mod2<-data.table(dem_mod)
     
     for (col in seq_along(cols)){ ## For each unique column entry in dem_mod 
       ## Pull the column name
@@ -62,7 +65,6 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, ..
         ## Pull the individual's column entry within demography 
         entry<-demography_tmp[[colname]]
         ## Find the modifier within mod tibble 
-        mod2<-data.table(dem_mod)
         modifier<-mod2$modifier[mod2$exposure_id==x & mod2$column==colname & mod2$value==entry]
         ## Multiply modifier by p 
         p <- p*modifier
@@ -73,8 +75,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, ..
         birth_time<-demography_tmp$birth
         curr_age<-floor((t-birth_time)/t_in_year)
         
-        ## Find the age modifier within dem_mod tibble 
-        mod2<-data.table(dem_mod)
+        ## Find the age modifier within dem_mod tibble
         modifier<-mod2$modifier[mod2$exposure_id==x & mod2$column==colname & mod2$value==curr_age]
         ## Multiply modifier by p 
         p <- p*modifier

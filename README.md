@@ -28,6 +28,8 @@ devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
+library(patchwork)
+library(reshape2)
 ```
 
 # 1.1 Simulation Settings
@@ -72,12 +74,12 @@ summary(demography)
 ```
 
     ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  1.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 30.50   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 62.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 60.51                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 92.25                  3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :118.00                  Max.   :120.00
+    ##  Min.   :  1.00   Min.   :  3.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 43.00   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 66.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 66.69                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.:101.25                  3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -351,12 +353,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    27     1     1 boost 4.04           4.04   
-    ## 2     1    27     1     1 wane  0.00342        0.00342
-    ## 3     1    37     2     1 boost 1.92           1.92   
-    ## 4     1    37     2     1 wane  0.00123        0.00123
-    ## 5     2    62     1     1 boost 3.31           3.31   
-    ## 6     2    62     1     1 wane  0.00320        0.00320
+    ## 1     1    68     2     1 boost 1.32           1.32   
+    ## 2     1    68     2     1 wane  0.00137        0.00137
+    ## 3     1    86     1     1 boost 1.70           1.70   
+    ## 4     1    86     1     1 wane  0.00373        0.00373
+    ## 5     2    58     2     1 boost 1.53           1.53   
+    ## 6     2    58     2     1 wane  0.00100        0.00100
 
 ``` r
 ## Plots for the paper 

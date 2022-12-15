@@ -81,6 +81,10 @@
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
+Rprof("test")
+Rprof(NULL)
+summaryRprof("test")
+
 
 library(tictoc)
 
@@ -89,6 +93,7 @@ run_time<-data.frame(
   run=1:100,
   time=NA
 )
+
 
 for (runs in 1:nrow(run_time)){
   tic()
@@ -118,15 +123,55 @@ for (runs in 1:nrow(run_time)){
   run_time$time[runs]<- time$callback_msg
 }
 
-cs2_run_time_250<-run_time
-write.csv(cs2_run_time_250,"/Users/arthurmenezes/downloads//cs2_run_time_250.csv", row.names = FALSE)
+cs2_run_time_100<-run_time
+write.csv(cs2_run_time_100,"/Users/arthurmenezes/downloads//cs2_run_time_100.csv", row.names = FALSE)
 
 
 
 
 
 
-
+library(microbenchmark)
+microbenchmark(runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  foe_pars,
+  biomarker_map,
+  model_pars,
+  exposure_model=exposure_model_dem_mod,
+  immunity_model,
+  antibody_model,
+  observation_model,
+  draw_parameters,
+  
+  ## Other arguments needed
+  bounds=bounds,
+  max_events=max_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+  dem_mod=dem_mod,
+  t_in_year=t_in_year
+), runserosim(
+  simulation_settings,
+  demography,
+  observation_times,
+  foe_pars,
+  biomarker_map,
+  model_pars,
+  exposure_model=exposure_model_dem_mod_2,
+  immunity_model,
+  antibody_model,
+  observation_model,
+  draw_parameters,
+  
+  ## Other arguments needed
+  bounds=bounds,
+  max_events=max_events,
+  vacc_exposures=vacc_exposures,
+  vacc_age=vacc_age,
+  dem_mod=dem_mod,
+  t_in_year=t_in_year), times=5)
 
 
 
