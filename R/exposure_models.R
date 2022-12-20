@@ -53,7 +53,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, ..
     ## Pull individual's information within demography 
     individualnum<-i
     demography_tmp<-data.table(demography)
-    demography_tmp<-demography_tmp[demography_tmp$i==individualnum & times==t,]
+    demography_tmp<-demography_tmp[demography_tmp$i==individualnum & demography_tmp$times==t,]
     
     ## Convert dem_mod to data table
     mod2<-data.table(dem_mod)
