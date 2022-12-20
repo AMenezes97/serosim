@@ -4,7 +4,17 @@
 \alias{exposure_model_dem_mod}
 \title{Exposure Model Modified By Relevant Demographic Elements}
 \usage{
-exposure_model_dem_mod(i, t, x, g, foe_pars, demography, dem_mod, ...)
+exposure_model_dem_mod(
+  i,
+  t,
+  x,
+  g,
+  foe_pars,
+  demography,
+  dem_mod,
+  t_in_year = 1,
+  ...
+)
 }
 \arguments{
 \item{i}{Individual}
@@ -20,6 +30,8 @@ exposure_model_dem_mod(i, t, x, g, foe_pars, demography, dem_mod, ...)
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
 \item{dem_mod}{A tibble specifying the modifier(how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. Users can also add age modifier(how much each age affects probability of exposure). The column name will be "age" with the entry being individual's ages.}
+
+\item{t_in_year}{The number of time steps in a year; defaults to 1}
 
 \item{...}{}
 }
