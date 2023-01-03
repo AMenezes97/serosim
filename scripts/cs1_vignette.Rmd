@@ -13,8 +13,8 @@ Here, we will use the serosim package to generate a longitudinal serological
 survey of a one pathogen system with vaccination and natural infection. The 
 overall structure and principles discussed within this case study are also 
 applicable to other vaccine preventable pathogens. In this simulation, 
-individuals can either be vaccinated against the pathogen or naturally infected 
-with the pathogen, or a combination of both. We will set up each of the required 
+individuals can either be vaccinated against the pathogen, naturally infected 
+with the pathogen, a combination of both or neither. We will set up each of the required 
 arguments and models for runserosim in the order outlined in the methods section 
 of the paper. 
 
@@ -46,6 +46,8 @@ devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
+library(patchwork)
+library(reshape2)
 ```
 
 
@@ -72,7 +74,7 @@ Note: The runserosim function, called later on, only requires a demography tibbl
 with two columns (individuals and times). 
 ```{r}
 ## Specify the number of individuals in the simulation 
-N<-1000
+N<-100
 
 ## Generate the population demography tibble
 ## See help file(?generate_pop_demography) for more information on function arguments.
@@ -88,9 +90,9 @@ summary(demography)
 Now, we have to set up the exposure IDs and biomarker IDs for our desired 
 simulation. Individuals can be seropositive either by measles natural infection 
 or by vaccination and we want to track both exposure types separately. 
-Here, we will simulate measles natural infection(exposure_ID=measles_ifxn) and 
+Here, we will simulate measles natural infection (exposure_ID=measles_ifxn) and 
 measles vaccination (exposure_ID=measles_vacc) both of which will boost titers 
-to the same biomarker(biomarker_ID=measles_IgG). Since we are only interested 
+to the same biomarker (biomarker_ID=measles_IgG). Since we are only interested 
 in tracking measles IgG antibody levels across time, we only need one biomarker 
 ID. runserosim requires that exposure_id and biomarker_id are numeric so we will 
 use the reformat_biomarker_map function to create a new version of the biomarker 
@@ -161,11 +163,11 @@ a result of waning or incomplete  immunity following vaccination. The
 titer-mediated protection parameters used within this immunity model are defined 
 within model_pars which will be loaded in section 1.6. 
 
-The Enzygnost ELISA kit reports that the threshold of seropositivity is 200mIU/ml 
+The Enzygnost ELISA kit reports that the threshold of seropositivity is 200 mIU/ml 
 and we have used this titer value to inform our titer-mediated protection curve. 
-In our simulation, individuals with titers below 200mIU/ml will become infected 
-when exposed to measles while all individuals with titers above 200mIU/ml are 
-protected from infection. It is important to note that, seropositivty and titer 
+In our simulation, individuals with titers below 200 mIU/ml will have a higher probability of becoming infected 
+when exposed to measles while all individuals with titers above 200 mIU/ml are 
+more ikelely to be protected from infection. It is important to note that, seropositivty and titer 
 level is not a perfect correlate of protection against infection as it does not 
 directly account for neutralizing titers, cellular immunity and other 
 immunological complexities. With a more in-depth literature review on correlates 
@@ -216,8 +218,7 @@ induced boost and waning parameters. From the reported quantitative measles IgG
 titer, we picked the conservative range of 2500-4500 mIU/mL for vaccine acquired 
 full boost. After 10 years, only the long-term boost remains which ranges from 
 900-2000 mIU/mL. Therefore, the short-term boost ranges from 1600-2500 mIU/mL
-[@Berry2017-ci; @Lyamuya1999-nf; @Carryn2019-qv; @Trevisan2021-of].Since we are only simulating a 10 year period, 
-assumed that there was minimal waning of the long-term boost for simplicity.
+[@Berry2017-ci; @Lyamuya1999-nf; @Carryn2019-qv; @Trevisan2021-of]. Since we are only simulating a 10 year period, we assumed that there was minimal waning of the long-term boost for simplicity.
 
 Although there is evidence that titers following measles infection are 
 significantly higher than after vaccination when measured with PRNT assays 
@@ -225,14 +226,13 @@ significantly higher than after vaccination when measured with PRNT assays
 following known infection events using Enzygnost ELISA IgG test kits. For 
 simplicity, we will assume that natural infection boosting parameters are 25% 
 higher than vaccine induced antibody boosting when measured with Enzygnost ELISA 
-IgG test kits which does not distinguish between neutralizing and non 
-neutralizing titers.
+IgG test kits which does not distinguish between neutralizing and non-neutralizing titers.
 
 Lastly, we define the draw_parameters function which determines how each 
-individual’s antibody kinetics parameters are simulated from the within host 
+individual’s antibody kinetics parameters are simulated from the within-host 
 processes parameters tibble (model_pars). We will use a function which draws 
 parameters directly from model_pars for the antibody model with random 
-effects so represent individual heterogeneity in immunological responses. 
+effects to represent individual heterogeneity in immunological responses. 
 Parameters are drawn randomly from a distribution with mean and standard 
 deviation specified within model_pars. This draw_parameters function also 
 incorporates titer-dependent boosting where an individual’s realized boost is 
@@ -249,15 +249,14 @@ re-vaccination of children with naturally acquired immunity
 [@Christenson1994-fj]. With this draw parameters function, we incorporated 
 titer-dependent boosting which will take into account an individual's current 
 titer and adjust their realized boost accordingly. We arbitrarily set the 
-titer-dependent boosting effects to only allow for the increase in titer 
-following a secondary successful exposure event to be only 10% of the regular 
-boost which they would have received if their titer level was 0.
+titer-dependent boosting effects following an additional successful exposure 
+event for individuals above 200 mIU/mL to be only 10% of the full boost.
 
 Given all of our specified parameters and models, individuals in the 
 simulation can only be vaccinated once and naturally infected once. If an 
 individual in vaccinated and their titers are below the threshold of protection 
-they run the risk of experiencing a natural infection where there titers will 
-receive a partial boost. Given the short duration(10 years) of this simulation 
+they run the risk of experiencing a natural infection where their titers will 
+receive a partial boost. Given the short duration (10 years) of this simulation 
 and the vaccine associated antibody kinetics parameters, it is unlikely that any 
 individual who is vaccinated and successfully immunized will reach a titer level 
 that puts them at risk of infection. If an individual is vaccinated following a 
@@ -270,7 +269,7 @@ antibody_model<-antibody_model_biphasic
 
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the titer-mediated protection parameters needed for the immunity model (Section 1.5), the titer-ceiling parameters needed for draw_parameters and the observation error parameter needed for the observation model (Section 1.7) are all defined here too.
-model_pars_path <- system.file("extdata", "model_pars_cs1_measles.csv", package = "serosim")
+model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
 model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
 
@@ -369,16 +368,16 @@ res<- runserosim(
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r}
 ## Plot antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=5, demography)
+plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
 
-## Plot individual the probability of exposure for all exposure types.
+## Plot individual probability of exposure for all exposure types.
 ## This is the output of the exposure model.
 ## Note: All individuals are under the same force of exposure since we specified a simple exposure model
 plot_exposure_force(res$exposure_force_long)
 
 ## Plot individual successful exposure probabilities for all exposure types
 ## This is the output of the exposure model multiplied by the output of the immunity model.
-## In other words, this is the probability of exposure event being successful and inducing 
+## In other words, this is the probability of exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
 
 ## Plot individual exposure histories for all exposure types

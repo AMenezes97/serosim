@@ -43,7 +43,6 @@ runserosim <- function(
     VERBOSE=NULL,
     ...
                     ){
-
     ## Simulation settings
     t_start <- simulation_settings[["t_start"]]
     t_end <- simulation_settings[["t_end"]]

@@ -1,8 +1,10 @@
 ---
-title: 'Paper case study 2: Multi-pathogen system with multivalent vaccinaton'
+title: 'Paper case study 2: Multi-pathogen system with multivalent vaccinaton (Diphtheria and Pertussis)'
 author: "Arthur Menezes"
 date: '2022-08-24'
 output: html_document
+bibliography: cs2_DP_PT_citations.bib
+link-citations: yes
 ---
 Here, we will use the serosim package to generate a cross-sectional serosurvey of 
 a multi-pathogen system with multivalent vaccination. The overall structure 
@@ -13,9 +15,31 @@ simulation will track natural infection to pathogen A, natural infection to
 pathogen B and bi-valent vaccination with pathogen A and pathogen B antigens for 
 100 individuals across a 10 year period. At the end of the 10 year period, we 
 will measure titers against both pathogen A specific antibodies and pathogen B 
-specific antibodies for all individuals.
-We will set up each of the required arguments and models for runserosim in the 
-order outlined in the methods section of the paper. 
+specific antibodies for all individuals. We will set up each of the required 
+arguments and models for runserosim in the order outlined in the methods section 
+of the paper. 
+
+This case study is built around diphtheria and pertussis and we are interested 
+in tracking bivalent vaccination and both diphtheria and pertussis natural infection 
+across a 10 year period. We will conduct a cross-sectional serological survey 
+where we will use an ELISA kit to measure an individual's diphtheria and 
+pertussis IgG titer.
+
+We will use published diphtheria and pertussis serological surveys and any well 
+characterized epidemiological and immunological characteristics of diphtheria 
+and pertussis to parameterize our models wherever possible and make reasonable 
+assumptions for other required model parameters wherever information is lacking. 
+
+We narrowed our search to diphtheria and pertussis serological surveys conducted 
+with ELISA IgG test kits that reported quantitative titers in comparable units. 
+We did not conduct an extensive search of all diphtheria and pertussis serological surveys in 
+order to parameterize our models as it is beyond the scope of this case study. 
+Our aim was to provide a simple example of how users can use the literature to 
+inform required serosim inputs. Within each section below, we will briefly 
+explain the rationale behind our selected model inputs. We caution users to 
+conduct their own research into the models and associated parameters which best 
+align with their disease system and biomarker test kits. 
+
 
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
@@ -23,6 +47,8 @@ devtools::load_all("~/Documents/GitHub/serosim")
 library(tidyverse)
 library(data.table)
 library(ggplot2)
+library(patchwork)
+library(reshape2)
 ```
 
 
@@ -60,9 +86,8 @@ aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribut
 
 
 ## Generate the population demography tibble
-## Limit is set to 0 which allows births to occur until the last time step
 ## Let's assume that individuals are removed from the population and set prob_removal to 0.2
-demography <- generate_pop_demography(N, times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.2, aux=aux)
+demography <- generate_pop_demography(N, times, age_min=0, removal_min=1, removal_max=120, prob_removal=0.2, aux=aux)
 
 ## Examine the generated demography tibble
 head(demography)
@@ -73,16 +98,18 @@ tail(demography)
 Now, we have to set up the exposure IDs and biomarker IDs for our desired 
 simulation. Individuals can be seropositive either by natural infection or by 
 vaccination and we want to track both exposure types separately. 
+
 In this case, we need three exposure IDs:
 
-1. Pathogen A and Pathogen B combined vaccine (AB_vacc)
-2. Pathogen A natural infection (A_ifxn)
-3. Pathogen B natural infection (B_ifxn)
+1. Diphtheria natural infection (DP_ifxn)
+2. Pertussis natural infection (PT_ifxn)
+3. Diphtheria and pertussis combined vaccination (vacc)
 
 And two biomarker IDs:
 
-1. Pathogen A specific antibodies (A_antibody)
-2. Pathogen B specific antibodies (B_antibody)
+1. Diphtheria specific antibodies (DP_antibody)
+2. Pertussis specific antibodies (PT_antibody)
+
 runserosim requires that exposure_id and biomarker_id are numeric so we will use 
 the reformat_biomarker_map function to create a new version of the biomarker map. 
 Users can go directly to numeric biomarker_map if they wish. Note that the 
@@ -91,7 +118,7 @@ alphabetical order so that the first exposure event or biomarker that is listed
 will not necessarily be labeled as 1.
 ```{r}
 ## Create biomarker map
-biomarker_map_original <- tibble(exposure_id=c("AB_vacc","AB_vacc","A_ifxn","B_ifxn"),biomarker_id=c("A_antibody","B_antibody","A_antibody","B_antibody"))
+biomarker_map_original <- tibble(exposure_id=c("DP_ifxn","PT_ifxn","vacc","vacc"),biomarker_id=c("DP_antibody","PT_antibody","DP_antibody","PT_antibody"))
 biomarker_map_original
 
 ## Reformat biomarker_map for runserosim
@@ -100,15 +127,22 @@ biomarker_map
 ```
 
 # 1.4 Force of Exposure and Exposure Model
-Now, we need to specify the foe_pars argument which contains the force of 
-exposure for all exposure_IDs across all time steps. We also specify the 
+Now, we need to specify the foe_pars argument which contains the force of exposure
+for all exposure_IDs across all time steps and groups. We also need to specify the 
 exposure model which will be called within runserosim later. The exposure model 
 will determine the probability that an individual is exposed to a specific 
-exposure event. For this example, the probability of exposure (1-e^(-λ)) depends 
-on the force of exposure (λ) at the current time t for group g modulated by 
-relevant demographic elements (dem_mod) and age (age_mod)
+exposure event.
 
-Since we have two groups, there are 2 rows in the first foe_pars dimension.
+We specified the same force of exposure for all time steps within foe_pars for 
+simplicity but users will likely have varying numbers to match real world settings. 
+
+For our selected exposure model, the probability of exposure (1-e^(-λ)) depends 
+on the force of exposure (λ) at the current time t for group g modulated by 
+relevant demographic elements (dem_mod). For simplicity, we 
+selected arbitrary age and demography modifiers specified below. Since we have 
+two groups, there are 2 rows in the first foe_pars dimension.
+
+
 ```{r}
 ## Create an empty array to store the force of exposure for all exposure types across all time steps and groups
 ## Dimension 1: Group
@@ -117,45 +151,49 @@ Since we have two groups, there are 2 rows in the first foe_pars dimension.
 foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))
 
 ## Note that we can specify a different force of exposure for each group, time and exposure ID
-## We specified the same value for all time steps within foe_pars for simplicity but users will likely have varying numbers to match real world settings. 
+## We specified the same value for all time steps within foe_pars for simplicity.
 
-## Assign arbitrary force of exposure
-## Specify the force of exposure for exposure ID 1 which represents Pathogen A natural infection (A_ifxn)
-foe_pars[1,,1] <- 0.4 ## Group 1 (aka Group 1)
-foe_pars[2,,1] <- 0.3 ## Group 2 (aka Group 2)
+## Specify the force of exposure for exposure ID 1 which represents diphtheria natural infection (DP_ifxn)
+foe_pars[1,,1] <- 0.04 ## Group 1 (aka Location 1)
+foe_pars[2,,1] <- 0.03 ## Group 2 (aka Location 2)
 
-## Specify the force of exposure for exposure ID 2 which represents Pathogen A and Pathogen B combined vaccine (AB_vacc)
-foe_pars[1,,2] <- 0.2 ## Group 1 (aka Group 1)
-foe_pars[2,,2] <- 0.3 ## Group 2 (aka Group 2)
+## Specify the force of exposure for exposure ID 2 which represents pertussis natural infection (PT_ifxn)
+foe_pars[1,,3] <- 0.02 ## Group 1 (aka Location 1)
+foe_pars[2,,3] <- 0.01 ## Group 2 (aka Location 2)
 
-## Specify the force of exposure for exposure ID 2 which represents Pathogen B natural infection (B_ifxn)
-foe_pars[1,,3] <- 0.2 ## Group 1 (aka Group 1)
-foe_pars[2,,3] <- 0.1 ## Group 2 (aka Group 2)
+## Specify the force of exposure for exposure ID 3 which represents diphtheria and pertussis combined vaccine (vacc)
+foe_pars[1,,2] <- 0.02 ## Group 1 (aka Location 1)
+foe_pars[2,,2] <- 0.03 ## Group 2 (aka Location 2)
 
 ## Specify a simple exposure model which calculates the probability of exposure from the force of exposure modulated by age and demography elements 
-exposure_model<-exposure_model_dem_age_mod
+exposure_model<-exposure_model_dem_mod
 
-## This exposure model requires age_mod, dem_mod and t_in_year arguments
+## This exposure model requires dem_mod and t_in_year arguments
 
-## Create a tibble with any relevant age modifiers that affect exposure probability 
-## Individuals who are 0-3 are 2 times more likely to be exposed to pathogen A
-age_mod_2<-tibble(exposure_id=rep(1,11), age=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
 
-## Individuals who are less than one years old are 3 times more likely be vaccinated than other age classes
-age_mod_1<-tibble(exposure_id=rep(2,11), age=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
+## Create a tibble with any relevant demography modifiers that affect exposure probability 
+## For simplicity, we selected arbitrary numbers. 
 
-## Individuals who are 0-3 are 2 times more likely to be exposed to pathogen B
-age_mod_3<-tibble(exposure_id=rep(3,11), age=0:10, modifier=c(1,2,1,1,1,1,1,1,1,1,1))
+## First, we will specify age modifiers 
+## Individuals who are 0-3 are 2 times more likely to be exposed to diphtheria
+age_mod_1<-tibble(exposure_id=rep(1,11), column=rep("age",times=11), value=0:10, modifier=c(2,2,2,2,1,1,1,1,1,1,1))
+
+## Individuals who are 0-3 are 2 times more likely to be exposed to pertussis
+age_mod_2<-tibble(exposure_id=rep(2,11), column=rep("age",times=11), value=0:10, modifier=c(2,2,2,1,1,1,1,1,1,1,1))
+
+## Individuals who are less than one year old are 3 times more likely be vaccinated than other age classes
+age_mod_3<-tibble(exposure_id=rep(3,11), column=rep("age",times=11),  value=0:10, modifier=c(3,1,1,1,1,1,1,1,1,1,1))
 age_mod<-rbind(age_mod_1,age_mod_2,age_mod_3)
 age_mod
 
-## Specify the demography exposure modifiers
-## Here, individuals who are of low nutritional status are twice as likely of being exposed to pathogen A and pathogen B while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
-## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 2 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 2 (vaccination) than individuals of low nutritional status. 
+## Now we will  specify additional demography exposure modifiers and combine them with the previous ones
+## Here, individuals who are of low nutritional status are twice as likely of being exposed to diphtheria and pertussis while individuals who are of medium nutritional status are 1.5 times as likely of being exposed when compared to individuals of high nutritional status 
+## Individuals of high nutritional status are 3 times more likely to be exposed to exposure ID 3 (vaccination) while individuals who are of medium nutritional status are 2 times more likely to be exposed to exposure ID 3 (vaccination) than individuals of low nutritional status. 
 ## Note that the modifiers must be defined for all combinations of exposure types and demographic elements
-dem_mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(2,1.5,1,1,2,3,2,1.5,1))
-dem_mod
-
+mod<-tibble(exposure_id=c(1,1,1,2,2,2,3,3,3), column=rep("NS",times=9), value=rep(c("low","medium", "high"),3), modifier=c(2,1.5,1,2,1.5,1,1,2,3))
+mod
+## Combine both age modifiers and additional modifiers
+dem_mod<-rbind(age_mod,mod)
 
 ## Specify the number of time steps within a year 
 ## We are simulating on the monthly scale
@@ -169,58 +207,130 @@ infection events, we will use immunity_model_vacc_ifxn_titer_prot. With this
 immunity model, the probability of successful vaccination exposure depends on 
 the number of vaccines received prior to time t and the individual's age at time 
 t while the probability of successful infection is dependent on the titer at the 
-time of exposure. The titer-mediated protection parameters used within this model 
-are defined within model_pars which will be loaded in section 1.6. In this 
-simulation an individual can still be "reinfected" with either Pathogen A or 
-Pathogen B. These "reinfection" events are representative of boosting events 
-which can occur if an individual is exposed to either pathogen following a 
-vaccination or previous infection. The user can limit the frequency of multiple 
-infections(aka boosting events) by adjusting the titer-mediated protection 
-parameters within model_pars.
+time of exposure. Individuals can have up to 3 successful vaccination 
+events (aka 3 doses) and are eligible for vaccination starting at 2 months of age 
+to align with the diphtheria/pertussis vaccination schedule. 
+
+As for the probability of a successful infection, we placed no limit on the 
+maximum number of infections to either diphtheria or pertussis however our 
+selected immunity model will take into account an individual's current titer 
+level when determining the probability of a successful infection. Additional 
+successful exposure events aka "reinfection" events are representative of 
+boosting events which can occur if an individual is exposed to either pathogen 
+following a vaccination or previous infection. The user can limit the frequency 
+of  reinfections by adjusting the titer-mediated protection parameters or by 
+specifying a maximum number of allowed successful exposure events The 
+titer-mediated protection parameters used within this model are defined within 
+model_pars which will be loaded in section 1.6. 
+
+Again, the following diphtheria and pertussis titer-mediated protection parameters were selected by a non-exhaustive literature search. The titer cutoffs used below were also discussed in a previous 
+analysis of diphtheria and pertussis serology [@Razafimahatratra2022-ub].
+
+Diphtheria:
+1. Individuals whose diphtheria antibody levels are under 0.01 IU/mL are considered highly susceptible to disease while individuals with higher levels are associated with less severe symptoms [@Ipsen1946-qc; @Bjorkholm1986-qk; @Danilova2006-vj; @Ohuabunwo2005-rn]. 
+2. Individuals whose antibody levels are 0.01 IU/mL have the lowest titer level which confers some degree of protection while individuals with >=0.1 IU/mL are associated with long term protection [@Efstratiou1994-xh,].
+3. Antibody levels in between 0.01 and 0.09 IU/mL are considered to provide basic levels of protection against disease [@World_Health_Organization2017-hc].
+
+Pertussis:
+1. Low anti-pertussis IgG antibodies have shown significant correlation with pertussis susceptibility [@Storsaeter2003-uk] but a protective threshold has not been established [@Saso2020-gd] since there is no established immunological correlate of protection against disease [@Plotkin2008-oi]
+2. Given the information presented above, we have chosen that antibody levels between 40-100 IU/mL will confer higher level of protection since they are indicative of serpositivity and of recent pertussis infection or pertussis vaccination [@noauthor_undated-hp; @Chen2016-ka].
+
 ```{r}
 ## Specify immunity model within the runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_titer_prot
 
 ## Specify which exposure IDs represent vaccination events 
-## In this case, only exposure ID 2 is a vaccination event
-vacc_exposures<-2
+## In this case, only exposure ID 3 is a vaccination event
+vacc_exposures<-3
 
-## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for AB vaccine); ; note non vaccine exposures are listed as NAs
-vacc_age<-c(NA,2,NA)
+## Specify the time step after birth at which an individual is eligible for vaccination (2 months old for diphtheria and pertussis combine vaccine); ; note non vaccine exposures are listed as NAs
+vacc_age<-c(NA,NA,2)
 
-## Specify the maximum number of successful exposure events an individual can receive for each exposure types
-max_events<-c(3,1,3)
+## Specify the maximum number of successful exposure events an individual can receive for each exposure type
+## We placed no successful exposure limit on the number of diphtheria or pertussis infection exposures and 3 dose limit on the vaccine exposure.
+max_events<-c(Inf,Inf,3)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1 (A_antibody) which will be loaded in section 1.6
-## The immunity model we selected will take into account an individual's current titer to Pathogen A when determining the probability of successful infection. 
-plot_titer_mediated_protection(0:20, titer_prot_midpoint=7, titer_prot_width=.9)
+## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1, diphtheria antibody  (DP_antibody) which will be loaded in section 1.6
+## The immunity model we selected will take into account an individual's current titer to diphtheria when determining the probability of successful infection. 
+## Titers are ploted in mIU/mL 
+plot_titer_mediated_protection(0:150, titer_prot_midpoint=75, titer_prot_width=.1)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 2 (B_antibody) which will be loaded in section 1.6
-## The immunity model we selected will take into account an individual's current titer to Pathogen B when determining the probability of successful infection. 
-plot_titer_mediated_protection(0:100, titer_prot_midpoint=50, titer_prot_width=.1)
+## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody) which will be loaded in section 1.6
+## The immunity model we selected will take into account an individual's current titer to pertussis when determining the probability of successful infection. 
+## Titers are ploted in IU/mL 
+plot_titer_mediated_protection(0:100, titer_prot_midpoint=40, titer_prot_width=.25)
 ```
 
 # 1.6  Antibody model and model parameters 
 Now, we specify the antibody model to be used within runserosim. We will be 
-using a biphasic boosting-waning model.  This model assumes that for each 
+using a biphasic boosting-waning model. This model assumes that for each 
 exposure there is a set of long-term boost, long-term boost waning, short-term 
-boost, and short-term boost waning parameters. This model incorporates titer 
-dependent boosting effects by taking an individual's realized boost which is 
-adjusted by draw_parameters.The antibody kinetics parameters are pre-loaded 
-within a csv file. Users can edit the csv file to adjust any parameters and to 
-add/remove exposures and biomarkers. All parameters needed for the antibody model, 
-must be specified within model_pars. runserosim requires that exposure_id and 
-biomarker_id are numeric within model_pars so we will use the reformat_model_pars 
-function to create a new version of model_pars similarly to what we did with the 
-biomarker_map argument. Users can go directly to numeric model_pars if they wish. 
+boost, and short-term boost waning parameters. Given varying diphtheria 
+antibody dynamics observed in early and late life, we decided that a biphasic 
+boosting-waning model was appropriate for our purposes
+[@Voysey2016-gu].
+
+The antibody kinetics parameters needed for the antibody model are pre-loaded
+within a csv file which will take on the argument name: model_pars.
+Users can edit the csv file to modify any parameters. runserosim requires that 
+exposure_id and biomarker_id are numeric within model_pars so we will use the 
+reformat_biomarker_map function again to create a new version of model_pars. 
+Users can go directly to numeric model_pars if they wish. 
+
+We selected a few diphtheria and pertussis serological surveys conducted which 
+reported IgG titers following vaccination to inform the vaccine induced boost 
+and waning parameters. There are many complexities and heterogeneity in these 
+parameters which arise from different vaccine types and vaccination schedules. 
+We neglect these complexities and select a few papers to give us some rough 
+parameters for this example simulation.
+
+After 3 vaccine doses, diphtheria titers ranged 1.5-1.7 IU/mL [@Kimura1991-pg] and 
+pertussis titers above 100 IU/mL are associated with recent vaccination 
+[@noauthor_undated-hp]. Diphtheria antibody half-life has been estimated to be around 
+19-27 years [@Amanna2007-pf; @Hammarlund2016-lj] with 10% of children losing immunity by 
+one year following the primary vaccination series [@Pichichero1987-sl]; 
+67% of children after 3 to 13 years and 83% after 14 to 23 years 
+[@Crossley1979-ta]. As for pertussis, the duration of immunity after a 
+3 dose series of the wP vaccine is estimated to be from 4 to 12 years 
+[@Sheridan2014-fo]. Pertussis titers >=100 IU/mL are associated with recent 
+infection or vaccination within the past year while titers between 40 and 100IU/mL 
+are associated with recent infection [@noauthor_undated-hp]
+
+Our selected antibody kinetics parameters given our brief and limited literature 
+search are as follows:
+
+Diphtheria vaccine:
+Long term boost: 0.3-0.5 IU/mL
+Long term boost waning: 0.01 IU/mL per month
+Short term boost: 0.1-0.3 IU/mL
+Short term boost waning: 0.033 IU/mL per month
+
+Pertussis vaccine:
+Long term boost: 30-50 IU/mL
+Long term boost waning: 0.0066 IU/mL per month
+Short term boost: 40-80 IU/mL
+Short term boost waning: 0.016 IU/mL per month
+
+We were unable to find studies that reported titer kinetics following known 
+infection events in comparable unit. For simplicity, we will assume that natural 
+infection boosting parameters are 25% higher than vaccine induced antibody 
+boosting with similar waning rates.
+
 Lastly, we define the draw_parameters function which determines how each 
-individual’s antibody kinetics parameters are simulated from the within host 
+individual’s antibody kinetics parameters are simulated from the within-host 
 processes parameters tibble (model_pars). We will use a function which draws 
-parameters directly from model_pars for the antibody model with random effects. 
-Parameters are drawn randomly from a distribution with mean and standard deviation 
-specified within model_pars. This draw_parameters function also incorporates 
-titer-ceiling effects where an individual’s realized boost is dependent on their 
-titer level at the time of the exposure event.
+parameters directly from model_pars for the antibody model with random 
+effects to represent individual heterogeneity in immunological responses. 
+Parameters are drawn randomly from a distribution with mean and standard 
+deviation specified within model_pars. This draw_parameters function also 
+incorporates titer-dependent boosting where an individual’s realized boost is 
+dependent on their titer level at the time of the exposure event.
+
+We arbitrarily set the diphtheria titer-dependent boosting effects following an 
+additional successful exposure event for individuals with diphtheria levels above 
+1.7 to be only 10% of the full boost. Similarly, individuals with pertussis 
+titers above 100 IU/mL will only receive 10% of the full boost for any 
+additional successful exposure event. 
 ```{r}
 ## Specify the antibody model 
 antibody_model<-antibody_model_biphasic
@@ -239,35 +349,44 @@ model_pars
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_titer_dep
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1 (A_antibody)
-plot_titer_dependent_boosting(start=0, end=4, by=1, titer_ceiling_threshold=2, titer_ceiling_gradient=0.45)
+## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1, diphtheria antibody (DP_antibody)
+plot_titer_dependent_boosting(start=0, end=2, by=.1, titer_ceiling_threshold=1.7, titer_ceiling_gradient=0.529411)
 
-## These parameters indicate that any individual with a A_antibody titer level above 2 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
+## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody)
+plot_titer_dependent_boosting(start=0, end=125, by=1, titer_ceiling_threshold=100, titer_ceiling_gradient=0.009)
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 2 (B_antibody)
-plot_titer_dependent_boosting(start=0, end=30, by=1, titer_ceiling_threshold=20, titer_ceiling_gradient=0.045)
-
-## These parameters indicate that any individual with a B_antibody titer level above 20 at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event 
 ```
 
 # 1.7 Observation Model 
 Now we specify how observed antibody titers are generated as a probabilistic 
 function of the true, latent antibody titer and when to observe these titers. 
 In this step, users are specifying the sampling design and assay choice for 
-their serological survey. This observation model observes the latent titer values 
-given a continuous assay with user-specified lower and upper limits and added 
+their serological survey. 
+
+This observation model observes the latent titer values 
+given a continuous assay with user-specified lower and upper limits, added 
 noise. The added noise represents assay variability and is done by sampling 
 from a distribution with the latent antibody titer as the mean and the measurement 
 error as the standard deviation. The observation standard deviation and distribution 
 is defined within model_pars as the “obs_sd” parameter for each biomarker.
+
+Diphtheria:
+Lower limit of ELISA IgG Detectability: 0.01 IU/mL
+Upper limit of ELISA IgG Detectability: 2 IU/mL
+
+Pertussis:
+Lower limit of ELISA IgG Detectability: 5 IU/mL
+Upper limit of ELISA IgG Detectability: 200 IU/mL
+
+
 ```{r}
 ## Specify the limits of detection for each biomarker for the continuous assays
-bounds<-tibble(biomarker_id=c(1,1,2,2),name=rep(c("lower_bound","upper_bound"),2),value=c(2,50,4,100))
+bounds<-tibble(biomarker_id=c(1,1,2,2),name=rep(c("lower_bound","upper_bound"),2),value=c(0.01,2,5,200))
 
 ## Specify the observation model 
 observation_model<-observation_model_continuous_bounded_noise
 
-## Specify observation_times to observe both biomarkers (aka A_antibody and B_antibody titers) across all individuals at the end of the simulation (t=120)
+## Specify observation_times to observe both biomarkers (aka DP_antibody and PT_antibody titers) across all individuals at the end of the simulation (t=120)
 obs1 <- tibble(i=1:N,t=120, b=1)
 obs2 <- tibble(i=1:N,t=120, b=2)
 observation_times<-rbind(obs1,obs2)
@@ -279,9 +398,8 @@ There are no optional arguments needed for this simulation.
 
 # 1.9 Run Simulation 
 This is the core simulation where all simulation settings, models and parameters 
-are specified within the main simulation function. Time to run this step varies 
-depending on the number of individuals and the complexities of the specified 
-models. 
+are specified within the main simulation function. The run time for this step varies 
+depending on the number of individuals and the complexities of the specified models. 
 ```{r message=FALSE, warning=FALSE, eval=TRUE}
 res<- runserosim(
   simulation_settings,
@@ -302,7 +420,6 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   dem_mod=dem_mod,
-  age_mod=age_mod,
   t_in_year=t_in_year
 )
 
@@ -312,23 +429,36 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
-## Plot antibody states and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography, removal=TRUE)
+## Plot diphtheria antibody kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states %>% filter(b==1), res$exposure_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
 
-## Plot individual force of exposure for all exposure types
+## Plot pertussis antibody kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$antibody_states %>% filter(b==2), res$exposure_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
+
+## Plot individual probability of exposure for all exposure types.
+## This is the output of the exposure model.
+## Note: All individuals are under the same force of exposure since we specified a simple exposure model
 plot_exposure_force(res$exposure_force_long)
 
-## Plot individual exposure probability for all exposure types
+## Plot individual successful exposure probabilities for all exposure types
+## This is the output of the exposure model multiplied by the output of the immunity model.
+## In other words, this is the probability of exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
 
 ## Plot individual exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 
-## Plot antibody states for all individuals
-plot_titers(res$antibody_states)
+## Plot diphtheria (biomarker 1) antibody states for all individuals
+plot_titers(res$antibody_states %>% filter(b==1))
 
-## Plot the serosurvey results 
-plot_obs_titers_one_sample(res$observed_antibody_states)
+## Plot pertussis (biomarker 2) antibody states for all individuals
+plot_titers(res$antibody_states %>% filter(b==2))
+
+## Plot the diphtheria serosurvey results 
+plot_obs_titers_one_sample(res$observed_antibody_states %>% filter(b==1))
+
+## Plot the pertussis serosurvey results 
+plot_obs_titers_one_sample(res$observed_antibody_states %>% filter(b==2))
 
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)
