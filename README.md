@@ -74,11 +74,11 @@ summary(demography)
 ```
 
     ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  3.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 43.00   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 66.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 66.69                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.:101.25                  3rd Qu.: 90.25  
+    ##  Min.   :  1.00   Min.   :  4.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 31.00   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 60.00                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 61.78                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 97.25                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -353,16 +353,39 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    68     2     1 boost 1.32           1.32   
-    ## 2     1    68     2     1 wane  0.00137        0.00137
-    ## 3     1    86     1     1 boost 1.70           1.70   
-    ## 4     1    86     1     1 wane  0.00373        0.00373
-    ## 5     2    58     2     1 boost 1.53           1.53   
-    ## 6     2    58     2     1 wane  0.00100        0.00100
+    ## 1     1   116     2     1 boost 2.45           2.45   
+    ## 2     1   116     2     1 wane  0.00174        0.00174
+    ## 3     2    58     2     1 boost 1.21           1.21   
+    ## 4     2    58     2     1 wane  0.00134        0.00134
+    ## 5     2    89     1     1 boost 2.21           2.21   
+    ## 6     2    89     1     1 wane  0.00267        0.00267
 
 ``` r
 ## Plots for the paper 
-# library(cowplot)
-# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-# plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+library(cowplot)
 ```
+
+    ## 
+    ## Attaching package: 'cowplot'
+
+    ## The following object is masked from 'package:patchwork':
+    ## 
+    ##     align_plots
+
+``` r
+plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-10-7.png)<!-- -->
+
+``` r
+plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+```
+
+    ## Warning: Graphs cannot be vertically aligned unless the axis parameter is set.
+    ## Placing graphs unaligned.
+
+    ## Warning: Graphs cannot be horizontally aligned unless the axis parameter is set.
+    ## Placing graphs unaligned.
+
+![](README_files/figure-gfm/unnamed-chunk-10-8.png)<!-- -->

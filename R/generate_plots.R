@@ -125,7 +125,7 @@ plot_exposure_force<-function(exposure_force_long){
 #' plot_exposure_histories(example_exposure_histories)
 plot_exposure_histories <- function(exposure_histories){
   exposure_histories$value <- ifelse(!is.na(exposure_histories$value),
-                                     ifelse(exposure_histories$value==1,"Succesful Exposure","No Exposure"), "NA")
+                                     ifelse(exposure_histories$value==1,"Successful Exposure","No Exposure"), "NA")
   
   p <- ggplot2::ggplot(exposure_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
     ggplot2::labs(title="Individual Exposure History",

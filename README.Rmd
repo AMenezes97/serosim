@@ -255,9 +255,9 @@ plot_obs_titers_one_sample(res$observed_antibody_states)
 head(res$kinetics_parameters)
 
 ## Plots for the paper 
-# library(cowplot)
-# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-# plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+library(cowplot)
+plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 
 
 ```
