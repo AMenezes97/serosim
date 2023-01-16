@@ -27,18 +27,3 @@ A probability of exposure is returned
 \description{
 This is a simple exposure model where the probability of exposure depends on the force of exposure at that time for that group
 }
-\examples{
-times <- seq(1,365,by=1)
-## Create fixed FOI (force of infection) for one exposure type for two groups
-n_groups <- 2
-n_exposures <- 1
-foe_pars <- array(NA, dim=c(n_groups,length(times),n_exposures))
-foe_pars[1,,] <- 0.01
-foe_pars[2,,] <- 0.005
-## Solve the model for each time point for each group. Note that the i argument is not used, 
-## but is kept for compatibility with other functions.
-foe <- matrix(NA, nrow=n_groups,ncol=length(times))
-for(g in 1:nrow(foe)){
-    foe[g,] <- unlist(sapply(times, function(t) exposure_model_simple_FOE(NULL, t, 1, g, foe_pars, NULL)))
-}
-}

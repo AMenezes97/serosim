@@ -139,8 +139,8 @@ antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_st
         t_inf <- tmp_pars[tmp_pars$name == "y1","t"]
         typhoid <- function(t, y0, y1, beta, r, t1){
             mu <- (1/t1) * log(y1/y0)
-            y <- numeric(length(t))
-            y[t<=t1] <- y0*exp(mu*t[t <= t1])
+            #y <- numeric(length(t))
+            #y[t<=t1] <- y0*exp(mu*t[t <= t1])
             alpha <- 1/(r-1)
             if(t <= t1){
                 y <- y0*exp(mu*t)
