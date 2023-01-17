@@ -162,7 +162,7 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
 #' @export
 precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
                                   foe_pars, demography, VERBOSE, ...){
-    n_groups <- unique(groups)
+    n_groups <- length(unique(groups))
     n_exposure_ids <- length(exposure_ids)
     
     ## Number of calls to function which would be needed
@@ -183,6 +183,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     ## If it does, then we assume we cannot do pre-computation as those models will typically be more complicated
     if(any(grepl("demography",deparsed_func[2:length(deparsed_func)]))){
         use_precomputation <- FALSE
+        if(!is.null(VERBOSE)) message(cat("Note: pre-computation of exposure models using the demography tibble is currently not supported. Your model will run but may be slower. If you see this message in error, please check that your exposure model function body does not contain the demography object.\n"))
     }
     
     foe_pars_precomputed <- array(NA, dim=c(n_groups,length(times),n_exposure_ids))
