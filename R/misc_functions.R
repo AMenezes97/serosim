@@ -212,7 +212,9 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     if(n_exposure_model_calls > n_exposure_model_calls_precomp){
         use_precomputation <- TRUE
     }
-    
+
+    foe_pars_precomputed <- array(NA, dim=c(length(n_groups),length(times),n_exposure_ids))
+
     precomputation_successful <- FALSE
     if(use_precomputation){
         if(!is.null(VERBOSE)) message(cat("Run time can be reduced by pre-computation!\n"))
