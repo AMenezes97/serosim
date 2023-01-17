@@ -1,3 +1,22 @@
+#' Fixed probability of exposure
+#' 
+#' @description Generic wrapper function to allow the probability of exposure for each time point to be drawn directly from the foe_pars array.
+#' @inheritParams exposure_model_simple_FOE
+#' @param foe_pars A 3D array providing the *probability* of exposure for each exposure ID, group and time.
+#' 
+#' @return A probability of exposure from the foe_pars array
+#' @export
+#' @examples
+#' times <- seq(0,365,by=1)
+#' n_groups <- 1
+#' n_exposures <- 1
+#' foe_pars <- array(0.01, dim=c(n_groups,length(times),n_exposures))
+#' exposure_model_fixed(1,1,1,1,foe_pars,NULL) 
+exposure_model_fixed <- function(i, t, x, g, foe_pars, demography, ...){
+   foe_pars[g, t, x]
+}
+
+
 #' Exposure Model Simple- Force of Exposure (FOE)
 #' 
 #' @description This is a simple exposure model where the probability of exposure depends on the force of exposure at that time for that group
@@ -131,20 +150,20 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' 
 #' @description Finds the probability of exposure governed by an SIR model with specified parameters for each exposure type and group combination.
 #' @inheritParams exposure_model_simple_FOE
-#' @param foe_pars Data frame containing SIR model parameters for each group and exposure combination. Variable names: x (exposure ID), g (group ID), name (parameter name), value (parameter value). Parameters needed are: beta (transmission rate), gamma (recovery rate), I0 (per capita infected population seed size), R0 (per capita recovered population seed size) and t0 (seeding time).
+#' @param foe_pars Data frame containing SIR model parameters for each group and exposure combination. Variable names: x (exposure ID), g (group ID), name (parameter name), value (parameter value). Parameters needed are: beta (transmission rate), gamma (recovery rate), I0 (per capita infected population seed size), R0 (per capita recovered population seed size) and t0 (seeding time). See example for format.
 #' @param time_res Time steps to solve the ODEs. Set lower for higher accuracy.
 #' @param ... Additional arguments.
 #' @return Probability of exposure for the requested time step
 #' @export
 #' @examples 
-#' times <- seq(1,365,by=1)
+#' times <- seq(0,365,by=1)
 #' ## Create FOI (force of infection) from SIR model for one exposure type for one group
 #' n_groups <- 1
 #' n_exposures <- 1
 #' ## Create parameters of the simple SIR model for one group and one exposure type
 #' foe_pars <- data.frame(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),values=c(0.2,1/7,1/10000,0,50))
 #' ## Solve over all times as example
-#' sir_prob <- exposure_model_sir(1,times, 1, 1, foe_pars)
+#' sir_prob <- exposure_model_sir(1, times, 1, 1, foe_pars)
 #' plot_exposure_model(exposure_model_sir,seq(1,365,by=1),n_groups=1,n_exposures=1,foe_pars=foe_pars)
 exposure_model_sir <- function(i, t, x, g, foe_pars, demography=NULL,time_res=1,...){
     SIR_odes_with <- function(t, y, pars){
@@ -177,7 +196,7 @@ exposure_model_sir <- function(i, t, x, g, foe_pars, demography=NULL,time_res=1,
 #' Simulate incidence curve using Gaussian Process
 #'
 #' @description Simulates an incidence curve (probability of infection per unit time) and associated parameters from a Gaussian Process model assuming that the covariance function (kernel) on time follows the squared exponential.
-#' @param pars Vector of model parameters, must have entries 1) l: the lengthscale of the covariance function (length of the wiggles); 2) sigma: the output variance (average distance of function from mean); 3) scale_factor: parameter to scale the incidence curve to give a desired "overall probability" of infection (roughly equivalent to scaling 1-e^-sum(incidence)); 4) tmax: the maximum time to solve the model over, generating a time vector starting at 0 and ending at tmax in increments of 1.
+#' @param pars Vector of model parameters, must have entries 1) l: the lengthscale of the covariance function (length of the wiggles); 2) sigma: the output variance (average distance of function from mean); 3) scale_factor: parameter to scale the incidence curve to give a desired "overall probability" of infection (specifically, solves the model, transforms each entry to unit scale, and then scales the entire vector as scale_factor*p/(sum(p))); 4) tmax: the maximum time to solve the model over, generating a time vector starting at 0 and ending at tmax in increments of 1.
 #' @return a list with two elements: 1) a vector giving the probability of infection at each timestep; 2) a vector giving the parameters used to solve the model
 #' @examples
 #' pars <- c("sigma"=1,"l"=100,"scale_factor"=1, "tmax"=365)
@@ -200,6 +219,7 @@ simulate_gaussian_process <- function(pars){
     diag(K) <- diag(K) + 1e-8
     L_K <- t(chol(K))
     
+    ## Simulate
     eta <- rnorm(nrow(L_K),mean=0,sd=1)
     k <- (L_K %*% eta)[,1]
     ## Convert to probability
