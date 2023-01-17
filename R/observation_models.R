@@ -96,7 +96,20 @@ observation_model_continuous_bounded_noise<-function(antibody_states,model_pars,
     upper_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="upper_bound"]
     antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
+      ## Create functions to convert normal distributions to log-normal distributions
+      normal_to_lognormal_mean <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        meanlog <- log(normmean ^ 2 / phi)
+        return(meanlog)
+      }
+      
+      normal_to_lognormal_sd <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
+        return(sdlog)
+      }
+      
+      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),normal_to_lognormal_mean(antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]),normal_to_lognormal_sd(antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]))
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<lower_bound,0,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed>upper_bound,upper_bound,antibody_states_tmp$observed)
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
@@ -155,7 +168,19 @@ observation_model_continuous_noise<-function(antibody_states,model_pars, sensiti
   for(bs in unique(antibody_states$b)){
     antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$observed<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
+      ## Create functions to convert normal distributions to log-normal distributions
+      normal_to_lognormal_mean <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        meanlog <- log(normmean ^ 2 / phi)
+        return(meanlog)
+      }
+      
+      normal_to_lognormal_sd <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
+        return(sdlog)
+      }
+      
       antibody_states_tmp$observed<-ifelse(antibody_states_tmp$observed<0,0,antibody_states_tmp$observed)
     }
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
@@ -213,7 +238,19 @@ observation_model_discrete_noise<-function(antibody_states,model_pars, cutoffs, 
     cutoffs_tmp<-c(cutoffs_b,Inf)
     antibody_states_tmp<-antibody_states[antibody_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
+      ## Create functions to convert normal distributions to log-normal distributions
+      normal_to_lognormal_mean <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        meanlog <- log(normmean ^ 2 / phi)
+        return(meanlog)
+      }
+      
+      normal_to_lognormal_sd <- function(normmean, normsd) {
+        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
+        return(sdlog)
+      }
+      antibody_states_tmp$temp<-rlnorm(nrow(antibody_states_tmp),normal_to_lognormal_mean(antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]),normal_to_lognormal_sd(antibody_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]))
       antibody_states_tmp$observed<-cut(antibody_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
       antibody_states_tmp$temp<-NULL
     }

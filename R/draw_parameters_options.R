@@ -25,7 +25,6 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, mo
     pars[par] <- model_pars_tmp$mean[par]
     par_names[par] <- model_pars_tmp$name[par]
   }
-  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }
@@ -80,7 +79,6 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, mo
       par_names[par] <- model_pars_tmp$name[par]
     }
   }
-  # all_pars <- tibble(i=i, t=t, x=x, b=b, name=par_names, value=pars) ## This line doesn't work
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
 }

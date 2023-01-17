@@ -3,21 +3,21 @@ README
 
 # Motivation
 
-The serosim package is designed to simulate serological survey data
+The *serosim* package is designed to simulate serological survey data
 arising from user-specified vaccine or infection-generated and antibody
-kinetics processes. serosim allows users to specify and adjust model
+kinetics processes. *serosim* allows users to specify and adjust model
 inputs responsible for generating the observed titer values like
 time-varying patterns of infection and vaccination, population
 demography, immunity and antibody kinetics, and serological survey
 sampling design in order to best represent the population and disease
 system(s) of interest.
 
-Here, we will use the serosim package to generate a simple
+Here, we will use the *serosim* package to generate a simple
 cross-sectional serosurvey at the end of a 10 year simulation period for
 100 individuals who have either been vaccinated, infected, both or
 neither. We will set up each of the required arguments and models for
-the runserosim function in the order outlined in the methods section of
-the paper. We then run the simulation and examine its outputs
+the *runserosim* function in the order outlined in the methods section
+of the paper. We then run the simulation and examine its outputs
 
 # Installation
 
@@ -53,10 +53,10 @@ For this case study, we will be simulating a population with 100
 individuals and we are not interested in tracking any demography
 information other than an individual’s birth time. We will use the
 generate_pop_demography function to create the demography tibble needed
-for runserosim.
+for *runserosim*.
 
-Note: The runserosim function only requires a demography tibble with two
-columns (individuals and times). In this case it will assume all
+Note: The *runserosim* function only requires a demography tibble with
+two columns (individuals and times). In this case it will assume all
 individuals are born at the start of the simulation period.
 
 ``` r
@@ -74,11 +74,11 @@ summary(demography)
 ```
 
     ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  4.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 31.00   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 60.00                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 61.78                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 97.25                  3rd Qu.: 90.25  
+    ##  Min.   :  1.00   Min.   :  2.00   Mode:logical   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 35.00   NA's:12000     1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 53.50                  Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 58.31                  Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 85.25                  3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -89,8 +89,8 @@ will simulate one circulating pathogen (exposure_ID=ifxn) and one
 vaccine (exposure_ID=vacc) both of which will boost titers to the same
 biomarker (biomarker_ID=IgG_titer). This biomarker map can be used for
 any simulations of vaccine preventable diseases like measles vaccination
-and measles natural infection. runserosim requires that exposure_id and
-biomarker_id are numeric so we will use the reformat_biomarker_map
+and measles natural infection. *runserosim* requires that exposure_id
+and biomarker_id are numeric so we will use the reformat_biomarker_map
 function to create a new version of the biomarker map. Users can go
 directly to numeric biomarker_map if they wish.
 
@@ -126,7 +126,7 @@ biomarker_map
 
 Now, we need to specify the foe_pars argument which contains the force
 of exposure for all exposure_IDs across all time steps. We also specify
-the exposure model which will be called within runserosim later. The
+the exposure model which will be called within *runserosim* later. The
 exposure model will determine the probability that an individual is
 exposed to a specific exposure event. Since we did not specify different
 groups within demography, all individuals will automatically be assigned
@@ -174,22 +174,22 @@ max_events<-c(1,1)
 
 # 1.6 Antibody Model and Model Parameters
 
-Now, we specify the antibody model to be used within runserosim. We will
-be using a monophasic boosting-waning model. This model assumes that for
-each exposure there is a boost and boost waning parameter.The antibody
-kinetics parameters are pre-loaded within a csv file. Users can edit the
-csv file to specify their own parameters. All parameters needed for the
-user specified antibody model must be specified within the antibody
-kinetics parameters tibble (model_pars). Lastly, we define the
+Now, we specify the antibody model to be used within *runserosim*. We
+will be using a monophasic boosting-waning model. This model assumes
+that for each exposure there is a boost and boost waning parameter.The
+antibody kinetics parameters are pre-loaded within a csv file. Users can
+edit the csv file to specify their own parameters. All parameters needed
+for the user specified antibody model must be specified within the
+antibody kinetics parameters tibble (model_pars). Lastly, we define the
 draw_parameters function which determines how each individual’s antibody
 kinetics parameters are simulated from the within-host processes
 parameters tibble (model_pars). We will use a function which draws
 parameters directly from model_pars for the antibody model with random
 effects to represent individual heterogeneity in immunological
 responses. Parameters are drawn randomly from a distribution with mean
-and standard deviation specified within model_pars. runserosim requires
-that exposure_id and biomarker_id are numeric so we will use the
-reformat_model_pars function to create a new version of model_pars.
+and standard deviation specified within model_pars. *runserosim*
+requires that exposure_id and biomarker_id are numeric so we will use
+the reformat_model_pars function to create a new version of model_pars.
 Users can go directly to numeric model_pars if they wish.
 
 ``` r
@@ -288,9 +288,21 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   sensitivity=sensitivity,
-  specificity=specificity
+  specificity=specificity,
+  VERBOSE=100
 )
+```
 
+    ## Checking for possible pre-computation to save time...
+    ## Run time can be reduced by pre-computation!
+    ## Checking if exposure model can be vectorized...
+    ## Exposure model can be vectorized!
+    ## Precomputing exposure probabilities...
+    ## Beginning simulation
+    ## Individual:  100 
+    ## Simulation complete! Cleaning up...
+
+``` r
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
@@ -351,14 +363,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name    value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1   116     2     1 boost 2.45           2.45   
-    ## 2     1   116     2     1 wane  0.00174        0.00174
-    ## 3     2    58     2     1 boost 1.21           1.21   
-    ## 4     2    58     2     1 wane  0.00134        0.00134
-    ## 5     2    89     1     1 boost 2.21           2.21   
-    ## 6     2    89     1     1 wane  0.00267        0.00267
+    ##       i     t     x     b name     value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
+    ## 1     1    98     2     1 boost 1.24           1.24    
+    ## 2     1    98     2     1 wane  0.00120        0.00120 
+    ## 3     2   100     2     1 boost 3.76           3.76    
+    ## 4     2   100     2     1 wane  0.00184        0.00184 
+    ## 5     3    21     2     1 boost 1.46           1.46    
+    ## 6     3    21     2     1 wane  0.000651       0.000651
 
 ``` r
 ## Plots for the paper 

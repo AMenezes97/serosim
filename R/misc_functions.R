@@ -167,10 +167,10 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     
     ## Number of calls to function which would be needed
     n_exposure_model_calls <- N*length(times)*n_exposure_ids
-    
+
     ## Number of function calls if pre-computation were used
     ## Plus one solve over times and one vectorized attempt for testing
-    n_exposure_model_calls_precomp <-  n_exposure_ids*n_groups*length(times) + length(times) + 1
+    n_exposure_model_calls_precomp <-  n_exposure_ids*length(n_groups)*length(times) + length(times) + 1
     
     ## If it would take fewer function calls to pre-compute, then do so
     use_precomputation <- FALSE
@@ -185,7 +185,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         use_precomputation <- FALSE
     }
     
-    foe_pars_precomputed <- array(NA, dim=c(n_groups,length(times),n_exposure_ids))
+    foe_pars_precomputed <- array(NA, dim=c(length(n_groups),length(times),n_exposure_ids))
     precomputation_successful <- FALSE
     if(use_precomputation){
         if(!is.null(VERBOSE)) message(cat("Run time can be reduced by pre-computation!\n"))
