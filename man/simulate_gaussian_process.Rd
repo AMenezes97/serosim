@@ -7,7 +7,7 @@
 simulate_gaussian_process(pars)
 }
 \arguments{
-\item{pars}{Vector of model parameters, must have entries 1) l: the lengthscale of the covariance function (length of the wiggles); 2) sigma: the output variance (average distance of function from mean); 3) scale_factor: parameter to scale the incidence curve to give a desired "overall probability" of infection (roughly equivalent to scaling 1-e^-sum(incidence)); 4) tmax: the maximum time to solve the model over, generating a time vector starting at 0 and ending at tmax in increments of 1.}
+\item{pars}{Vector of model parameters, must have entries 1) l: the lengthscale of the covariance function (length of the wiggles); 2) sigma: the output variance (average distance of function from mean); 3) scale_factor: parameter to scale the incidence curve to give a desired "overall probability" of infection (specifically, solves the model, transforms each entry to unit scale, and then scales the entire vector as scale_factor*p/(sum(p))); 4) tmax: the maximum time to solve the model over, generating a time vector starting at 0 and ending at tmax in increments of 1.}
 }
 \value{
 a list with two elements: 1) a vector giving the probability of infection at each timestep; 2) a vector giving the parameters used to solve the model

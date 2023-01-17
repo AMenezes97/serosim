@@ -15,7 +15,7 @@ exposure_model_gaussian_process(i, t, x, g, foe_pars, demography, ...)
 
 \item{g}{group}
 
-\item{foe_pars}{Data frame giving named parameters of the Gaussian process model for each unique group and exposure ID. Mandatory variable names are: 1) value (parameter value); 2) name (parameter name); 3) x (exposure ID); 4) g (group ID). Each group/exposure combination must have entries for the following parameters: l, sigma, scale_factor, tmax, eta. Note that eta gives the means of the Gaussian process at each time point.}
+\item{foe_pars}{Data frame giving named parameters of the Gaussian process model for each unique group and exposure ID. Mandatory variable names are: 1) value (parameter value); 2) name (parameter name); 3) x (exposure ID); 4) g (group ID). Each group/exposure combination must have entries for the following parameters: l, sigma, scale_factor, tmax, eta. Note that eta gives the means of the Gaussian process at each time point, and thus there must be one entry for every element of seq(0,tmax,by=1).}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/runserosim.R
 \name{runserosim}
 \alias{runserosim}
-\title{Main simulation function for serosim}
+\title{Main simulation function for \emph{serosim}}
 \usage{
 runserosim(
   simulation_settings,
@@ -22,35 +22,38 @@ runserosim(
 )
 }
 \arguments{
-\item{simulation_settings}{A list of parameters governing the simulation time step settings}
+\item{simulation_settings}{A list of parameters governing the simulation time step settings. Should contain integer entries for \emph{t_start} and \emph{t_end}}
 
-\item{demography}{A tibble of relevant demographic information for each individual in the simulation. This tibble only requires 1 column (i) where all individuals in the simulation are listed by row. This is where the sample size for the simulation will be extracted from. If no information is included for birth and removal time, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+\item{demography}{A tibble of necessary demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times. If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
 
-\item{observation_times}{A tibble of observation times and biomarkers measured for each individual}
+\item{observation_times}{A tibble for observation times with three variables: 1) i: individual; 2) t: the timepoint of an observation; 3) b: the biomarker being measured. Defaults to NULL, where all latent biomarker states are returned.}
 
-\item{foe_pars}{A 3D array providing the force of exposure for each exposure ID, group and time}
+\item{foe_pars}{Any object class (usually a 3D array) providing the force of exposure for each exposure ID, group and time, or parameters of the model generating the FOEs}
 
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{biomarker_map}{A tibble specifying the relationship between exposure IDs and biomarker IDs with two variables: 1) exposure_id: the numeric exposure ID; 2) biomarker_id: the numeric biomarker ID}
 
 \item{model_pars}{A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function}
 
-\item{exposure_model}{A function which calculates the probability of exposure given the foe_pars array}
+\item{exposure_model}{A function calculating the probability of exposure given the foe_pars array}
 
 \item{immunity_model}{A function determining the probability of an exposure leading to successful infection or vaccination for a given individual}
 
-\item{antibody_model}{A function determining the antibody state as a function of infection and vaccination history and antibody kinetics parameters (model_pars)}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\emph{model_pars})}
 
-\item{observation_model}{A function generating observed titers as a function of latent titers and kinetics parameters (model_pars)}
+\item{observation_model}{A function generating observed biomarkers as a function of latent biomarkers and observation model parameters (\emph{model_pars})}
 
-\item{draw_parameters}{A function to simulate parameters antibody kinetics model, immunity model, observation model from model_pars}
+\item{draw_parameters}{A function to simulate parameters for the antibody model, immunity model and observation model from \emph{model_pars}}
 
-\item{exposure_histories_fixed}{(optional) A 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3).  Here, users can input pre-specified information if exposure histories are known for any individuals.}
+\item{exposure_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for any individuals.}
 
-\item{VERBOSE}{(optional) If an integer is specified; an update message will be printed once the simulation reaches that individual and every multiple thereafter; defaults to NULL}
+\item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed.}
 }
 \value{
 a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
 }
 \description{
-Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers.
+Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers. See README for full details.
+}
+\examples{
+See package README.
 }

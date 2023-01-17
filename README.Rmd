@@ -4,18 +4,18 @@ output: github_document
 ---
 
 # Motivation 
-The serosim package is designed to simulate serological survey data arising from 
+The _serosim_ package is designed to simulate serological survey data arising from 
 user-specified vaccine or infection-generated and antibody kinetics processes. 
-serosim allows users to specify and adjust model inputs responsible for 
+_serosim_ allows users to specify and adjust model inputs responsible for 
 generating the observed titer values like time-varying patterns of infection and 
 vaccination, population demography, immunity and antibody kinetics, and 
 serological survey sampling design in order to best represent the population and 
 disease system(s) of interest.
 
-Here, we will use the serosim package to generate a simple cross-sectional 
+Here, we will use the _serosim_ package to generate a simple cross-sectional 
 serosurvey at the end of a 10 year simulation period for 100 individuals who 
 have either been vaccinated, infected, both or neither. We will set up each of the 
-required arguments and models for the runserosim function in the order 
+required arguments and models for the _runserosim_ function in the order 
 outlined in the methods section of the paper. We then run the simulation and 
 examine its outputs
 
@@ -48,9 +48,9 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 For this case study, we will be simulating a population with 100 individuals and 
 we are not interested in tracking any demography information other than an individual's 
 birth time. We will use the generate_pop_demography function to create the 
-demography tibble needed for runserosim. 
+demography tibble needed for _runserosim_. 
 
-Note: The runserosim function only requires a demography tibble 
+Note: The _runserosim_ function only requires a demography tibble 
 with two columns (individuals and times). In this case it will assume all individuals 
 are born at the start of the simulation period. 
 ```{r}
@@ -69,7 +69,7 @@ which infection or vaccination events are occurring. Here, we will simulate one
 circulating pathogen (exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both 
 of which will boost titers to the same biomarker (biomarker_ID=IgG_titer). This 
 biomarker map can be used for any simulations of vaccine preventable diseases 
-like measles vaccination and measles natural infection. runserosim requires that 
+like measles vaccination and measles natural infection. _runserosim_ requires that 
 exposure_id and biomarker_id are numeric so we will use the
 reformat_biomarker_map function to create a new version of the biomarker map. 
 Users can go directly to numeric biomarker_map if they wish.
@@ -90,7 +90,7 @@ biomarker_map
 # 1.4 Force of Exposure and Exposure Model
 Now, we need to specify the foe_pars argument which contains the force of 
 exposure for all exposure_IDs across all time steps. We also specify the 
-exposure model which will be called within runserosim later. The exposure model 
+exposure model which will be called within _runserosim_ later. The exposure model 
 will determine the probability that an individual is exposed to a specific 
 exposure event. 
 Since we did not specify different groups within demography, all individuals will 
@@ -133,7 +133,7 @@ max_events<-c(1,1)
 ```
 
 # 1.6  Antibody Model and Model Parameters
-Now, we specify the antibody model to be used within runserosim. We will be using 
+Now, we specify the antibody model to be used within _runserosim_. We will be using 
 a monophasic boosting-waning model. This model assumes that for each exposure there 
 is a boost and boost waning parameter.The antibody kinetics parameters are 
 pre-loaded within a csv file. Users can edit the csv file to specify their 
@@ -145,7 +145,7 @@ processes parameters tibble (model_pars). We will use a function which draws
 parameters directly from model_pars for the antibody model with random 
 effects to represent individual heterogeneity in immunological responses. 
 Parameters are drawn randomly from a distribution with mean and standard 
-deviation specified within model_pars. runserosim requires that exposure_id and biomarker_id 
+deviation specified within model_pars. _runserosim_ requires that exposure_id and biomarker_id 
 are numeric so we will use the reformat_model_pars function to create a new 
 version of model_pars. Users can go directly to numeric model_pars if they wish.
 ```{r}
