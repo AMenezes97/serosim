@@ -15,6 +15,7 @@
 #' @param draw_parameters A function to simulate parameters for the antibody model, immunity model and observation model from _model_pars_
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for any individuals.
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed.
+#' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step.
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' 
@@ -41,6 +42,7 @@ runserosim <- function(
     
     ## UPDATE MESSAGE
     VERBOSE=NULL,
+    attempt_precomputation=TRUE,
     ...
                     ){
     ## Simulation settings
@@ -94,7 +96,7 @@ runserosim <- function(
     ## If successful precomputation, change the exposure model
     if(precomputations$flag == TRUE){
         foe_pars <- precomputations$foe
-        exposure_model <- exposure_model_fixed
+        exposure_model <- exposure_model_indiv_fixed
     }
     ########################################################################
     

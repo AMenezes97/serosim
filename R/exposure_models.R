@@ -135,8 +135,13 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
         birth_time<-demography_tmp$birth
         curr_age<-floor((t-birth_time)/t_in_year)
         
-        ## Find the age modifier within dem_mod tibble
-        modifier<-mod2$modifier[mod2$exposure_id==x & mod2$column==colname & mod2$value==curr_age]
+        ## If time is before birth, then exposure probability is 0
+        if(curr_age < 0){
+            modifier <- 0
+        } else {
+            ## Find the age modifier within dem_mod tibble
+            modifier<-mod2$modifier[mod2$exposure_id==x & mod2$column==colname & mod2$value==curr_age]
+        }
         ## Multiply modifier by p 
         p <- p*modifier
       }

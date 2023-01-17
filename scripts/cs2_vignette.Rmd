@@ -82,7 +82,7 @@ N<-100
 ## Specify options for each demography element and the distribution of each within the population
 ## We are interested in simulating a population where individuals have varying nutritional status and can reside in either of 2 locations
 aux <- list("NS"=list("name"="NS","options"=c("low","medium","high"), "distribution"=c(0.3,0.3,0.4)),
-            "Group"=list("name"="group","options"=c("1", "2"), "distribution"=c(0.5,0.5)))
+            "Group"=list("name"="group","options"=c(1, 2), "distribution"=c(0.5,0.5)))
 
 
 ## Generate the population demography tibble
@@ -420,7 +420,8 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   dem_mod=dem_mod,
-  t_in_year=t_in_year
+  t_in_year=t_in_year,
+  attempt_precomputation = FALSE
 )
 
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.

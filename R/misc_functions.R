@@ -167,7 +167,6 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
 #' @export
 precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
                                   foe_pars, demography, VERBOSE, ...){
-    browser()
     n_groups <- length(unique(groups))
     n_exposure_ids <- length(exposure_ids)
     
@@ -177,21 +176,23 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     ## Check if we care about time in the demography tibble. We care if "t" is a variable name and 
     ## there is more than one entryfor each individual. If we care, then use it as a unique 
     ## demography variable. Otherwise ignore it.
-    if(("t" in colnames(demography)) & 
-       ((demography %>% dplyr::select(-t) %>% distinct() %>% nrow()) > N)){
+    if(("times" %in% colnames(demography)) & 
+       ((demography %>% dplyr::select(-times) %>% distinct() %>% nrow()) > N)){
         time_flag <- TRUE
-        demography <- demography %>% group_by(across(c(-i)))
+        unique_demography <- demography %>% group_by(across(c(-i)))%>% 
+            mutate(index=1:n()) %>% 
+            filter(index==min(index)) %>% 
+            select(-index) %>%
+            rename(match=i)
     } else {
         time_flag <- FALSE
-        demography <- demography %>% group_by(across(c(-i,-t)))
+        unique_demography <- demography %>% group_by(across(c(-i,-times)))%>% 
+            mutate(index=1:n()) %>% 
+            filter(index==min(index)) %>% 
+            select(c(-index,-times)) %>%
+            rename(match=i)
     }
-    
-    ## Find unique demography variable values. This may just be "group".
-    unique_demography <- demography %>% 
-        mutate(index=1:n()) %>% 
-        filter(index==min(index)) %>% 
-        select(-index) %>%
-        rename(match=i)
+    demography <- demography %>% ungroup()
     
     ## How many unique demography entries do we have?
     n_unique_demography <- nrow(unique_demography)
@@ -232,21 +233,29 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         ## the demography variable changes at some t, the vectorized call may work but will not
         ## return the right values. If this applies to individuals but not individual 1,
         ## this check will not pick that up.
+        ptm <- Sys.time()
         tmp_exp <- sapply(times, function(t) exposure_model(1, t, 1, 1, foe_pars, demography,...))
+        if(!is.null(VERBOSE)) message(cat("Solving the model for one individual without vectorization would take: ", Sys.time() - ptm, " seconds\n"))
         
         ## Try to solve exposure_model in one function call. If an error, warning or incorrect
         ## values are returned, then assume the call cannot be vectorized.
         tmp_exp_vectorized <- tryCatch(
             expr = {
+                ptm <- Sys.time()
                 tmp <- exposure_model(1, times, 1, 1, foe_pars, demography,...)
+                if(!is.null(VERBOSE)) message(cat("Solving the model for one individual with vectorization would take: ", Sys.time() - ptm, " seconds\n"))
+                tmp
             },
             error = function(e) {
+                if(!is.null(VERBOSE)) message(cat("Exposure model fails with attempted vectorization\n"))
                 tmp <- NA
             },
             warning=function(w){
+                if(!is.null(VERBOSE)) message(cat("Exposure model gives warning with attempted vectorization\n"))
                 tmp <- NA
             })
-
+        
+        
         ## Check if vectorized version gives the same outputs as the input version
         if(length(tmp_exp_vectorized) == length(tmp_exp) & 
            isTRUE(all.equal(tmp_exp, tmp_exp_vectorized))){
@@ -277,34 +286,37 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
             
             ## Convert foe_pars_precomputed from unique entries for each group to unique entries
             ## for each individual
-            demography_tmp <- demography %>% dplyr::select(i, g) %>% distinct()
-            exposure_force[demography_tmp$i,,] <- foe_pars_precomputed[demography_tmp$g,,]
+            demography_tmp <- demography %>% dplyr::select(i, group) %>% distinct()
+            exposure_force[demography_tmp$i,,] <- foe_pars_precomputed[demography_tmp$group,,]
         } else{
+            
             ## If there is no time element to the demography table, then enumerate an entry for each t
             ## This is just temporary to ensure compatibility further down.
-            if(!("t" %in% colnames(unique_demography))){
-                unique_demography <- unique_demography %>% expand_grid(t=times)
+            if(time_flag){
+                unique_demography <- unique_demography %>% expand_grid(times=times)
             }
-            
             ## Mark which individuals have a match to "steal" the calculation from
             demography <- suppressMessages(demography %>% left_join(unique_demography))
+            if(!is.null(VERBOSE)) message(cat("Number of individuals to precompute: ", nrow(unique_demography), " vs. ", N, " total individuals.\n"))
             
             for(index in 1:nrow(unique_demography)){
+                update(VERBOSE, index)
                 for(x in exposure_ids){
                     if(can_vectorize){
-                        exposure_force[unique_demography$match[index],,x] <- exposure_model(unique_demography$match[index], times, x, g, foe_pars, demography,...)
+                        exposure_force[unique_demography$match[index],,x] <- exposure_model(unique_demography$match[index], times, x, 
+                                                                                            unique_demography$group[index], foe_pars, demography,...)
                     } else {
-                        exposure_force[unique_demography$match[index],,x] <- sapply(times, function(t) exposure_model(unique_demography$match[index], t, x, g, foe_pars, demography,...))
+                        exposure_force[unique_demography$match[index],,x] <- sapply(times, function(t) exposure_model(unique_demography$match[index], t, x, 
+                                                                                                                      unique_demography$group[index], foe_pars, 
+                                                                                                                      demography,...))
                     }
                 }
-            }
+            }  
             exposure_force[demography$i,demography$times,] <- exposure_force[demography$match,demography$times,]
         }
-        
-       
         precomputation_successful <- TRUE
     } else {
         if(!is.null(VERBOSE)) message(cat("Precomputation of exposure model not possible."))
     }
-    return(list(flag=precomputation_successful,foe=foe_pars_precomputed))
+    return(list(flag=precomputation_successful,foe=exposure_force))
 }
