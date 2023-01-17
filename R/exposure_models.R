@@ -165,7 +165,9 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' ## Solve over all times as example
 #' sir_prob <- exposure_model_sir(1, times, 1, 1, foe_pars)
 #' plot_exposure_model(exposure_model_sir,seq(1,365,by=1),n_groups=1,n_exposures=1,foe_pars=foe_pars)
-exposure_model_sir <- function(i, t, x, g, foe_pars, demography=NULL,time_res=1,...){
+exposure_model_sir <- function(i, t, x, g, foe_pars, 
+                               demography=NULL,
+                               time_res=1,...){
     SIR_odes_with <- function(t, y, pars){
         with(as.list(c(y,pars)),{
             if(t > t0){

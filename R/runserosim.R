@@ -67,7 +67,8 @@ runserosim <- function(
     if(!("group" %in% colnames(demography))) {
         demography$group <- 1
     }
-    groups <- demography %>% select(i, group) %>% distinct()
+    groups <- demography %>% select(group) %>% distinct() %>% pull(group)
+    N_groups <- length(groups)
     
     ## Extract information on number of exposure types
     exposure_ids <- unique(biomarker_map$exposure_id)
@@ -83,15 +84,28 @@ runserosim <- function(
     antibody_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
     kinetics_parameters <- vector(mode="list",length=N)
 
+    ########################################################################
+    ## Checking if pre-compuation of exposure probabilities is possible
+    if(!is.null(VERBOSE)) message(cat("Checking for possible pre-computation to save time...\n"))
+    precomputations <- precomputation_checks(N, times,exposure_ids, groups,
+                                                 exposure_model, foe_pars, demography, 
+                                                 VERBOSE, ...)
+    
+    ## If successful precomputation, change the exposure model
+    if(precomputations$flag == TRUE){
+        foe_pars <- precomputations$foe
+        exposure_model <- exposure_model_fixed
+    }
+    ########################################################################
+    
+    
     ## Merge in any pre-specified exposure history information
     ## ...
     if(!is.null(exposure_histories_fixed)){
         exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
     }
     
-    if(!is.null(VERBOSE)){
-         message(cat("Beginning simulation\n"))
-    }
+    if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
     
     ## For each individual
     for(i in indivs){
@@ -130,7 +144,7 @@ runserosim <- function(
                                                    antibody_states, demography, 
                                                    biomarker_map, model_pars, ...)
 
-                                        ## Randomly assign success of exposure event based on immune state
+                    ## Randomly assign success of exposure event based on immune state
                     successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
                     
                     ## Simulate kinetics parameters for this exposure event
@@ -154,9 +168,7 @@ runserosim <- function(
         }
     }
     
-    if(!is.null(VERBOSE)){
-        message(cat("Simulation complete! Cleaning up...\n"))
-    }
+    if(!is.null(VERBOSE)) message(cat("Simulation complete! Cleaning up...\n"))
     
     all_kinetics_parameters <- do.call("bind_rows", kinetics_parameters)
     

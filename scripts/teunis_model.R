@@ -37,8 +37,8 @@ immunity_model_all_successful
 
 ## 6. Antibody model
 model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
-plot_antibody_model(antibody_model_typhoid,N = 25,times=seq(1,365,by=1),model_pars=model_pars,
-                    biomarker_map=biomarker_map,draw_parameters_fn=draw_parameters_random_fx)
+#plot_antibody_model(antibody_model_typhoid,N = 25,times=seq(1,365,by=1),model_pars=model_pars,
+#                    biomarker_map=biomarker_map,draw_parameters_fn=draw_parameters_random_fx)
 
 bounds<-data.frame(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(10,500))
 

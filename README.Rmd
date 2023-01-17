@@ -220,7 +220,8 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   sensitivity=sensitivity,
-  specificity=specificity
+  specificity=specificity,
+  VERBOSE=100
 )
 
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.

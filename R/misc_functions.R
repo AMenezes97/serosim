@@ -69,7 +69,7 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
 #' simulate_birth_times(500, 1:100, age_min=9) 
 simulate_birth_times <- function(N, times, age_min=0){
     if(age_min >= max(times)){
-        message("age_min is greater than or equal to the final time step. Setting to max(times)-1.")
+        message(cat("age_min is greater than or equal to the final time step. Setting to max(times)-1."))
         age_min <- max(times)-1
     }
   birth_times <- sample(times[1:(length(times)-(age_min+1))], N, replace =TRUE)
@@ -91,11 +91,11 @@ simulate_birth_times <- function(N, times, age_min=0){
 #' simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal_max=max(times), prob_removal=0){
     if(removal_min < min(times)){
-        message("removal_min is less than the first time step. Setting to min(times).")
+        message(cat("removal_min is less than the first time step. Setting to min(times)."))
         removal_min <- min(times)
     }
     if(removal_max > max(times)){
-        message("removal_max is greater than the final time step. Setting to max(times).")
+        message(cat("removal_max is greater than the final time step. Setting to max(times)."))
         removal_max <- max(times)
     }
     
@@ -157,4 +157,80 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
         }
     }
     input_map
+}
+
+#' @export
+precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
+                                  foe_pars, demography, VERBOSE, ...){
+    n_groups <- unique(groups)
+    n_exposure_ids <- length(exposure_ids)
+    
+    ## Number of calls to function which would be needed
+    n_exposure_model_calls <- N*length(times)*n_exposure_ids
+    
+    ## Number of function calls if pre-computation were used
+    ## Plus one solve over times and one vectorized attempt for testing
+    n_exposure_model_calls_precomp <-  n_exposure_ids*n_groups*length(times) + length(times) + 1
+    
+    ## If it would take fewer function calls to pre-compute, then do so
+    use_precomputation <- FALSE
+    if(n_exposure_model_calls > n_exposure_model_calls_precomp){
+        use_precomputation <- TRUE
+    }
+    ## If the exposure model uses demography, then we would need a call for each unique demography combination
+    deparsed_func <- deparse(exposure_model)
+    ## Check if "demography" shows up in the function outside of the arguments
+    ## If it does, then we assume we cannot do pre-computation as those models will typically be more complicated
+    if(any(grepl("demography",deparsed_func[2:length(deparsed_func)]))){
+        use_precomputation <- FALSE
+    }
+    
+    foe_pars_precomputed <- array(NA, dim=c(n_groups,length(times),n_exposure_ids))
+    precomputation_successful <- FALSE
+    if(use_precomputation){
+        if(!is.null(VERBOSE)) message(cat("Run time can be reduced by pre-computation!\n"))
+        if(!is.null(VERBOSE)) message(cat("Checking if exposure model can be vectorized...\n"))
+        
+        
+        ## Check if model function can be vectorized ie. one call with the times vector will return the correct values
+        tmp_exp <- sapply(times, function(t) exposure_model(1, t, 1, 1, foe_pars, demography,...))
+        
+        ## Try to solve exposure_model in one function call. If an error, warning or incorrect
+        ## values are returned, then assume the call cannot be vectorized.
+        tmp_exp_vectorized <- tryCatch(
+            expr = {
+                tmp <- exposure_model(1, times, 1, 1, foe_pars, demography,...)
+            },
+            error = function(e) {
+                tmp <- NA
+            },
+            warning=function(w){
+                tmp <- NA
+            })
+
+        ## Check if vectorized version gives the same outputs as the input version
+        if(length(tmp_exp_vectorized) == length(tmp_exp) & 
+           isTRUE(all.equal(tmp_exp, tmp_exp_vectorized))){
+            if(!is.null(VERBOSE)) message(cat("Exposure model can be vectorized!\n"))
+            can_vectorize <- TRUE
+        } else {
+            if(!is.null(VERBOSE)) message(cat("Exposure model cannot be vectorized.\n"))
+            can_vectorize <- FALSE
+        }
+        if(!is.null(VERBOSE)) message(cat("Precomputing exposure probabilities...\n"))
+        
+        for(g in groups){
+            for(x in exposure_ids){
+                if(can_vectorize){
+                    foe_pars_precomputed[g,,x] <- exposure_model(1, times, x, g, foe_pars, demography,...)
+                } else {
+                    foe_pars_precomputed[g,,x] <- sapply(times, function(t) exposure_model(1, t, x, g, foe_pars, demography,...))
+                }
+            }
+        }
+        precomputation_successful <- TRUE
+    } else {
+        if(!is.null(VERBOSE)) message(cat("Precomputation of exposure model not possible."))
+    }
+    return(list(flag=precomputation_successful,foe=foe_pars_precomputed))
 }
