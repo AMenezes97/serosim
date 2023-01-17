@@ -41,7 +41,8 @@ model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
 #                    biomarker_map=biomarker_map,draw_parameters_fn=draw_parameters_random_fx)
 
 bounds<-data.frame(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(10,500))
-
+precomputation_checks(N, times, exposure_ids, 1, exposure_model_sir, foe_pars,
+                      demography,TRUE)
 ## Run serosim
 set.seed(1)
 res<- runserosim(

@@ -37,7 +37,7 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
     removal_times <- simulate_removal_times(N, times=times,birth_times=birth_times, removal_min=removal_min, removal_max=removal_max, prob_removal)
     
     demog <- tibble(i=1:N,birth=birth_times,removal=removal_times)
-    demog <- demog %>% left_join(expand_grid(i=1:N,t=times))
+    demog <- demog %>% left_join(expand_grid(i=1:N,times=times))
 
     ## If there is additional auxiliary demographic information, merge this with default demography table
     if(!is.null(aux)){
@@ -174,14 +174,20 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     ## Number of calls to function which would be needed if no pre-computation were done
     n_exposure_model_calls <- N*length(times)*n_exposure_ids
 
-    ## Check if we care about time in the demography tibble.
-    if(!("t" %in% colnames(demography))){
-        demography$t <- 1
+    ## Check if we care about time in the demography tibble. We care if "t" is a variable name and 
+    ## there is more than one entryfor each individual. If we care, then use it as a unique 
+    ## demography variable. Otherwise ignore it.
+    if(("t" in colnames(demography)) & 
+       ((demography %>% dplyr::select(-t) %>% distinct() %>% nrow()) > N)){
+        time_flag <- TRUE
+        demography <- demography %>% group_by(across(c(-i)))
+    } else {
+        time_flag <- FALSE
+        demography <- demography %>% group_by(across(c(-i,-t)))
     }
     
     ## Find unique demography variable values. This may just be "group".
-    ## Exclude time (t), as unique entries will show up if an individual changes demography
-    unique_demography <- demography %>% group_by(across(c(-i,-t))) %>% 
+    unique_demography <- demography %>% 
         mutate(index=1:n()) %>% 
         filter(index==min(index)) %>% 
         select(-index) %>%
@@ -292,7 +298,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
                     }
                 }
             }
-            exposure_force[demography$i,demography$t,] <- exposure_force[demography$match,demography$t,]
+            exposure_force[demography$i,demography$times,] <- exposure_force[demography$match,demography$times,]
         }
         
        
