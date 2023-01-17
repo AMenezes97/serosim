@@ -20,7 +20,7 @@ aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=
             "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "proportion"=c(0.25,0.25,0.25,0.25)),
             "SES"=list("name"="ses","options"=c("low","high"),"proportion"=c(0.8,0.2)))
 #demography <- generate_pop_demography(N=N,times=times, age_min=180,prob_removal=1,aux=aux)
-demography <- generate_pop_demography(N=N,times=times, age_min=180,prob_removal=0)
+demography <- generate_pop_demography(N=N,times=times, age_min=730,prob_removal=0,removal_min = max(times),removal_max=max(times))
 
 biomarker_map <- tibble(exposure_id=c("infection"),biomarker_id=c("IgG"))
 biomarker_map <- reformat_biomarker_map(biomarker_map)

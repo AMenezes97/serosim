@@ -113,7 +113,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
     ## Pull individual's information within demography 
     individualnum<-i
     demography_tmp<-data.table(demography)
-    demography_tmp<-demography_tmp[demography_tmp$i==individualnum & demography_tmp$times==t,]
+    demography_tmp<-demography_tmp[demography_tmp$i==individualnum & demography_tmp$t==t,]
     
     ## Convert dem_mod to data table
     mod2<-data.table(dem_mod)
@@ -287,4 +287,23 @@ exposure_model_gaussian_process <- function(i, t, x, g, foe_pars, demography, ..
     ## Calculates incidence rate (probability of infection) for given times 
     prob_infection_tmp <- scale_factor*ps[,1]/sum(ps[,1])
     prob_infection_tmp[t]
+}
+
+
+#' Known individual-level probability of exposure
+#' 
+#' @description Generic wrapper function to allow the probability of exposure for each individual at each time point to be drawn directly from the foe_pars array.
+#' @inheritParams exposure_model_simple_FOE
+#' @param foe_pars A 3D array providing the *probability* of exposure for each individual, time and exposure ID
+#' 
+#' @return A probability of exposure from the foe_pars array
+#' @export
+#' @examples
+#' times <- seq(0,365,by=1)
+#' n_indivs <- 1:100
+#' n_exposures <- 1
+#' foe_pars <- array(0.01, dim=c(n_indivs,length(times),n_exposures))
+#' exposure_model_indiv_fixed(1,1,1,1,foe_pars,NULL) 
+exposure_model_indiv_fixed <- function(i, t, x, g, foe_pars, demography, ...){
+    foe_pars[i, t, x]
 }

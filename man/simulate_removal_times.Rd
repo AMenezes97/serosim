@@ -24,7 +24,7 @@ simulate_removal_times(
 
 \item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
 
-\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to NA, then removal time will be max(times)+1}
 }
 \value{
 A vector of all individual's removal times is returned. NA represents no removal.

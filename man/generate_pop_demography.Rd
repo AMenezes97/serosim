@@ -28,7 +28,7 @@ generate_pop_demography(
 
 \item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
 
-\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition.}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to NA, then removal time will be max(times)+1}
 
 \item{aux}{An optional list of lists describing additional demographic factors. Each list must contain the variable name, a vector of possible factor levels, and their proportions to simulate from. Note that this is intended for categorical, uncorrelated variables. More complex demographic information should be added post-hoc. Defaults to NULL.}
 }
