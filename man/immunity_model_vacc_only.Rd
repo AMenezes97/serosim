@@ -9,7 +9,7 @@ immunity_model_vacc_only(
   t,
   x,
   exposure_histories,
-  antibody_states,
+  biomarker_states,
   demography,
   biomarker_map,
   model_pars,
@@ -27,7 +27,7 @@ immunity_model_vacc_only(
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure event}
 
-\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 

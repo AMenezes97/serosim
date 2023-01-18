@@ -6,26 +6,26 @@
 #' @param t1 time
 #' @param b biomarker
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
-#' @param antibody_states An array of antibody states across all individuals, time steps and biomarker IDs
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all biomarkers 
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param ... 
 #'
-#' @return A titer value is returned 
+#' @return A biomarker quantity is returned 
 #' @export
 #'
 #' @examples
-antibody_model_monophasic <-  function(i, t1, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   ## Find which successful exposures correspond to this biomarker 
   exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==b]
   
   ## Find all exposures up until current time for this individual and exposure type
   exp_history <- exposure_histories[i,1:t1,exposure_id_tmp]
   
-  ## Set starting titer to 0
-  titer<-0
+  ## Set starting biomarker quantity to 0
+  biomarker_quantity<-0
   
-  ## Calculate current titer if there has been an exposure 
+  ## Calculate current biomarker quantity if there has been an exposure 
   if(sum(exp_history,na.rm = TRUE)==0){
     return(0)
   }
@@ -34,16 +34,16 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, antibody_st
     b_tmp<-b
     
     tmp_kinetics_parameters <- kinetics_parameters[[i]]
-    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] ## Since you are going through time, all parameters will only be from the current or previous times?
+    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] 
     
     # setkey(tmp_kinetics_parameters, cols="i","t","e","b","name","value", "realized_value")
     tmp_boost <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",] 
     tmp_wane <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",] 
     
     for(j in seq_along(tmp_boost$realized_value)){
-      titer<- titer + tmp_boost$realized_value[j]*max(0,1-tmp_wane$realized_value[j]*(t1-tmp_wane$t[j]))
+      biomarker_quantity<- biomarker_quantity + tmp_boost$realized_value[j]*max(0,1-tmp_wane$realized_value[j]*(t1-tmp_wane$t[j]))
     }
-    titer
+    biomarker_quantity
   }
 }
 
@@ -53,11 +53,11 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, antibody_st
 #'
 #' @inheritParams antibody_model_monophasic
 #'
-#' @return A titer value is returned 
+#' @return A biomarker quantity is returned 
 #' @export
 #'
 #' @examples
-antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
 
   ## Find which successful exposures correspond to this biomarker 
   exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==b]
@@ -65,10 +65,10 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
   ## Find all exposures up until current time for this individual and exposure type
   exp_history <- exposure_histories[i,1:t1,exposure_id_tmp]
   
-  ## Set starting titer to 0
-  titer<-0
+  ## Set starting biomarker quantity to 0
+  biomarker_quantity<-0
   
-  ## Calculate current titer if there has been an exposure 
+  ## Calculate current biomarker quantity if there has been an exposure 
   if(sum(exp_history,na.rm = TRUE)==0){
     return(0)
   }
@@ -77,7 +77,7 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
     b_tmp<-b
     
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
-    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] ## Since you are going through time, all parameters will only be from the current or previous times?
+    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] 
     
     # setkey(tmp_kinetics_parameters, cols="i","t","e","b","name","value", "realized_value")
     tmp_boost_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",] 
@@ -88,9 +88,9 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
     
     
     for(j in seq_along(tmp_boost_long$realized_value)){
-      titer<- titer + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j])) + tmp_boost_short$realized_value[j]*max(0,1-tmp_wane_short$realized_value[j]*(t1-tmp_wane_short$t[j]))
+      biomarker_quantity<- biomarker_quantity + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j])) + tmp_boost_short$realized_value[j]*max(0,1-tmp_wane_short$realized_value[j]*(t1-tmp_wane_short$t[j]))
     }
-    titer
+    biomarker_quantity
     
   }
 }
@@ -102,11 +102,11 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, antibody_stat
 #'
 #' @inheritParams antibody_model_monophasic
 #'
-#' @return A titer value is returned 
+#' @return A biomarker_quantity is returned 
 #' @export
 #'
 #' @examples
-antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, antibody_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
+antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, biomarker_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
     tmp_pars <- kinetics_parameters[[i]]
     
     ## Find which successful exposures correspond to this biomarker 

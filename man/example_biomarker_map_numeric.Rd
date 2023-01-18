@@ -19,8 +19,8 @@ Example numeric biomarker map required as an input for runserosim. This biomarke
 }
 \seealso{
 Other example_data: 
-\code{\link{example_antibody_states}},
 \code{\link{example_biomarker_map}},
+\code{\link{example_biomarker_states}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_force}},
 \code{\link{example_exposure_histories}},
@@ -28,7 +28,7 @@ Other example_data:
 \code{\link{example_foe_pars}},
 \code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}},
-\code{\link{example_observed_antibody_states}}
+\code{\link{example_observed_biomarker_states}}
 }
 \concept{example_data}
 \keyword{datasets}

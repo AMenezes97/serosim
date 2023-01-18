@@ -7,7 +7,7 @@
 plot_exposure_prob(exposure_probabilities_long)
 }
 \arguments{
-\item{exposure_probabilities_long}{TThe reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event}
+\item{exposure_probabilities_long}{The reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event}
 }
 \value{
 A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned

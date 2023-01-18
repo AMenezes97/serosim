@@ -6,7 +6,7 @@ README
 The *serosim* package is designed to simulate serological survey data
 arising from user-specified vaccine or infection-generated and antibody
 kinetics processes. *serosim* allows users to specify and adjust model
-inputs responsible for generating the observed titer values like
+inputs responsible for generating the observed biomarker quantities like
 time-varying patterns of infection and vaccination, population
 demography, immunity and antibody kinetics, and serological survey
 sampling design in order to best represent the population and disease
@@ -73,21 +73,21 @@ demography <- generate_pop_demography(N=100, times=times, removal_min=1, removal
 summary(demography)
 ```
 
-    ##        i              birth        removal            times       
-    ##  Min.   :  1.00   Min.   :  2.00   Mode:logical   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 35.00   NA's:12000     1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 53.50                  Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 58.31                  Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 85.25                  3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :119.00                  Max.   :120.00
+    ##        i              birth           removal        times       
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 25.50   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 53.50   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 59.06   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 92.25   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
 Set up the exposure IDs and biomarker IDs for the simulation which will
 determine which infection or vaccination events are occurring. Here, we
 will simulate one circulating pathogen (exposure_ID=ifxn) and one
-vaccine (exposure_ID=vacc) both of which will boost titers to the same
-biomarker (biomarker_ID=IgG_titer). This biomarker map can be used for
+vaccine (exposure_ID=vacc) both of which will boost the same biomarker,
+IgG titers (biomarker_ID=IgG_titer). This biomarker map can be used for
 any simulations of vaccine preventable diseases like measles vaccination
 and measles natural infection. *runserosim* requires that exposure_id
 and biomarker_id are numeric so we will use the reformat_biomarker_map
@@ -230,20 +230,20 @@ draw_parameters<-draw_parameters_random_fx
 
 # 1.7 Observation Model and observation_times
 
-Now we specify how observed antibody titers are generated as a
-probabilistic function of the true, latent antibody titer and when to
-observe these titers. In this step, we specify the sampling design and
-assay choice for our serological survey. We will take samples of all
-individuals at the end of the simulation (t=120).
+Now we specify how observed biomarker quantities are generated as a
+probabilistic function of the true, latent biomarker quantity and when
+to observe these quantities. In this step, we specify the sampling
+design and assay choice for our serological survey. We will take samples
+of all individuals at the end of the simulation (t=120).
 
-Our chosen observation model observes the latent titer values given a
-continuous assay with added noise. The added noise represents assay
-variability and is implemented by sampling from a distribution with the
-true latent antibody titer as the mean and the measurement error as the
-standard deviation. The observation standard deviation and distribution
-are defined within model_pars as the “obs_sd” parameter. Within this
-observation model, we can also specify the assay sensitivity and
-specificity.
+Our chosen observation model observes the latent biomarker quantity
+given a continuous assay with added noise. The added noise represents
+assay variability and is implemented by sampling from a distribution
+with the true latent biomarker quantity as the mean and the measurement
+error as the standard deviation. The observation standard deviation and
+distribution are defined within model_pars as the “obs_sd” parameter.
+Within this observation model, we can also specify the assay sensitivity
+and specificity.
 
 ``` r
 ## Specify the observation model 
@@ -288,21 +288,9 @@ res<- runserosim(
   vacc_exposures=vacc_exposures,
   vacc_age=vacc_age,
   sensitivity=sensitivity,
-  specificity=specificity,
-  VERBOSE=100
+  specificity=specificity
 )
-```
 
-    ## Checking for possible pre-computation to save time...
-    ## Run time can be reduced by pre-computation!
-    ## Checking if exposure model can be vectorized...
-    ## Exposure model can be vectorized!
-    ## Precomputing exposure probabilities...
-    ## Beginning simulation
-    ## Individual:  100 
-    ## Simulation complete! Cleaning up...
-
-``` r
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
@@ -312,8 +300,8 @@ Now that the simulation is complete, let’s plot and examine the
 simulation outputs.
 
 ``` r
-## Plot antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+## Plot biomarker kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
@@ -344,15 +332,15 @@ plot_exposure_histories(res$exposure_histories_long)
 ![](README_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
 
 ``` r
-## Plot antibody states for all individuals
-plot_titers(res$antibody_states)
+## Plot true biomarker quantities for all individuals across the entire simulation period
+plot_biomarker_quantity(res$biomarker_states)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
 
 ``` r
-## Plot the serosurvey results 
-plot_obs_titers_one_sample(res$observed_antibody_states)
+## Plot the serosurvey results (observed biomarker quantities)
+plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-10-6.png)<!-- -->
@@ -363,41 +351,18 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name     value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
-    ## 1     1    98     2     1 boost 1.24           1.24    
-    ## 2     1    98     2     1 wane  0.00120        0.00120 
-    ## 3     2   100     2     1 boost 3.76           3.76    
-    ## 4     2   100     2     1 wane  0.00184        0.00184 
-    ## 5     3    21     2     1 boost 1.46           1.46    
-    ## 6     3    21     2     1 wane  0.000651       0.000651
+    ##       i     t     x     b name    value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
+    ## 1     1    71     2     1 boost 3.13           3.13   
+    ## 2     1    71     2     1 wane  0.00188        0.00188
+    ## 3     1   109     1     1 boost 2.89           2.89   
+    ## 4     1   109     1     1 wane  0.00282        0.00282
+    ## 5     2   111     2     1 boost 1.16           1.16   
+    ## 6     2   111     2     1 wane  0.00181        0.00181
 
 ``` r
 ## Plots for the paper 
-library(cowplot)
+# library(cowplot)
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 ```
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:patchwork':
-    ## 
-    ##     align_plots
-
-``` r
-plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-```
-
-![](README_files/figure-gfm/unnamed-chunk-10-7.png)<!-- -->
-
-``` r
-plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-```
-
-    ## Warning: Graphs cannot be vertically aligned unless the axis parameter is set.
-    ## Placing graphs unaligned.
-
-    ## Warning: Graphs cannot be horizontally aligned unless the axis parameter is set.
-    ## Placing graphs unaligned.
-
-![](README_files/figure-gfm/unnamed-chunk-10-8.png)<!-- -->

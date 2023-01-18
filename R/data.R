@@ -154,37 +154,37 @@
 #' @family example_data
 "example_exposure_force"
 
-#' Example antibody states
+#' Example biomarker states
 #'
-#' Example antibody states runserosim output. This example data set output contains antibody titers for individuals at all time steps for all biomarkers listed in example_biomarker_map
+#' Example biomarker states runserosim output. This example data set output contains biomarker quantities for individuals at all time steps for all biomarkers listed in example_biomarker_map
 #' 
 #' @docType data
-#' @name example_antibody_states
-#' @usage data(example_antibody_states)
+#' @name example_biomarker_states
+#' @usage data(example_biomarker_states)
 #' @format A data frame with 12000 rows and 4 variables:
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step in the simulation}
 #'     \item{b}{numeric values for each biomarker type; this example only has 1 biomarker type}
-#'     \item{value}{numeric values indicating antibody titer}
+#'     \item{value}{numeric values indicating biomarker quantity}
 #' }
 #' @family example_data
-"example_antibody_states"
+"example_biomarker_states"
 
-#' Example observed antibody states
+#' Example observed biomarker states
 #'
-#' Example observed antibody states runserosim output. This example data set output contains observed antibody titers for all individuals at the time of observation (t=120) for all biomarker 1
+#' Example observed biomarker states runserosim output. This example data set output contains observed biomarker quantities for all individuals at the time of observation (t=120) for all biomarker 1
 #' 
 #' @docType data
-#' @name example_observed_antibody_states
-#' @usage data(example_observed_antibody_states)
+#' @name example_observed_biomarker_states
+#' @usage data(example_observed_biomarker_states)
 #' @format A data frame with 100 rows and 5 variables:
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
 #'     \item{t}{string numeric values for each time step observed}
 #'     \item{b}{numeric values for each biomarker type; this example only has 1 biomarker type}
-#'     \item{value}{numeric values indicating antibody titer}
-#'     \item{observed}{numeric values indicating observed antibody titer}
+#'     \item{value}{numeric values indicating biomarker quantity}
+#'     \item{observed}{numeric values indicating observed biomarker quantity}
 #' }
 #' @family example_data
-"example_observed_antibody_states"
+"example_observed_biomarker_states"

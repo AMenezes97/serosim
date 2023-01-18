@@ -1,6 +1,6 @@
 #' Main simulation function for _serosim_
 #' 
-#' @description Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers. See README for full details.
+#' @description Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed biomarker quantities. See README for full details.
 #' 
 #' @param simulation_settings A list of parameters governing the simulation time step settings. Should contain integer entries for _t_start_ and _t_end_
 #' @param demography A tibble of necessary demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times. If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.
@@ -31,11 +31,11 @@ runserosim <- function(
     model_pars,
     
     ## FUNCTIONS
-    exposure_model, ## calculates the probability of infection given the FOI array, foe_pars
-    immunity_model, ## function determining probability of infection conditional on foe_pars and individuals immune state
-    antibody_model, ## function determining antibody state as a function of exposure history and kinetics parameters (model_pars)
-    observation_model, ## function generating observed titers as a function of latent titers and model_pars
-    draw_parameters, ## function to simulate antibody kinetics parameters
+    exposure_model, ## calculates the probability of infection given the FOE array, foe_pars
+    immunity_model, ## function determining probability of infection conditional on foe_pars and individual's immune state
+    antibody_model, ## function determining biomarker quantity, commonly antibody state, as a function of exposure history and kinetics parameters (model_pars)
+    observation_model, ## function generating observed biomarker quantity as a function of latent biomarker quantities and model_pars
+    draw_parameters, ## function to simulate biomarker (e.g, antibody)  kinetics parameters
     
     ## Pre-specified parameters/events (optional)
     exposure_histories_fixed=NULL,
@@ -83,7 +83,7 @@ runserosim <- function(
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
     exposure_force <-array(NA, dim=c(N, length(times), N_exposure_ids))
-    antibody_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
+    biomarker_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
     kinetics_parameters <- vector(mode="list",length=N)
 
     ########################################################################
@@ -129,8 +129,8 @@ runserosim <- function(
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state
             for(b in biomarker_ids){
-                antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
-                                                          antibody_states, kinetics_parameters, biomarker_map, ...)
+                biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                                                          biomarker_states, kinetics_parameters, biomarker_map, ...)
             }
             
             ## Work out exposure result for each exposure ID
@@ -143,7 +143,7 @@ runserosim <- function(
                     ## If an exposure event occurred, what's the probability 
                     ## of successful exposure?
                     prob_success <- immunity_model(i, t, x, exposure_histories, 
-                                                   antibody_states, demography, 
+                                                   biomarker_states, demography, 
                                                    biomarker_map, model_pars, ...)
 
                     ## Randomly assign success of exposure event based on immune state
@@ -154,15 +154,15 @@ runserosim <- function(
                     ## for this event, drawn from information given in model_pars
                     if(successful_exposure == 1){
                         kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                          draw_parameters(i, t, x, b, demography, antibody_states, model_pars, ...))
+                                                          draw_parameters(i, t, x, b, demography, biomarker_states, model_pars, ...))
                     }
                     exposure_histories[i,t,x] <- successful_exposure
                     exposure_probabilities[i,t,x] <- prob_success*prob_exposed
                     exposure_force[i,t,x] <- prob_exposed
                     if(successful_exposure == 1){
                         for(b in biomarker_ids){
-                            antibody_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
-                                                                      antibody_states, kinetics_parameters, biomarker_map, ...)
+                            biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                                                                      biomarker_states, kinetics_parameters, biomarker_map, ...)
                         }
                     }
                 }
@@ -175,9 +175,9 @@ runserosim <- function(
     all_kinetics_parameters <- do.call("bind_rows", kinetics_parameters)
     
     ## Reshape antibody states
-    antibody_states <- reshape2::melt(antibody_states)
-    colnames(antibody_states) <- c("i","t","b","value")
-    antibody_states <- antibody_states %>% arrange(i, t, b)
+    biomarker_states <- reshape2::melt(biomarker_states)
+    colnames(biomarker_states) <- c("i","t","b","value")
+    biomarker_states <- biomarker_states %>% arrange(i, t, b)
     
     ## Reshape exposure histories
     exposure_histories_long <- NULL
@@ -200,9 +200,9 @@ runserosim <- function(
     
     ## Observation process
     if(!is.null(observation_times)){
-        observed_antibody_states <- observation_model(left_join(observation_times,antibody_states), model_pars, ...)
+        observed_biomarker_states <- observation_model(left_join(observation_times,biomarker_states), model_pars, ...)
     } else {
-        observed_antibody_states <- observation_model(antibody_states, model_pars, ...)
+        observed_biomarker_states <- observation_model(biomarker_states, model_pars, ...)
     }
     
     return(list("exposure_histories"=exposure_histories,
@@ -211,7 +211,7 @@ runserosim <- function(
                 "exposure_probabilities_long"=exposure_probabilities_long,
                 "exposure_force"=exposure_force,
                 "exposure_force_long"=exposure_force_long,
-                "antibody_states"=antibody_states,
-                "observed_antibody_states"=observed_antibody_states,
+                "biomarker_states"=biomarker_states,
+                "observed_biomarker_states"=observed_biomarker_states,
                 "kinetics_parameters"=all_kinetics_parameters))
 }

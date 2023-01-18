@@ -4,18 +4,18 @@
 \alias{observation_model_continuous}
 \title{Observation Model For Continuous Assays With No Added Noise}
 \usage{
-observation_model_continuous(antibody_states, model_pars, ...)
+observation_model_continuous(biomarker_states, model_pars, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 
 \item{...}{}
 }
 \value{
-antibody_states is returned with a new column for observed titers
+biomarker_states is returned with a new column for observed biomarker quantities
 }
 \description{
-This observation model observes the latent titer values given a continuous assay with no added noise.Therefore the true titer is the observed titer.
+This observation model observes the latent biomarker quantities given a continuous assay with no added noise. Therefore the true biomarker quantity is the observed biomarker quantity.
 }

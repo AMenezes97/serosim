@@ -18,6 +18,7 @@ runserosim(
   draw_parameters,
   exposure_histories_fixed = NULL,
   VERBOSE = NULL,
+  attempt_precomputation = TRUE,
   ...
 )
 }
@@ -47,12 +48,14 @@ runserosim(
 \item{exposure_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for any individuals.}
 
 \item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed.}
+
+\item{attempt_precomputation}{If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step.}
 }
 \value{
 a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
 }
 \description{
-Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed antibody titers. See README for full details.
+Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed biomarker quantities. See README for full details.
 }
 \examples{
 See package README.

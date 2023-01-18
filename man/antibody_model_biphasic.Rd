@@ -9,7 +9,7 @@ antibody_model_biphasic(
   t1,
   b,
   exposure_histories,
-  antibody_states,
+  biomarker_states,
   kinetics_parameters,
   biomarker_map,
   ...
@@ -24,7 +24,7 @@ antibody_model_biphasic(
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
-\item{antibody_states}{An array of antibody states across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
 \item{kinetics_parameters}{A tibble of parameters needed for the antibody kinetics model for all biomarkers}
 
@@ -33,7 +33,7 @@ antibody_model_biphasic(
 \item{...}{}
 }
 \value{
-A titer value is returned
+A biomarker quantity is returned
 }
 \description{
 Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term boost waning, short-term boost, and short-term boost waning parameters

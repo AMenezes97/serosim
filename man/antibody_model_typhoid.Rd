@@ -9,7 +9,7 @@ antibody_model_typhoid(
   t,
   b,
   exposure_histories = NULL,
-  antibody_states = NULL,
+  biomarker_states = NULL,
   kinetics_parameters,
   biomarker_map = NULL,
   ...
@@ -22,7 +22,7 @@ antibody_model_typhoid(
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
 
-\item{antibody_states}{An array of antibody states across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
 \item{kinetics_parameters}{A tibble of parameters needed for the antibody kinetics model for all biomarkers}
 
@@ -31,7 +31,7 @@ antibody_model_typhoid(
 \item{...}{}
 }
 \value{
-A titer value is returned
+A biomarker_quantity is returned
 }
 \description{
 
