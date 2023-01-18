@@ -83,13 +83,13 @@ runserosim <- function(
         all_groups <- matrix(NA, nrow=N,ncol=length(times))
         indices <- convert_indices_matrix_to_vector(demography$i, demography$times, N)
         all_groups[indices] <- demography$group
+        if(any(is.na(all_groups))) message(cat("Warning - could not find group membership for all individuals at all times. This may lead to an error or unexpected output"))
     } else {
         use_time <- FALSE
         demography <- demography %>% arrange(i)
         all_groups <- demography$group
         all_groups <- matrix(rep(all_groups,each=length(times)),nrow=N,ncol=length(times),byrow=TRUE)
     }
-    
     ## Extract information on number of exposure types
     exposure_ids <- unique(biomarker_map$exposure_id)
     biomarker_ids <- unique(biomarker_map$biomarker_id)
