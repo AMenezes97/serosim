@@ -98,6 +98,7 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #'     }
 #' }
 exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_in_year=1, ...){
+    #browser()
   ## Find the force of exposure
   p <- foe_pars[g, t, x]
   
@@ -117,7 +118,6 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
     
     ## Convert dem_mod to data table
     mod2<-data.table(dem_mod)
-    
     for (col in seq_along(cols)){ ## For each unique column entry in dem_mod 
       ## Pull the column name
       colname<-cols[col] 

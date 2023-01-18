@@ -12,7 +12,7 @@ times <- seq(1,365*2,by=1) ## 2 years in daily resolution
 simulation_settings <- list("t_start"=min(times),"t_end"=max(times))
 
 ## 2. Population demography
-N <- 100
+N <- 200
 birth_times <- simulate_birth_times(N, times, age_min=0)
 removal_times <- simulate_removal_times(N, times=times,birth_times=birth_times, removal_min=365,removal_max=max(times),prob_removal=1)
 
@@ -43,10 +43,18 @@ model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
 bounds<-data.frame(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(10,500))
 
 demography$group <- 1
-precomputation_checks(N, times, 1, 1, exposure_model_sir, foe_pars,
-                      demography,TRUE)
+#precomputation_checks(N, times, 1, 1, exposure_model_sir, foe_pars,
+#                      demography,TRUE)
 ## Run serosim
+antibody_model_1 <- function(i, t, b, exposure_histories=NULL, antibody_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
+    return(5)
+}
+exposure_model_1 <- function(i, t, x, g, foe_pars, 
+                             demography=NULL,...){
+    return(0.001)
+}
 set.seed(1)
+t1 <- Sys.time()
 res<- runserosim(
     simulation_settings,
     demography, 
@@ -63,8 +71,10 @@ res<- runserosim(
     ## Pre-specified parameters/events
     exposure_histories_fixed=NULL,
     bounds=bounds,
-    VERBOSE=TRUE
+    VERBOSE=10
 )
+print(Sys.time() - t1)
+
 plot_exposure_histories(res$exposure_histories_long)
 plot_titers(res$observed_antibody_states)
  

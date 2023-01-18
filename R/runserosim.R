@@ -15,7 +15,7 @@
 #' @param draw_parameters A function to simulate parameters for the antibody model, immunity model and observation model from _model_pars_
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for any individuals.
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed.
-#' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step.
+#' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway.
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' 
@@ -72,12 +72,29 @@ runserosim <- function(
     groups <- demography %>% select(group) %>% distinct() %>% pull(group)
     N_groups <- length(groups)
     
+    ## Make sure demography is arranged by i and times (if there is a time element). 
+    ## This is important for subsetting below. 
+    ## Also pre-compute which group the individual is in for each time point to speed up
+    ## indexing below
+    if("times" %in% colnames(demography)){
+        use_time <- TRUE
+        demography <- demography %>% arrange(i, times)
+        ## Create groups matrix
+        all_groups <- matrix(NA, nrow=N,ncol=length(times))
+        indices <- convert_indices_matrix_to_vector(demography$i, demography$times, N)
+        all_groups[indices] <- demography$group
+    } else {
+        use_time <- FALSE
+        demography <- demography %>% arrange(i)
+        all_groups <- demography$group
+        all_groups <- matrix(rep(all_groups,each=length(times)),nrow=N,ncol=length(times),byrow=TRUE)
+    }
+    
     ## Extract information on number of exposure types
     exposure_ids <- unique(biomarker_map$exposure_id)
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     N_exposure_ids <- length(exposure_ids)
     N_biomarker_ids <- length(biomarker_ids)
-    
     
     ## Create empty arrays to store exposure histories
     exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
@@ -89,15 +106,18 @@ runserosim <- function(
     ########################################################################
     ## Checking if pre-compuation of exposure probabilities is possible
     if(!is.null(VERBOSE)) message(cat("Checking for possible pre-computation to save time...\n"))
-    precomputations <- precomputation_checks(N, times,exposure_ids, groups,
+    if(attempt_precomputation){
+        precomputations <- precomputation_checks(N, times,exposure_ids, groups,
                                                  exposure_model, foe_pars, demography, 
                                                  VERBOSE, ...)
-    
-    ## If successful precomputation, change the exposure model
-    if(precomputations$flag == TRUE){
-        foe_pars <- precomputations$foe
-        exposure_model <- exposure_model_indiv_fixed
-    }
+        if(precomputations$flag == TRUE){
+            foe_pars <- precomputations$foe
+            exposure_model <- exposure_model_indiv_fixed
+        } 
+        if(!is.null(VERBOSE)) message(cat("Using pre-computed exposure probabilities\n"))
+        
+    } 
+    ## If successful precomputation, change the exposure model to just read directly from foe_pars
     ########################################################################
     
     
@@ -108,7 +128,7 @@ runserosim <- function(
     }
     
     if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
-    
+
     ## For each individual
     for(i in indivs){
         ## Print update message
@@ -119,12 +139,12 @@ runserosim <- function(
         
         ## Only consider times that the individual was alive for
         simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
-        
         ## Go through all times relevant to this individual
         for(t in simulation_times_tmp){
             ## Pull group for this individual at this time 
-            g <- as.numeric(demography$group[demography$i==i & demography$times==t]) 
-           
+            g <- all_groups[i, t]
+            #g <- demography$group[demography$i==i & demography$times==t]
+
             ## Work out antibody state for each biomarker
             ## The reason we nest this at the same level as the exposure history generation is
             ## that exposure histories may be conditional on antibody state

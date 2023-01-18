@@ -421,9 +421,9 @@ res<- runserosim(
   vacc_age=vacc_age,
   dem_mod=dem_mod,
   t_in_year=t_in_year,
-  attempt_precomputation = FALSE
+  VERBOSE=NULL,
+  attempt_precomputation = TRUE
 )
-
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 

@@ -164,38 +164,52 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
     input_map
 }
 
+
+#' Check exposure model for pre-computation possibilities
+#' 
+#' Checks if the provided exposure model can be solved in advance of the main simulation in fewer function calls than would be expected in the main simulation. Note that there is some overhead to checking for pre-computation, so this may not be quicker and may actually slow down the simulation. However, in some cases where many individuals share identical exposure probabilities, running this function can lead to massive speed ups.
 #' @export
 precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
-                                  foe_pars, demography, VERBOSE, ...){
+                                  foe_pars, demography, VERBOSE, check_correct=FALSE,...){
     n_groups <- length(unique(groups))
     n_exposure_ids <- length(exposure_ids)
     
     ## Number of calls to function which would be needed if no pre-computation were done
+    ## 1 per individual per time per exposure ID
     n_exposure_model_calls <- N*length(times)*n_exposure_ids
 
-    ## Check if we care about time in the demography tibble. We care if "t" is a variable name and 
-    ## there is more than one entryfor each individual. If we care, then use it as a unique 
-    ## demography variable. Otherwise ignore it.
+    
+    ############################################################
+    ## How many function calls with pre-computation?
+    ## The idea is that we only need to solve the exposure model once per unique set of variables
+    ## affecting the exposure model. If we can re-use that result then we shouldn't bother calling 
+    ## the function again. This part is tricky -- if an individual's demography changes over time, 
+    ## then their matching "look up" value might change.
+    ## Check demography changes over time. If so, then consider "times" as a unique demography variable. 
+    ## Otherwise ignore it.
     if(("times" %in% colnames(demography)) & 
        ((demography %>% dplyr::select(-times) %>% distinct() %>% nrow()) > N)){
+        ## Consider time as a demography variable
         time_flag <- TRUE
         unique_demography <- demography %>% group_by(across(c(-i)))%>% 
             mutate(index=1:n()) %>% 
             filter(index==min(index)) %>% 
             select(-index) %>%
-            rename(match=i)
+            rename(match=i) %>% ungroup()
     } else {
+        ## Don't consider time as a demography variable
         time_flag <- FALSE
         unique_demography <- demography %>% group_by(across(c(-i,-times)))%>% 
             mutate(index=1:n()) %>% 
             filter(index==min(index)) %>% 
             select(c(-index,-times)) %>%
-            rename(match=i)
+            rename(match=i) %>% ungroup()
     }
     demography <- demography %>% ungroup()
     
     ## How many unique demography entries do we have?
     n_unique_demography <- nrow(unique_demography)
+    
    
     ## If the exposure model uses demography, then we would need a call for each unique demography combination
     deparsed_func <- deparse(exposure_model)
@@ -204,7 +218,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     ## Check if "demography" shows up in the function outside of the arguments
     ## If it does, then we assume we cannot do pre-computation as those models will typically be more complicated
     if(demography_used){
-        if(!is.null(VERBOSE)) message(cat("Note: your exposure model appears to use the demography tibble. This is permitted, but may slow down pre-computation. If you see this message in error, please check that your exposure model function body does not contain the word \"demography\".\n"))
+        if(!is.null(VERBOSE)) message(cat("Note: your exposure model appears to use the demography tibble. If you see this message in error, please check that your exposure model function body does not contain the word \"demography\"\n"))
         
         ## How many function calls would it take to precompute all necessary values of the exposure model?
         n_exposure_model_calls_precomp <- n_unique_demography*n_exposure_ids + length(times) + 1
@@ -212,6 +226,11 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         ## Number of function calls if pre-computation were used
         ## Plus one solve over times and one vectorized attempt for testing
         n_exposure_model_calls_precomp <- n_groups*n_exposure_ids + length(times) + 1    
+    }
+    if(!time_flag){
+        n_exposure_model_calls_precomp_print <- (n_exposure_model_calls_precomp - length(times) - 1)*length(times) + length(times) + 1
+    } else {
+        n_exposure_model_calls_precomp_print <- n_exposure_model_calls_precomp
     }
     
     ## Is it more efficient to try precomputation?
@@ -221,10 +240,9 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     }
 
     foe_pars_precomputed <- array(NA, dim=c(length(n_groups),length(times),n_exposure_ids))
-
     precomputation_successful <- FALSE
     if(use_precomputation){
-        if(!is.null(VERBOSE)) message(cat("Run time can be reduced by pre-computation!\n"))
+        if(!is.null(VERBOSE)) message(cat("Run time can be reduced by pre-computation! Pre-computation would require a maximum of ", n_exposure_model_calls_precomp_print, " calls to exposure_model as opposed to ", n_exposure_model_calls,"\n"))
         if(!is.null(VERBOSE)) message(cat("Checking if exposure model can be vectorized...\n"))
         
         ## Check if model function can be vectorized ie. one call with the times vector 
@@ -289,34 +307,71 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
             demography_tmp <- demography %>% dplyr::select(i, group) %>% distinct()
             exposure_force[demography_tmp$i,,] <- foe_pars_precomputed[demography_tmp$group,,]
         } else{
-            
-            ## If there is no time element to the demography table, then enumerate an entry for each t
-            ## This is just temporary to ensure compatibility further down.
-            if(time_flag){
-                unique_demography <- unique_demography %>% expand_grid(times=times)
-            }
             ## Mark which individuals have a match to "steal" the calculation from
             demography <- suppressMessages(demography %>% left_join(unique_demography))
-            if(!is.null(VERBOSE)) message(cat("Number of individuals to precompute: ", nrow(unique_demography), " vs. ", N, " total individuals.\n"))
+            if(!is.null(VERBOSE)) message(cat("Number of individuals to precompute: ", length(unique((unique_demography$match))), " vs. ", N, " total individuals.\n"))
+            unique_ids <- unique_demography %>% dplyr::select(c(match, group)) %>% distinct()
             
-            for(index in 1:nrow(unique_demography)){
+            if(!time_flag){
+                if(!("times" %in% colnames(demography))){
+                    demography <- demography %>% expand_grid(times=times)
+                }
+                unique_demography <- unique_demography %>% expand_grid(times=times)
+            }
+            
+            ## For each individual with unique demography
+            for(index in 1:nrow(unique_ids)){
+                ## Use only times that we need for solving
+                solve_i <- unique_ids$match[index]
+                tmp_times <- as.data.frame(unique_demography)[unique_demography$match == solve_i, "times"]
                 update(VERBOSE, index)
+                ## For each exposure ID
                 for(x in exposure_ids){
                     if(can_vectorize){
-                        exposure_force[unique_demography$match[index],,x] <- exposure_model(unique_demography$match[index], times, x, 
-                                                                                            unique_demography$group[index], foe_pars, demography,...)
+                        exposure_force[solve_i,tmp_times,x] <- exposure_model(solve_i, tmp_times, x, unique_ids$group[index], foe_pars, demography,...)
                     } else {
-                        exposure_force[unique_demography$match[index],,x] <- sapply(times, function(t) exposure_model(unique_demography$match[index], t, x, 
-                                                                                                                      unique_demography$group[index], foe_pars, 
-                                                                                                                      demography,...))
+                        exposure_force[solve_i,tmp_times,x] <- sapply(tmp_times, function(t) exposure_model(solve_i, t, x,unique_ids$group[index], foe_pars,demography,...))
                     }
                 }
-            }  
-            exposure_force[demography$i,demography$times,] <- exposure_force[demography$match,demography$times,]
+            } 
+            indices1 <- convert_indices_matrix_to_vector(demography$i,demography$times, N)
+            indices2 <- convert_indices_matrix_to_vector(demography$match,demography$times, N)
+            
+            for(x in exposure_ids){
+                exposure_force[,,x][indices1] <- exposure_force[,,x][indices2]
+            }
         }
         precomputation_successful <- TRUE
     } else {
-        if(!is.null(VERBOSE)) message(cat("Precomputation of exposure model not possible."))
+        if(!is.null(VERBOSE)) message(cat("Precomputation of exposure model not possible.\n"))
+    }
+    ## If requested, will calculate the exposure probabilities as if no pre-computation were done and
+    ## check for equivalence with the pre-computed version.
+    if(check_correct){
+        if(!is.null(VERBOSE)) message(cat("Checking if pre-computed exposure probabilities are the same as calculating individually...\n"))
+        exposure_force_correct <-array(0, dim=c(N, length(times), n_exposure_ids))
+        for(i in 1:N){
+            update(VERBOSE, i)
+            g <- as.data.frame(demography)[demography$i == i, "group"][1]
+            for(t in times){
+                for(x in exposure_ids){
+                    exposure_force_correct[i,t,x] <- exposure_model(i,t,x,g,foe_pars,demography,...) 
+                }
+            }
+        }
+        precomputation_successful <- identical(exposure_force_correct, exposure_force)
+        if(!is.null(VERBOSE)){
+            if(precomputation_successful){        
+                message(cat("Pre-computed exposure probabilities are all correct\n"))
+            } else {
+                message(cat("ERROR - pre-computed exposure probabilities are incorrect\n"))
+            }
+        }
     }
     return(list(flag=precomputation_successful,foe=exposure_force))
+}
+
+#' @export
+convert_indices_matrix_to_vector <- function(i, j, n){
+    (j-1)*n + i
 }
