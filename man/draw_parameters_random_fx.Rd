@@ -10,7 +10,7 @@ draw_parameters_random_fx(
   x,
   b,
   demography,
-  antibody_states,
+  biomarker_states,
   model_pars,
   ...
 )
@@ -26,9 +26,9 @@ draw_parameters_random_fx(
 
 \item{demography}{Demography information}
 
-\item{antibody_states}{An array of true antibody titers for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{An array of true biomarker quantities for all individuals across all time steps and biomarkers}
 
-\item{model_pars}{Tibble of antibody kinetics parameters}
+\item{model_pars}{Tibble of biomarker (antibody) kinetics parameters}
 
 \item{...}{}
 }

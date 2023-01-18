@@ -1,53 +1,53 @@
-#' Plot Titer Mediated Protection Graphs For Each Pathogen
+#' Plot Biomarker Mediated Protection Graphs For Each Pathogen
 #'
-#' @param titer_range The range of possible titers an individual can have at exposure
-#' @param titer_prot_midpoint The titer value at which you are 50% protected from infection
-#' @param titer_prot_width Determines the chape of the curve
+#' @param biomarker_range The range of possible biomarker quantities an individual can have at exposure
+#' @param biomarker_prot_midpoint The biomarker quantity at which you are 50% protected from infection
+#' @param biomarker_prot_width Determines the shape of the curve
 #'
-#' @return A plot of the probability of infection given an individual's titer at exposure
+#' @return A plot of the probability of infection given an individual's biomarker quantity at exposure
 #' @export
 #'
 #' @examples
-#' plot_titer_mediated_protection(0:10,5,0.9)
-plot_titer_mediated_protection <- function(titer_range, titer_prot_midpoint, titer_prot_width){
-  ## Create a function to calculate the risk of infection at a given titer
-  titer_protection <- function(titer, alpha1, beta1){
-    risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
+#' plot_biomarker_mediated_protection(0:10,5,0.9)
+plot_biomarker_mediated_protection <- function(biomarker_range, biomarker_prot_midpoint, biomarker_prot_width){
+  ## Create a function to calculate the risk of infection at a given biomarker quantity 
+  biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
+    risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
     return(risk)
   }
   
-  p_infection <- function(phi, titer, alpha1, beta1){
-    p <- phi*(1-titer_protection(titer, alpha1 , beta1))
+  p_infection <- function(phi, biomarker_quantity, alpha1, beta1){
+    p <- phi*(1-biomarker_protection(biomarker_quantity, alpha1 , beta1))
     p
   }
   
-    #create a data frame with the probability of infection at each titre level
-    prob_infection <- tibble(titer=titer_range, prob_infection=p_infection(1, titer_range,titer_prot_midpoint,titer_prot_width))
-    #plot probability of infection given titre level at exposure
-    p1<- ggplot2::ggplot(prob_infection) + ggplot2::geom_line(ggplot2::aes(x=titer,y=prob_infection)) + ggplot2::theme_bw() + ggplot2::ylab("Probability of infection (relative to 0 titre)") + ggplot2::xlab("Titer at exposure")
+    #create a data frame with the probability of infection at each biomarker quantity 
+    prob_infection <- tibble(biomarker=biomarker_range, prob_infection=p_infection(1, biomarker_range,biomarker_prot_midpoint,biomarker_prot_width))
+    #plot probability of infection given biomarker quantity at exposure
+    p1<- ggplot2::ggplot(prob_infection) + ggplot2::geom_line(ggplot2::aes(x=biomarker,y=prob_infection)) + ggplot2::theme_bw() + ggplot2::ylab("Probability of infection (relative to biomarker quantity of 0)") + ggplot2::xlab("Biomarker quantity at exposure")
     return(p1)
   }
   
-#' Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Titer
+#' Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Biomarker Quantity 
 #'
 #' @param start Lower bound of the x axis
 #' @param end Upper bound of the x axis
 #' @param by Increments at which your x axis will be plotted
-#' @param titer_ceiling_threshold The maximum titer level an individual can have before their boost is limited in size
-#' @param titer_ceiling_gradient (1-A)/B; Where A is the proportion of the full boost received at or above the titer_ceiling_threshold (B)
+#' @param biomarker_ceiling_threshold The maximum biomarker level an individual can have before their boost is limited in size
+#' @param biomarker_ceiling_gradient (1-A)/B; Where A is the proportion of the full boost received at or above the biomarker_ceiling_threshold (B)
 #'
-#' @return A plot displaying titer dependent boosting is returned
+#' @return A plot displaying biomarker quantity dependent boosting is returned
 #' @export
 #'
 #' @examples
-#' plot_titer_dependent_boosting(0,10,1,4,.14)
-plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshold, titer_ceiling_gradient){
-    test_titres <-pmin(seq(start,end,by=by), titer_ceiling_threshold)
-    boost_modifier <- (1-titer_ceiling_gradient*test_titres)
-    boost_modifier_dat <- tidyr::tibble(boost_mod=boost_modifier,starting_titers=seq(start,end, by=by))
+#' plot_biomarker_dependent_boosting(0,10,1,4,.14)
+plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_threshold, biomarker_ceiling_gradient){
+    test_titres <-pmin(seq(start,end,by=by), biomarker_ceiling_threshold)
+    boost_modifier <- (1-biomarker_ceiling_gradient*test_titres)
+    boost_modifier_dat <- tidyr::tibble(boost_mod=boost_modifier,starting_biomarkers=seq(start,end, by=by))
     
-    g<-ggplot2::ggplot(boost_modifier_dat) + ggplot2::geom_line(ggplot2::aes(x=starting_titers, y=boost_mod)) + ggplot2::theme_bw() +
-      ggplot2::xlab("Starting titer") +
+    g<-ggplot2::ggplot(boost_modifier_dat) + ggplot2::geom_line(ggplot2::aes(x=starting_biomarkers, y=boost_mod)) + ggplot2::theme_bw() +
+      ggplot2::xlab("Starting Biomarker") +
       ggplot2::ylab("Proportion of full boost experienced") + ggplot2::scale_y_continuous(limits=c(0,1)) + ggplot2::xlim(start,end)
     return(g)
 }
@@ -55,7 +55,7 @@ plot_titer_dependent_boosting <- function(start, end, by, titer_ceiling_threshol
 
 #' Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events
 #'
-#' @param exposure_probabilities_long TThe reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event
+#' @param exposure_probabilities_long The reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event
 #'
 #' @return A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned
 #' @export
@@ -142,27 +142,27 @@ plot_exposure_histories <- function(exposure_histories){
   return(p)
 }
 
-#' Plot Titers Across Time For All Individuals And Biomarkers
+#' Plot Biomarker Quantities Across Time For All Individuals And Biomarkers
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker 
+#' @param biomarker_states The reshaped data set containing biomarker quantity for individuals at all time steps for each biomarker 
 #'
-#' @return A plot of titers across all time steps for all individuals and biomarkers is returned
+#' @return A plot of biomarker quantities across all time steps for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples
-#' plot_titers(example_antibody_states)
-plot_titers<- function(titers){
-  p <- ggplot2::ggplot(titers) + 
+#' plot_biomarker_quantity(example_biomarker_states)
+plot_biomarker_quantity<- function(biomarker_states){
+  p <- ggplot2::ggplot(biomarker_states) + 
     ggplot2::geom_tile(aes(x=t,y=i,fill=value)) + 
     ggplot2::facet_wrap(~b,nrow=2) + 
     ggplot2::theme_bw() + 
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="True Antibody Titers",
+    ggplot2::labs(title="True Biomarker Quantity",
                   x="Time",
                   y="Individual",
-                  fill="Titer")   + 
+                  fill="Biomarker Quantity")   + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
     ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
     ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
@@ -173,19 +173,19 @@ plot_titers<- function(titers){
   return(p)
 }
 
-#' Plot Observed Titers For One Observation Time 
+#' Plot Observed Biomarker Quantities For One Observation Time 
 #' 
-#' @description This function should be used when there was only one time step in which titers were observed
+#' @description This function should be used when there was only one time step in which biomarker quantities were observed
 #'
-#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each biomarker
+#' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
 #'
-#' @return A plot of observed titers for all individuals and biomarkers is returned
+#' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples
-#' plot_obs_titers_one_sample(example_observed_antibody_states)
-plot_obs_titers_one_sample<-function(observed_titers){
-  p<-ggplot2::ggplot(observed_titers  %>% filter(!is.na(observed))) +
+#' plot_obs_biomarkers_one_sample(example_observed_biomarker_states)
+plot_obs_biomarkers_one_sample<-function(observed_biomarker_states){
+  p<-ggplot2::ggplot(observed_biomarker_states  %>% filter(!is.na(observed))) +
   ggplot2::geom_jitter(ggplot2::aes(x=b, y=observed),
                        height=0,width=0.25) +
   ggplot2::theme_bw() +
@@ -194,28 +194,28 @@ plot_obs_titers_one_sample<-function(observed_titers){
   ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
     ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
-    ggplot2::labs(title="Observed Antibody Titers",
+    ggplot2::labs(title="Observed Biomarker Quantity",
                   x="Biomarker",
-                  y="Observed Titer") + 
+                  y="Observed Quantity") + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
     suppressWarnings(ggplot2::scale_x_discrete(name ="Biomarker", 
-                     limits=c(unique(observed_titers$b)), expand = c(0.1, 0.1))) +
+                     limits=c(unique(observed_biomarker_states$b)), expand = c(0.1, 0.1))) +
     theme(legend.position="bottom")
 return(p)
 }
 
-#' Plot Observed Titers For Multiple Observation Times and Paired Samples
+#' Plot Biomarker Quantities For Multiple Observation Times and Paired Samples
 #' 
-#' @description This function should be used when there were multiple time step in which titers were observed
+#' @description This function should be used when there were multiple time step in which biomarker quantities were observed
 #'
-#' @param observed_titers The reshaped data set containing observed antibody titers for individuals at all time steps for each biomarker
+#' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
 #'
-#' @return A plot of observed titers for all individuals and biomarkers is returned
+#' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
 #' @export
 #'
 #' @examples 
-plot_obs_titers_paired_sample<-function(observed_titers){
-p<- ggplot2::ggplot(observed_titers, aes(x = t, y = observed, group = i)) + 
+plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states){
+p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = i)) + 
   ggplot2::geom_line() + 
   ggplot2:: geom_point(size = 2, aes(color=factor(t))) + 
   ggplot2:: facet_wrap(~ b) +
@@ -224,9 +224,9 @@ p<- ggplot2::ggplot(observed_titers, aes(x = t, y = observed, group = i)) +
   ggplot2::theme(legend.position = "top", 
         panel.grid = element_blank(),
         axis.line.y = element_line(size = .5)) +
-  ggplot2::labs(title="Observed Paired Antibody Titers",
+  ggplot2::labs(title="Observed Paired Biomarker Quantities",
                 x="Biomarker",
-                y="Observed Titer") + 
+                y="Observed Quantity") + 
   ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
   ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
@@ -238,9 +238,9 @@ return(p)
 
 
 
-#' Plot Antibody States and Exposure Histories For A Subset Of Individuals
+#' Plot Biomarker States and Exposure Histories For A Subset Of Individuals
 #'
-#' @param titers The reshaped data set containing antibody titer for individuals at all time steps for each biomarker 
+#' @param biomarker_states The reshaped data set containing biomarker quantities for individuals at all time steps for each biomarker 
 #' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
@@ -250,10 +250,10 @@ return(p)
 #' @export
 #'
 #' @examples
-#' plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
-plot_subset_individuals_history <- function(titers, exposure_histories, subset, demography, removal=FALSE){
+#' plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,3,example_demography)
+plot_subset_individuals_history <- function(biomarker_states, exposure_histories, subset, demography, removal=FALSE){
   exposure_histories$x <- paste0("Exposure: ", exposure_histories$x)
-  titers$b <- paste0("Biomarker: ", titers$b)
+  biomarker_states$b <- paste0("Biomarker: ", biomarker_states$b)
   exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
   sample_indivs <- sample(1:max(demography$i), size=subset)
   
@@ -261,12 +261,12 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
     removal_subset <- demography %>% filter(times==1)
     g<-  ggplot() +
       geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
-      geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
+      geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
       facet_wrap(~i) + theme_bw() +
       scale_color_hue("Key", guide=guide_legend(order=3)) +
-      ggplot2::labs(title="Individual Antibody Kinetics",
+      ggplot2::labs(title="Individual Biomarker Kinetics",
                     x="Time",
-                    y="Antibody Titer") + 
+                    y="Biomarker Quantity") + 
       ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
       ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
       ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
@@ -279,12 +279,12 @@ plot_subset_individuals_history <- function(titers, exposure_histories, subset, 
   g<-  ggplot() +
     geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
     geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
-    geom_line(data=titers %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
+    geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
     facet_wrap(~i) + theme_bw() +
     scale_color_hue("Key", guide=guide_legend(order=3)) +
-    ggplot2::labs(title="Individual Antibody Kinetics",
+    ggplot2::labs(title="Individual Biomarker Kinetics",
                   x="Time",
-                  y="Antibody Titer") + 
+                  y="Biomarker Quantity") + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
     ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
     ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +

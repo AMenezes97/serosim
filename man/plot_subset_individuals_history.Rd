@@ -2,10 +2,10 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_subset_individuals_history}
 \alias{plot_subset_individuals_history}
-\title{Plot Antibody States and Exposure Histories For A Subset Of Individuals}
+\title{Plot Biomarker States and Exposure Histories For A Subset Of Individuals}
 \usage{
 plot_subset_individuals_history(
-  titers,
+  biomarker_states,
   exposure_histories,
   subset,
   demography,
@@ -13,7 +13,7 @@ plot_subset_individuals_history(
 )
 }
 \arguments{
-\item{titers}{The reshaped data set containing antibody titer for individuals at all time steps for each biomarker}
+\item{biomarker_states}{The reshaped data set containing biomarker quantities for individuals at all time steps for each biomarker}
 
 \item{exposure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt}
 
@@ -27,8 +27,8 @@ plot_subset_individuals_history(
 
 }
 \description{
-Plot Antibody States and Exposure Histories For A Subset Of Individuals
+Plot Biomarker States and Exposure Histories For A Subset Of Individuals
 }
 \examples{
-plot_subset_individuals_history(example_antibody_states,example_exposure_histories,3,example_demography)
+plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,3,example_demography)
 }

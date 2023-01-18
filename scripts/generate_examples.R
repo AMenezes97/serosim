@@ -40,7 +40,7 @@ model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "se
 example_model_pars <- read.csv(file = model_pars_path, header = TRUE)
 
 ## Reformat model_pars for runserosim
-example_model_pars_numeric<-reformat_model_pars(example_biomarker_map,example_model_pars)
+example_model_pars_numeric<-reformat_biomarker_map(example_model_pars)
 
 
 
@@ -72,8 +72,8 @@ res<- runserosim(
 example_exposure_histories<-res$exposure_histories_long
 example_exposure_probabilities<-res$exposure_probabilities_long
 example_exposure_force <- res$exposure_force_long
-example_antibody_states<-res$antibody_states
-example_observed_antibody_states<-res$observed_antibody_states
+example_biomarker_states<-res$biomarker_states
+example_observed_biomarker_states<-res$observed_biomarker_states
 
 
 
@@ -88,8 +88,8 @@ save(example_demography,
      example_exposure_histories,
      example_exposure_probabilities,
      example_exposure_force,
-     example_antibody_states,
-     example_observed_antibody_states,
+     example_biomarker_states,
+     example_observed_biomarker_states,
      file="~/Documents/GitHub/serosim/data/example.RData")
 
 

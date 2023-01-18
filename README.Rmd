@@ -7,7 +7,7 @@ output: github_document
 The _serosim_ package is designed to simulate serological survey data arising from 
 user-specified vaccine or infection-generated and antibody kinetics processes. 
 _serosim_ allows users to specify and adjust model inputs responsible for 
-generating the observed titer values like time-varying patterns of infection and 
+generating the observed biomarker quantities like time-varying patterns of infection and 
 vaccination, population demography, immunity and antibody kinetics, and 
 serological survey sampling design in order to best represent the population and 
 disease system(s) of interest.
@@ -67,7 +67,7 @@ summary(demography)
 Set up the exposure IDs and biomarker IDs for the simulation which will determine 
 which infection or vaccination events are occurring. Here, we will simulate one 
 circulating pathogen (exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both 
-of which will boost titers to the same biomarker (biomarker_ID=IgG_titer). This 
+of which will boost the same biomarker, IgG titers (biomarker_ID=IgG_titer). This 
 biomarker map can be used for any simulations of vaccine preventable diseases 
 like measles vaccination and measles natural infection. _runserosim_ requires that 
 exposure_id and biomarker_id are numeric so we will use the
@@ -168,16 +168,16 @@ draw_parameters<-draw_parameters_random_fx
 ```
 
 # 1.7 Observation Model and observation_times
-Now we specify how observed antibody titers are generated as a probabilistic 
-function of the true, latent antibody titer and when to observe these titers.
+Now we specify how observed biomarker quantities are generated as a probabilistic 
+function of the true, latent biomarker quantity and when to observe these quantities.
 In this step, we specify the sampling design and assay choice for our
 serological survey. We will take samples of all individuals at the end of the 
 simulation (t=120). 
 
-Our chosen observation model observes the latent titer values given a 
+Our chosen observation model observes the latent biomarker quantity given a 
 continuous assay with added noise. The added noise represents assay variability 
-and is implemented by sampling from a distribution with the true latent antibody 
-titer as the mean and the measurement error as the standard deviation. The 
+and is implemented by sampling from a distribution with the true latent biomarker
+quantity as the mean and the measurement error as the standard deviation. The 
 observation standard deviation and distribution are defined within model_pars as 
 the “obs_sd” parameter. Within this observation model, we can also specify 
 the assay sensitivity and specificity. 
@@ -229,8 +229,8 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
-## Plot antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states, res$exposure_histories_long, subset=10, demography)
+## Plot biomarker kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
 
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
@@ -245,19 +245,19 @@ plot_exposure_prob(res$exposure_probabilities_long)
 ## Plot individual exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 
-## Plot antibody states for all individuals
-plot_titers(res$antibody_states)
+## Plot true biomarker quantities for all individuals across the entire simulation period
+plot_biomarker_quantity(res$biomarker_states)
 
-## Plot the serosurvey results 
-plot_obs_titers_one_sample(res$observed_antibody_states)
+## Plot the serosurvey results (observed biomarker quantities)
+plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
 
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)
 
 ## Plots for the paper 
-library(cowplot)
-plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-plot_grid(plot_titers(res$antibody_states), plot_obs_titers_one_sample(res$observed_antibody_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# library(cowplot)
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 
 
 ```

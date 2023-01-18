@@ -81,7 +81,7 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' foe_pars[1,,2] <- 0.005
 #' 
 #' ## Create demography modifiers
-#' ## Example with two individuals, one in low SES and one in high SES
+#' ## Example with two individuals, one in low SES -and one in high SES
 #' demography <- tibble(i = rep(1:n_indiv, each=n_times), t=rep(times,2),SES=rep(c("low","high"),each=n_times))
 #' 
 #' ## Create example where for exposure ID 1, high SES gives 25% reduction in FOE.

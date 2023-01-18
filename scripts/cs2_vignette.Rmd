@@ -206,7 +206,7 @@ exposure event is successful. Since we have both vaccination and natural
 infection events, we will use immunity_model_vacc_ifxn_titer_prot. With this 
 immunity model, the probability of successful vaccination exposure depends on 
 the number of vaccines received prior to time t and the individual's age at time 
-t while the probability of successful infection is dependent on the titer at the 
+t while the probability of successful infection is dependent on the biomarker quantity, in this case antibody titer, at the 
 time of exposure. Individuals can have up to 3 successful vaccination 
 events (aka 3 doses) and are eligible for vaccination starting at 2 months of age 
 to align with the diphtheria/pertussis vaccination schedule. 
@@ -237,7 +237,7 @@ Pertussis:
 
 ```{r}
 ## Specify immunity model within the runserosim function below 
-immunity_model<-immunity_model_vacc_ifxn_titer_prot
+immunity_model<-immunity_model_vacc_ifxn_biomarker_prot
 
 ## Specify which exposure IDs represent vaccination events 
 ## In this case, only exposure ID 3 is a vaccination event
@@ -250,15 +250,15 @@ vacc_age<-c(NA,NA,2)
 ## We placed no successful exposure limit on the number of diphtheria or pertussis infection exposures and 3 dose limit on the vaccine exposure.
 max_events<-c(Inf,Inf,3)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 1, diphtheria antibody  (DP_antibody) which will be loaded in section 1.6
+## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1, diphtheria antibody  (DP_antibody) which will be loaded in section 1.6
 ## The immunity model we selected will take into account an individual's current titer to diphtheria when determining the probability of successful infection. 
 ## Titers are ploted in mIU/mL 
-plot_titer_mediated_protection(0:150, titer_prot_midpoint=75, titer_prot_width=.1)
+plot_biomarker_mediated_protection(0:150, biomarker_prot_midpoint=75, biomarker_prot_width=.1)
 
-## Plot titer-mediated protection curve given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody) which will be loaded in section 1.6
+## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody) which will be loaded in section 1.6
 ## The immunity model we selected will take into account an individual's current titer to pertussis when determining the probability of successful infection. 
 ## Titers are ploted in IU/mL 
-plot_titer_mediated_protection(0:100, titer_prot_midpoint=40, titer_prot_width=.25)
+plot_biomarker_mediated_protection(0:100, biomarker_prot_midpoint=40, biomarker_prot_width=.25)
 ```
 
 # 1.6  Antibody model and model parameters 
@@ -347,19 +347,19 @@ model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 
 ## Specify the draw_parameters function to use 
-draw_parameters<-draw_parameters_random_fx_titer_dep
+draw_parameters<-draw_parameters_random_fx_biomarker_dep
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 1, diphtheria antibody (DP_antibody)
-plot_titer_dependent_boosting(start=0, end=2, by=.1, titer_ceiling_threshold=1.7, titer_ceiling_gradient=0.529411)
+## Plot biomarker (in this case antibody titer) dependent boosting effects given parameters specified within model_pars for biomarker 1, diphtheria antibody (DP_antibody)
+plot_biomarker_dependent_boosting(start=0, end=2, by=.1, biomarker_ceiling_threshold=1.7, biomarker_ceiling_gradient=0.529411)
 
-## Plot titer dependent boosting effects given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody)
-plot_titer_dependent_boosting(start=0, end=125, by=1, titer_ceiling_threshold=100, titer_ceiling_gradient=0.009)
+## Plot biomarker (in this case antibody titer) dependent boosting effects given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody)
+plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_threshold=100, biomarker_ceiling_gradient=0.009)
 
 ```
 
 # 1.7 Observation Model 
-Now we specify how observed antibody titers are generated as a probabilistic 
-function of the true, latent antibody titer and when to observe these titers. 
+Now we specify how observed biomarker quantities, in this case antibody titers, are generated as a probabilistic 
+function of the true, latent biomarker quantities, and when to observe these quantities. 
 In this step, users are specifying the sampling design and assay choice for 
 their serological survey. 
 
@@ -430,11 +430,11 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
-## Plot diphtheria antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states %>% filter(b==1), res$exposure_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
+## Plot diphtheria biomarker kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$exposure_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
 
-## Plot pertussis antibody kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$antibody_states %>% filter(b==2), res$exposure_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
+## Plot pertussis biomarker kinetics and exposure histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$exposure_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
 
 ## Plot individual probability of exposure for all exposure types.
 ## This is the output of the exposure model.
@@ -449,17 +449,17 @@ plot_exposure_prob(res$exposure_probabilities_long)
 ## Plot individual exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 
-## Plot diphtheria (biomarker 1) antibody states for all individuals
-plot_titers(res$antibody_states %>% filter(b==1))
+## Plot diphtheria antibody (biomarker 1) states for all individuals (true biomarker quantities)
+plot_biomarker_quantity(res$biomarker_states %>% filter(b==1))
 
-## Plot pertussis (biomarker 2) antibody states for all individuals
-plot_titers(res$antibody_states %>% filter(b==2))
+## Plot pertussis antibody (biomarker 2) states for all individuals (true biomarker quantities)
+plot_biomarker_quantity(res$biomarker_states %>% filter(b==2))
 
-## Plot the diphtheria serosurvey results 
-plot_obs_titers_one_sample(res$observed_antibody_states %>% filter(b==1))
+## Plot the diphtheria serosurvey results (observed biomarker quantities)
+plot_obs_biomarkers_one_sample(res$observed_biomarker_states %>% filter(b==1))
 
-## Plot the pertussis serosurvey results 
-plot_obs_titers_one_sample(res$observed_antibody_states %>% filter(b==2))
+## Plot the pertussis serosurvey results (observed biomarker quantities)
+plot_obs_biomarkers_one_sample(res$observed_biomarker_states %>% filter(b==2))
 
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)

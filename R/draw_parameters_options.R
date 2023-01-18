@@ -7,15 +7,15 @@
 #' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of antibody kinetics parameters 
+#' @param biomarker_states An array of true biomarker quantities for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of biomarker (antibody) kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
+draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
   model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
   pars <- numeric(nrow(model_pars_tmp))
@@ -37,15 +37,15 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, antibody_states, mo
 #' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of antibody kinetics parameters  
+#' @param biomarker_states An array of true biomarker quantities for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of biomarker (antibody) kinetics parameters  
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, model_pars, ...){
+draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
     pars <- numeric(nrow(model_pars_tmp))
@@ -83,24 +83,24 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, antibody_states, mo
   return(all_pars)
 }
 
-#' Draw Parameters Fixed Effects With Titer-Dependent Boosting
+#' Draw Parameters Fixed Effects With Biomarker Quantity Dependent Boosting
 #'  
-#' @description This function adds titer-ceiling effects to the previous draw_parameters_fixed_fx. Here an individual’s realized boost is dependent on their titer level at the time of the exposure event.
+#' @description This function adds biomarker quantity ceiling effects to the previous draw_parameters_fixed_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
 #' 
 #' @param i Individual
 #' @param t time
 #' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of antibody kinetics parameters 
+#' @param biomarker_states An array of true biomarker quantities for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of biomarker (antibody) kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
+draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
     
@@ -116,33 +116,33 @@ draw_parameters_fixed_fx_titer_dep <- function(i, t, x, b, demography, antibody_
     if(par_names[par] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
       biomarker<-model_pars_tmp$biomarker_id[par]
-      titer_threshold <- min(antibody_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
-      ## Replace realized titer value for boost parameters
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
+      biomarker_threshold <- min(biomarker_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
+      ## Replace realized biomarker quantity for boost parameters
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
     }
   }
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
   return(all_pars)
 }
 
-#' Draw Parameters Random Effects With Titer-Dependent Boosting
+#' Draw Parameters Random Effects With Biomarker Quantity Dependent Boosting
 #'  
-#' @description This function adds titer-ceiling effects to the previous draw_parameters_random_fx. Here an individual’s realized boost is dependent on their titer level at the time of the exposure event.
+#' @description his function adds biomarker quantity ceiling effects to the previous draw_parameters_random_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity  at the time of the exposure event.
 #'
 #' @param i Individual
 #' @param t time
 #' @param x exposure
 #' @param b biomarker
 #' @param demography Demography information 
-#' @param antibody_states An array of true antibody titers for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of antibody kinetics parameters 
+#' @param biomarker_states An array of true biomarker quantities for all individuals across all time steps and biomarkers  
+#' @param model_pars Tibble of biomarker (antibody) kinetics parameters 
 #' @param ... 
 #'
 #' @return A tibble with the parameters drawn is returned
 #' @export
 #'
 #' @examples
-draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody_states, model_pars, ...){
+draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
       pars <- numeric(nrow(model_pars_tmp))
@@ -180,11 +180,11 @@ draw_parameters_random_fx_titer_dep <- function(i, t, x, b, demography, antibody
       ## Pull out all biomarker
       biomarker<-model_pars_tmp$biomarker_id[par]
       t1<-t-1
-      titer_threshold <- min(antibody_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="titer_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="titer_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*titer_threshold)
+      biomarker_threshold <- min(biomarker_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
+      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
     }
     if(!(par_names[par] %in% c("boost_short","boost_long","boost"))){
-      ## Non boost Realized parameters don't get affected by titer ceiling
+      ## Non-boost realized parameters don't get affected by biomarker quantity ceiling
       realized[par] <- pars[par]
     }
   }

@@ -4,20 +4,20 @@
 \alias{observation_model_discrete}
 \title{Observation Model For Discrete Assays With No Added Noise}
 \usage{
-observation_model_discrete(antibody_states, model_pars, cutoffs, ...)
+observation_model_discrete(biomarker_states, model_pars, cutoffs, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 
-\item{cutoffs}{A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 specific antibodies are in the first row of this matrix.}
+\item{cutoffs}{A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.}
 
 \item{...}{}
 }
 \value{
-antibody_states is returned with a new column for observed titers
+biomarker_states is returned with a new column for observed biomarker quantities
 }
 \description{
-This observation model observes the latent titer values given a discrete assay with user-specified ranges within discrete and no added noise.
+This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within "discrete" argument and no added noise.
 }

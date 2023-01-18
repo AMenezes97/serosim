@@ -4,10 +4,10 @@
 \alias{observation_model_continuous_bounded}
 \title{Observation Model For Continuous Assays With Detection Limits And No Added Noise}
 \usage{
-observation_model_continuous_bounded(antibody_states, model_pars, bounds, ...)
+observation_model_continuous_bounded(biomarker_states, model_pars, bounds, ...)
 }
 \arguments{
-\item{antibody_states}{True antibody titers for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
 
 \item{model_pars}{Tibble of observation model parameters}
 
@@ -16,8 +16,8 @@ observation_model_continuous_bounded(antibody_states, model_pars, bounds, ...)
 \item{...}{}
 }
 \value{
-antibody_states is returned with a new column for observed titers
+biomarker_states is returned with a new column for observed biomarker quantities
 }
 \description{
-This observation model observes the latent titer values given a continuous assay with user-specified lower and upper limits and no added noise.
+This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and no added noise.
 }

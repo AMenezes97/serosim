@@ -6,7 +6,7 @@
 #' @param t time
 #' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
-#' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars A tibble of parameters needed for the immunity model
@@ -17,7 +17,7 @@
 #'
 #' @examples
 immunity_model_all_successful <- function(i, t, x, exposure_histories, 
-                           antibody_states, demography, biomarker_map, model_pars, ...){
+                           biomarker_states, demography, biomarker_map, model_pars, ...){
   return(1)
 }
 
@@ -29,7 +29,7 @@ immunity_model_all_successful <- function(i, t, x, exposure_histories,
 #' @param t time
 #' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure event
-#' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs 
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure event and biomarker 
 #' @param model_pars A tibble of parameters needed for the immunity model
@@ -42,7 +42,7 @@ immunity_model_all_successful <- function(i, t, x, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_only <- function(i, t, x, exposure_histories, 
-                              antibody_states, demography, biomarker_map, 
+                              biomarker_states, demography, biomarker_map, 
                               model_pars, max_vacc_events, vacc_age,...){
   ## Calculate the individual's current age
   birth_time<-unique(demography$birth[demography$i==i])
@@ -72,7 +72,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' @param t time
 #' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
-#' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs 
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure events and biomarker 
 #' @param model_pars A tibble of parameters needed for the immunity model
@@ -86,7 +86,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #'
 #' @examples
 immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories, 
-                                     antibody_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age, ...){
+                                     biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  	
     ## Calculate the individual's current age
@@ -121,15 +121,15 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 
 
 
-#' Immunity Model For Natural Infection Events With Titer-Mediated Protection
+#' Immunity Model For Natural Infection Events With Biomarker Quantity Mediated Protection
 #' 
-#' @description  This immunity model should only be used if all exposures are natural infection events. The probability of a successful exposure event is dependent on the individual’s antibody titer at the time of exposure. 
+#' @description This immunity model should only be used for natural infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified biomakrer_prot_midpoint and biomarker_prot_width within model_pars is used to calculate biomarker-mediated protection.   
 #'    
 #' @param i Individual
 #' @param t time
 #' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
-#' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure events and biomarker
 #' @param model_pars A tibble of parameters needed for the immunity model
@@ -139,40 +139,40 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories, 
-                              antibody_states, demography, biomarker_map, model_pars, ...){
+immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
+                              biomarker_states, demography, biomarker_map, model_pars, ...){
     ## Find biomarkers which are boosted by this exposure type
-    ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
+    ## The assumption here is that the biomarker quantity will determine if an individual is protected
     b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
-    ## Find current titer to all relevant biomarkers
-    curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
+    ## Find current biomarker quantity to all relevant biomarkers
+    curr_t <- biomarker_states[i,t,b] 
     curr_t <- sum(curr_t)
     
     ## Pull out necessary variables 
-    titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"] ## Would each biomarker have it's own value?
-    titer_prot_width <- model_pars$mean[model_pars$exposure_id==x  & model_pars$name=="titer_prot_width"]
+    biomarker_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_midpoint"] 
+    biomarker_prot_width <- model_pars$mean[model_pars$exposure_id==x  & model_pars$name=="biomarker_prot_width"]
     
-    ## Create a function to calculate the risk of infection at a given titer
-    titer_protection <- function(titer, alpha1, beta1){
-      risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
+    ## Create a function to calculate the risk of infection at a given biomarker quantity
+    biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
+      risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
       return(risk)
     }
     
-    prob_success<- (1-titer_protection(curr_t, titer_prot_midpoint, titer_prot_width))
+    prob_success<- (1-biomarker_protection(curr_t, biomarker_prot_midpoint, biomarker_prot_width))
     
     return(prob_success)
   }
 
 
-#' Immunity Model For Vaccination Events and Natural Infection Events With Titer-Mediated Protection
+#' Immunity Model For Vaccination Events and Natural Infection Events With Biomarker Quantity Mediated Protection
 #' 
-#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the titer at the time of exposure and the total number of successful infections prior to that point.
+#' @description This immunity model should be used if exposures represent vaccination and natural infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the biomarker quantity at the time of exposure and the total number of successful infections prior to that point.
 #' 
 #' @param i Individual
 #' @param t time
 #' @param x exposure
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure events
-#' @param antibody_states True antibody titers for all individuals across all time steps and biomarkers  
+#' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param biomarker_map A table specifying the relationship between exposure events and biomarkers
 #' @param model_pars A tibble of parameters needed for the immunity model
@@ -185,8 +185,8 @@ immunity_model_ifxn_titer_prot <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
-                           antibody_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, ...){
+immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
+                           biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  
     ## Calculate the individual's current age
@@ -217,23 +217,23 @@ immunity_model_vacc_ifxn_titer_prot <- function(i, t, x, exposure_histories,
     if(curr_ifx_events<max_events[x]){
       
         ## Find biomarkers which are boosted by this exposure type
-        ## The assumption here is that the titer levels to these biomarkers will determine if an individual is protected
+        ## The assumption here is that the biomaker quantity will determine if an individual is protected
          b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
-        ## Find current titer to all relevant biomarkers
-        curr_t <- antibody_states[i,t,b] ## How to deal with titers against multiple biomarkers? Should they be added?
+        ## Find current biomarker quantity to all relevant biomarkers
+        curr_t <- biomarker_states[i,t,b]
         curr_t <- sum(curr_t)
     
         ## Pull out necessary variables 
-       titer_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_midpoint"]
-        titer_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="titer_prot_width"]
+       biomarker_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_midpoint"]
+        biomarker_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_width"]
     
-        ## Create a function to calculate the risk of infection at a given titer
-        titer_protection <- function(titer, alpha1, beta1){
-          risk <- 1 - 1/(1 + exp(beta1*(titer - alpha1)))
+        ## Create a function to calculate the risk of infection at a given biomarker
+        biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
+          risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
          return(risk)
        }
      
-          prob_success<- (1-titer_protection(curr_t, titer_prot_midpoint, titer_prot_width))
+          prob_success<- (1-biomarker_protection(curr_t, biomarker_prot_midpoint, biomarker_prot_width))
     
        return(prob_success)
     }
