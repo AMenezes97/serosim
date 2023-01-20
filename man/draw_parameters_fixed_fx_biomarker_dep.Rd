@@ -2,7 +2,7 @@
 % Please edit documentation in R/draw_parameters_options.R
 \name{draw_parameters_fixed_fx_biomarker_dep}
 \alias{draw_parameters_fixed_fx_biomarker_dep}
-\title{Draw Parameters Fixed Effects With Biomarker Quantity Dependent Boosting}
+\title{Draw parameters fixed effects with biomarker-quantity-dependent boosting}
 \usage{
 draw_parameters_fixed_fx_biomarker_dep(
   i,
@@ -16,7 +16,7 @@ draw_parameters_fixed_fx_biomarker_dep(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{individual}
 
 \item{t}{time}
 
@@ -24,17 +24,21 @@ draw_parameters_fixed_fx_biomarker_dep(
 
 \item{b}{biomarker}
 
-\item{demography}{Demography information}
+\item{demography}{demography information}
 
-\item{biomarker_states}{An array of true biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{an array of true biomarker quantities for all individuals across all time steps and biomarkers}
 
-\item{model_pars}{Tibble of biomarker (antibody) kinetics parameters}
+\item{model_pars}{tibble of biomarker (antibody) kinetics parameters with variables: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution; 6) distribution: character description of the parameter distribution type (e.g., log-normal, normal)}
 
 \item{...}{}
 }
 \value{
-A tibble with the parameters drawn is returned
+A tibble with the simulated parameters for this exposure event
 }
 \description{
-This function adds biomarker quantity ceiling effects to the previous draw_parameters_fixed_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
+Adds a biomarker quantity ceiling effects to the \code{draw_parameters_fixed_fx} function. Here, an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
+}
+\examples{
+model_pars <- reformat_biomarker_map(example_model_pars_biphasic) \%>\% filter(exposure_id != 3)
+draw_parameters_fixed_fx_biomarker_dep(2,100,1,1,example_demography, example_biomarker_states_wide, model_pars)
 }

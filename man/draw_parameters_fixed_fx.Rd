@@ -2,7 +2,7 @@
 % Please edit documentation in R/draw_parameters_options.R
 \name{draw_parameters_fixed_fx}
 \alias{draw_parameters_fixed_fx}
-\title{Draw parameters fixed effects}
+\title{Draw parameters with fixed effects}
 \usage{
 draw_parameters_fixed_fx(
   i,
@@ -28,16 +28,17 @@ draw_parameters_fixed_fx(
 
 \item{biomarker_states}{an array of true biomarker quantities for all individuals across all time steps and biomarkers}
 
-\item{model_pars}{tibble of biomarker (antibody) kinetics parameters}
+\item{model_pars}{tibble of biomarker (antibody) kinetics parameters with variables: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution; 6) distribution: character description of the parameter distribution type (e.g., log-normal, normal)}
 
 \item{...}{}
 }
 \value{
-A tibble with the drawn parameters
+A tibble with the simulated parameters for this exposure event
 }
 \description{
 Draws parameters directly from the distributions specified by \code{model_pars} for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 }
 \examples{
-draw_parameters_fixed_fx(1,1,1,1,demographu)
+draw_parameters_fixed_fx(1,1,1,1,example_demography, example_biomarker_states, example_model_pars_numeric)
 }
+\concept{draw_parameters}
