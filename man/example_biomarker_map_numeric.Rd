@@ -15,17 +15,19 @@ A data frame with 2 rows and 2 variables:
 data(example_biomarker_map_numeric)
 }
 \description{
-Example numeric biomarker map required as an input for runserosim. This biomarker map is for a simulation with two different exposure events both containing the same biomarker.
+Example numeric biomarker map required as an input for \code{runserosim}. This biomarker map is for a simulation with two different exposure events both containing the same biomarker.
 }
 \seealso{
 Other example_data: 
 \code{\link{example_biomarker_map}},
+\code{\link{example_biomarker_states_wide}},
 \code{\link{example_biomarker_states}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_force}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_biphasic}},
 \code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}},
 \code{\link{example_observed_biomarker_states}}

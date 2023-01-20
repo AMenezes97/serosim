@@ -22,3 +22,12 @@ This observation model observes the latent biomarker quantities given a continuo
 \examples{
 observation_model_continuous(example_biomarker_states, NULL)
 }
+\seealso{
+Other observation_model: 
+\code{\link{observation_model_continuous_bounded_noise}()},
+\code{\link{observation_model_continuous_bounded}()},
+\code{\link{observation_model_continuous_noise}()},
+\code{\link{observation_model_discrete_noise}()},
+\code{\link{observation_model_discrete}()}
+}
+\concept{observation_model}

@@ -38,3 +38,12 @@ cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
 tmp_pars <- example_model_pars_numeric \%>\% mutate(sd=ifelse(name=="obs_sd",2,sd))
 observation_model_discrete_noise(example_biomarker_states, tmp_pars, cutoffs, 0.95,0.99)
 }
+\seealso{
+Other observation_model: 
+\code{\link{observation_model_continuous_bounded_noise}()},
+\code{\link{observation_model_continuous_bounded}()},
+\code{\link{observation_model_continuous_noise}()},
+\code{\link{observation_model_continuous}()},
+\code{\link{observation_model_discrete}()}
+}
+\concept{observation_model}

@@ -25,3 +25,12 @@ This observation model observes the latent biomarker quantities given a continuo
 bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
 observation_model_continuous_bounded(example_biomarker_states, NULL,bounds)
 }
+\seealso{
+Other observation_model: 
+\code{\link{observation_model_continuous_bounded_noise}()},
+\code{\link{observation_model_continuous_noise}()},
+\code{\link{observation_model_continuous}()},
+\code{\link{observation_model_discrete_noise}()},
+\code{\link{observation_model_discrete}()}
+}
+\concept{observation_model}

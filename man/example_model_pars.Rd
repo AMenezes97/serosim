@@ -3,7 +3,7 @@
 \docType{data}
 \name{example_model_pars}
 \alias{example_model_pars}
-\title{Example model parameters (model_pars)}
+\title{Example model parameters (\code{model_pars})}
 \format{
 A data frame with 5 rows and 6 variables:
 \describe{
@@ -19,19 +19,21 @@ A data frame with 5 rows and 6 variables:
 data(example_model_pars)
 }
 \description{
-Example model parameters (model_pars). This model_pars input must be converted to the numeric version (example_model_pars_numeric) before being input into runserosim. This example model_pars is for a simulation two different exposure events both containing the same biomarker. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
-In this example, model_pars has parameters for a monophasic antibody model and for an observational model with noise.
+Example model parameters (\code{model_pars}). This \code{model_pars} input must be converted to the numeric version (\code{example_model_pars_numeric}) before being input into \code{runserosim}. This example \code{model_pars} is for a simulation with two different exposure events both containing the same biomarker. \code{model_pars} argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
+In this example, \code{model_pars} has parameters for a monophasic antibody model and for an observational model with noise.
 }
 \seealso{
 Other example_data: 
 \code{\link{example_biomarker_map_numeric}},
 \code{\link{example_biomarker_map}},
+\code{\link{example_biomarker_states_wide}},
 \code{\link{example_biomarker_states}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_force}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_biphasic}},
 \code{\link{example_model_pars_numeric}},
 \code{\link{example_observed_biomarker_states}}
 }

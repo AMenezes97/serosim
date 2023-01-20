@@ -18,18 +18,20 @@ A data frame with 100 rows and 5 variables:
 data(example_observed_biomarker_states)
 }
 \description{
-Example observed biomarker states runserosim output. This example data set output contains observed biomarker quantities for all individuals at the time of observation (t=120) for all biomarker 1
+Example observed biomarker states \code{runserosim} output. This example data set output contains observed biomarker quantities for all individuals at the time of observation (t=120) for all biomarker 1
 }
 \seealso{
 Other example_data: 
 \code{\link{example_biomarker_map_numeric}},
 \code{\link{example_biomarker_map}},
+\code{\link{example_biomarker_states_wide}},
 \code{\link{example_biomarker_states}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_force}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_biphasic}},
 \code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}}
 }

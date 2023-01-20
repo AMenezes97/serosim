@@ -7,6 +7,7 @@
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples
@@ -25,6 +26,7 @@ observation_model_continuous<-function(biomarker_states,model_pars, ...){
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples
@@ -57,6 +59,7 @@ observation_model_continuous_bounded<-function(biomarker_states,model_pars, boun
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples
@@ -88,6 +91,7 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples
@@ -144,6 +148,7 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples
@@ -195,6 +200,7 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
 #' @param ... 
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @family observation_model
 #' @export
 #'
 #' @examples

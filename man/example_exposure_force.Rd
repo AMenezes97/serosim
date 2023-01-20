@@ -17,17 +17,19 @@ A data frame with 24000 rows and 4 variables:
 data(example_exposure_force
 }
 \description{
-Example force of exposure runserosim output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID
+Example force of exposure \code{runserosim} output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID
 }
 \seealso{
 Other example_data: 
 \code{\link{example_biomarker_map_numeric}},
 \code{\link{example_biomarker_map}},
+\code{\link{example_biomarker_states_wide}},
 \code{\link{example_biomarker_states}},
 \code{\link{example_demography}},
 \code{\link{example_exposure_histories}},
 \code{\link{example_exposure_probabilities}},
 \code{\link{example_foe_pars}},
+\code{\link{example_model_pars_biphasic}},
 \code{\link{example_model_pars_numeric}},
 \code{\link{example_model_pars}},
 \code{\link{example_observed_biomarker_states}}

@@ -26,3 +26,12 @@ breaks <- seq(0,8,by=1)
 cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
 observation_model_discrete(example_biomarker_states, NULL,cutoffs)
 }
+\seealso{
+Other observation_model: 
+\code{\link{observation_model_continuous_bounded_noise}()},
+\code{\link{observation_model_continuous_bounded}()},
+\code{\link{observation_model_continuous_noise}()},
+\code{\link{observation_model_continuous}()},
+\code{\link{observation_model_discrete_noise}()}
+}
+\concept{observation_model}

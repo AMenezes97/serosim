@@ -1,6 +1,6 @@
 #' Example demography tibble 
 #'
-#' Example of a demography tibble produced by generate_pop_demography and required as an input for runserosim
+#' Example of a demography tibble produced by `generate_pop_demography` and required as an input for `runserosim`
 #' 
 #' @docType data
 #' @name example_demography
@@ -17,7 +17,7 @@
 
 #' Example biomarker map
 #'
-#' Example biomarker map. This biomarker map must be converted to the numeric version (example_biomarker_map_numeric) before being input into runserosim. This biomarker map is for a simulation with two different exposure events(infection and vaccination) both containing the same biomarker(IgG titer).
+#' Example biomarker map. This biomarker map must be converted to the numeric version (`example_biomarker_map_numeric`) before being input into `runserosim`. This biomarker map is for a simulation with two different exposure events (infection and vaccination) both containing the same biomarker (IgG titer).
 #' 
 #' @docType data
 #' @name example_biomarker_map
@@ -32,7 +32,7 @@
 
 #' Example numeric biomarker map
 #'
-#' Example numeric biomarker map required as an input for runserosim. This biomarker map is for a simulation with two different exposure events both containing the same biomarker.
+#' Example numeric biomarker map required as an input for `runserosim`. This biomarker map is for a simulation with two different exposure events both containing the same biomarker.
 #' 
 #' @docType data
 #' @name example_biomarker_map_numeric
@@ -45,9 +45,9 @@
 #' @family example_data
 "example_biomarker_map_numeric"
 
-#' Example force of exposure parameters (foe_pars) 
+#' Example force of exposure parameters (`foe_pars`) 
 #'
-#' Example force of exposure parameters required (foe_pars) as an input for runserosim. foe_pars is a 3D array providing the force of exposure for each exposure ID, group and time. This foe_pars argument is for a simulation with 120 time steps and two different exposure events (dimension 3)
+#' Example force of exposure parameters required (`foe_pars`) as an input for `runserosim`. `foe_pars` is a 3D array providing the force of exposure for each exposure ID, group and time. This `foe_pars` argument is for a simulation with 120 time steps and two different exposure events (dimension 3)
 #' 
 #' @docType data
 #' @name example_foe_pars
@@ -61,10 +61,10 @@
 #' @family example_data
 "example_foe_pars"
 
-#' Example model parameters (model_pars)
+#' Example model parameters (`model_pars`)
 #'
-#' Example model parameters (model_pars). This model_pars input must be converted to the numeric version (example_model_pars_numeric) before being input into runserosim. This example model_pars is for a simulation two different exposure events both containing the same biomarker. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
-#' In this example, model_pars has parameters for a monophasic antibody model and for an observational model with noise.
+#' Example model parameters (`model_pars`). This `model_pars` input must be converted to the numeric version (`example_model_pars_numeric`) before being input into `runserosim`. This example `model_pars` is for a simulation with two different exposure events both containing the same biomarker. `model_pars` argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
+#' In this example, `model_pars` has parameters for a monophasic antibody model and for an observational model with noise.
 #'  
 #' 
 #' @docType data
@@ -82,10 +82,31 @@
 #' @family example_data
 "example_model_pars"
 
-#' Example numeric model parameters (model_pars)
+#' Example model parameters for biphasic waning model
 #'
-#' Example numeric model parameters (model_pars) required as an input for runserosim. This example model_pars is for a simulation two different exposure events both containing the same biomarker. model_pars argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
-#' In this example, model_pars has parameters for a monophasic antibody model and for an observational model with noise.
+#' This example `model_pars` is for a simulation three different exposure events (one vaccination, two infection types) corresponding to two biomarkers. `model_pars` argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model. In this example, `model_pars` has parameters for a biphasic antibody model and for an observational model with noise. This `model_pars` input must be converted to the numeric version (`reformat_biomarker_map`) before being input into `runserosim`. 
+#'  
+#' 
+#' @docType data
+#' @name example_model_pars_biphasic
+#' @usage data(example_model_pars_biphasic)
+#' @format A data frame with 5 rows and 6 variables:
+#' \describe{
+#'     \item{exposure_ID}{name of each exposure type present in example biomarker_map}
+#'     \item{biomarker_ID}{name of each biomarker present within each exposure type present in example biomarker_map}
+#'     \item{name}{names of model parameters}
+#'     \item{mean}{numeric values for the true paramter means}
+#'     \item{sd}{numeric values for the true paramter standard deviation}
+#'     \item{distribution}{distribution type from which the draw_paramaters function will be sampling a parameter }
+#' }
+#' @family example_data
+"example_model_pars_biphasic"
+
+
+#' Example numeric model parameters (`model_pars`)
+#'
+#' Example numeric model parameters (`model_pars`) required as an input for `runserosim`. This example `model_pars` is for a simulation two different exposure events both containing the same biomarker. `model_pars` argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model.
+#' In this example, `model_pars` has parameters for a monophasic antibody model and for an observational model with noise.
 #'  
 #' 
 #' @docType data
@@ -105,7 +126,7 @@
 
 #' Example exposure histories 
 #'
-#' Example exposure history runserosim output. This example data set output contains exposure history for individuals at all time steps for each exposure ID
+#' Example exposure history `runserosim` output. This example data set output contains exposure history for individuals at all time steps for each exposure ID
 #' 
 #' @docType data
 #' @name example_exposure_histories
@@ -122,7 +143,7 @@
 
 #' Example exposure probability 
 #'
-#' Example exposure probability runserosim output. This example data set output contains exposure probability for individuals at all time steps for each exposure ID
+#' Example exposure probability `runserosim` output. This example data set output contains exposure probability for individuals at all time steps for each exposure ID
 #' 
 #' @docType data
 #' @name example_exposure_probabilities
@@ -139,7 +160,7 @@
 
 #' Example force of exposure 
 #'
-#' Example force of exposure runserosim output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID
+#' Example force of exposure `runserosim` output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID
 #' 
 #' @docType data
 #' @name example_exposure_force
@@ -156,7 +177,7 @@
 
 #' Example biomarker states
 #'
-#' Example biomarker states runserosim output. This example data set output contains biomarker quantities for individuals at all time steps for all biomarkers listed in example_biomarker_map
+#' Example biomarker states from `runserosim` output. This example data set output contains biomarker quantities for individuals at all time steps for all biomarkers listed in `example_biomarker_map`
 #' 
 #' @docType data
 #' @name example_biomarker_states
@@ -171,9 +192,21 @@
 #' @family example_data
 "example_biomarker_states"
 
+
+#' Example biomarker states (wide)
+#'
+#' Example biomarker states in wide format from `runserosim` output. This is identical to `example_biomarker_states`, but is converted into a 3D array giving the format expected by most antibody model functions. This example data set output contains biomarker quantities for individuals at all time steps for all biomarkers listed in `example_biomarker_map`
+#' 
+#' @docType data
+#' @name example_biomarker_states_wide
+#' @usage data(example_biomarker_states_wide)
+#' @format A 3D array with dimensions corresponding to 1) individual; 2) time; 3) biomarker, and values giving the latent biomarker quantity
+#' @family example_data
+"example_biomarker_states_wide"
+
 #' Example observed biomarker states
 #'
-#' Example observed biomarker states runserosim output. This example data set output contains observed biomarker quantities for all individuals at the time of observation (t=120) for all biomarker 1
+#' Example observed biomarker states `runserosim` output. This example data set output contains observed biomarker quantities for all individuals at the time of observation (t=120) for all biomarker 1
 #' 
 #' @docType data
 #' @name example_observed_biomarker_states
