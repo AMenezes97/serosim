@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_obs_biomarkers_paired_sample}
 \alias{plot_obs_biomarkers_paired_sample}
-\title{Plot Biomarker Quantities For Multiple Observation Times and Paired Samples}
+\title{Plot biomarker quantities for multiple observation times and paired samples}
 \usage{
 plot_obs_biomarkers_paired_sample(observed_biomarker_states)
 }
@@ -14,4 +14,9 @@ A plot of observed biomarker quantities for all individuals and biomarkers is re
 }
 \description{
 This function should be used when there were multiple time step in which biomarker quantities were observed
+}
+\examples{
+example_biomarker_states$observed <- example_biomarker_states$value
+example_biomarker_states_subset <- example_biomarker_states \%>\% filter(t \%in\% c(1,120))
+plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
 }

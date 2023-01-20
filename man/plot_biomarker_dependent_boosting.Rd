@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_biomarker_dependent_boosting}
 \alias{plot_biomarker_dependent_boosting}
-\title{Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Biomarker Quantity}
+\title{Generate a plot displaying proportion of full boost received at each starting biomarker quantity}
 \usage{
 plot_biomarker_dependent_boosting(
   start,
@@ -27,7 +27,7 @@ plot_biomarker_dependent_boosting(
 A plot displaying biomarker quantity dependent boosting is returned
 }
 \description{
-Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Biomarker Quantity
+Generate a plot displaying proportion of full boost received at each starting biomarker quantity
 }
 \examples{
 plot_biomarker_dependent_boosting(0,10,1,4,.14)

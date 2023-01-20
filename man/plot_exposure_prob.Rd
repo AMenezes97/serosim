@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_exposure_prob}
 \alias{plot_exposure_prob}
-\title{Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events}
+\title{Plot probability of a successful exposure event for all individuals and exposure events}
 \usage{
 plot_exposure_prob(exposure_probabilities_long)
 }
@@ -13,7 +13,7 @@ plot_exposure_prob(exposure_probabilities_long)
 A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned
 }
 \description{
-Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events
+Plot probability of a successful exposure event for all individuals and exposure events
 }
 \examples{
 plot_exposure_prob(example_exposure_probabilities)

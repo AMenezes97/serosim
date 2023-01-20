@@ -1,4 +1,4 @@
-#' Plot Biomarker Mediated Protection Graphs For Each Pathogen
+#' Plot biomarker mediated protection graphs for each pathogen
 #'
 #' @param biomarker_range The range of possible biomarker quantities an individual can have at exposure
 #' @param biomarker_prot_midpoint The biomarker quantity at which you are 50% protected from infection
@@ -28,7 +28,7 @@ plot_biomarker_mediated_protection <- function(biomarker_range, biomarker_prot_m
     return(p1)
   }
   
-#' Generate A Plot Displaying Proportion Of Full Boost Received At Each Starting Biomarker Quantity 
+#' Generate a plot displaying proportion of full boost received at each starting biomarker quantity 
 #'
 #' @param start Lower bound of the x axis
 #' @param end Upper bound of the x axis
@@ -53,7 +53,7 @@ plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_
 }
   
 
-#' Plot Probability of a Successful Exposure Event For All Individuals And Exposure Events
+#' Plot probability of a successful exposure event for all individuals and exposure events
 #'
 #' @param exposure_probabilities_long The reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event
 #'
@@ -84,7 +84,7 @@ plot_exposure_prob<-function(exposure_probabilities_long){
   return(p)
 }
 
-#' Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events
+#' Plot individual exposure probabilities across time for all individuals and exposure events
 #'
 #' @param exposure_force_long The reshaped data set containing the probability of an exposure event for individuals at all time steps for each exposure event
 #'
@@ -114,7 +114,7 @@ plot_exposure_force<-function(exposure_force_long){
     theme(legend.position="bottom")
   return(p)
 }
-#' Plot Individual Exposure Histories
+#' Plot individual exposure histories
 #'
 #' @param expsoure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
 #'
@@ -142,7 +142,7 @@ plot_exposure_histories <- function(exposure_histories){
   return(p)
 }
 
-#' Plot Biomarker Quantities Across Time For All Individuals And Biomarkers
+#' Plot biomarker quantities across time for all individuals and biomarkers
 #'
 #' @param biomarker_states The reshaped data set containing biomarker quantity for individuals at all time steps for each biomarker 
 #'
@@ -204,7 +204,7 @@ plot_obs_biomarkers_one_sample<-function(observed_biomarker_states){
 return(p)
 }
 
-#' Plot Biomarker Quantities For Multiple Observation Times and Paired Samples
+#' Plot biomarker quantities for multiple observation times and paired samples
 #' 
 #' @description This function should be used when there were multiple time step in which biomarker quantities were observed
 #'
@@ -214,6 +214,9 @@ return(p)
 #' @export
 #'
 #' @examples 
+#' example_biomarker_states$observed <- example_biomarker_states$value
+#' example_biomarker_states_subset <- example_biomarker_states %>% filter(t %in% c(1,120))
+#' plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
 plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states){
 p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = i)) + 
   ggplot2::geom_line() + 
@@ -238,10 +241,10 @@ return(p)
 
 
 
-#' Plot Biomarker States and Exposure Histories For A Subset Of Individuals
+#' Plot biomarker states and exposure histories for a subset of individuals
 #'
 #' @param biomarker_states The reshaped data set containing biomarker quantities for individuals at all time steps for each biomarker 
-#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure evnt
+#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
 #' @param removal Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE
@@ -361,6 +364,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
 #' Plots the probability of exposure over time for the provided exposure models
 #' 
 #' @inheritParams runserosim
+#' @param indivs (optional) vector of individuals to plot exposure probabilities for. This is important if the `demography` table contains information on more individuals than you wish to plot
 #' @param times Vector of times to solve model over
 #' @param n_groups Number of groups corresponding to \code{foe_pars}
 #' @param n_exposures Number of exposure types corresponding to \code{foe_pars}

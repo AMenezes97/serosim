@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_exposure_force}
 \alias{plot_exposure_force}
-\title{Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events}
+\title{Plot individual exposure probabilities across time for all individuals and exposure events}
 \usage{
 plot_exposure_force(exposure_force_long)
 }
@@ -13,7 +13,7 @@ plot_exposure_force(exposure_force_long)
 A plot of individual exposure probabilities across time for all exposure events is returned
 }
 \description{
-Plot Individual Exposure Probabilities Across Time For All Individuals And Exposure Events
+Plot individual exposure probabilities across time for all individuals and exposure events
 }
 \examples{
 plot_exposure_force(example_force_long)

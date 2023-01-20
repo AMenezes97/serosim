@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_biomarker_mediated_protection}
 \alias{plot_biomarker_mediated_protection}
-\title{Plot Biomarker Mediated Protection Graphs For Each Pathogen}
+\title{Plot biomarker mediated protection graphs for each pathogen}
 \usage{
 plot_biomarker_mediated_protection(
   biomarker_range,
@@ -21,7 +21,7 @@ plot_biomarker_mediated_protection(
 A plot of the probability of infection given an individual's biomarker quantity at exposure
 }
 \description{
-Plot Biomarker Mediated Protection Graphs For Each Pathogen
+Plot biomarker mediated protection graphs for each pathogen
 }
 \examples{
 plot_biomarker_mediated_protection(0:10,5,0.9)

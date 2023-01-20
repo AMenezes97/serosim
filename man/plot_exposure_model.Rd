@@ -5,6 +5,7 @@
 \title{Plots the probability of exposure over time for the provided exposure models}
 \usage{
 plot_exposure_model(
+  indivs = 1,
   exposure_model,
   times,
   n_groups = 1,
@@ -15,6 +16,8 @@ plot_exposure_model(
 )
 }
 \arguments{
+\item{indivs}{(optional) vector of individuals to plot exposure probabilities for. This is important if the \code{demography} table contains information on more individuals than you wish to plot}
+
 \item{exposure_model}{A function calculating the probability of exposure given the foe_pars array}
 
 \item{times}{Vector of times to solve model over}

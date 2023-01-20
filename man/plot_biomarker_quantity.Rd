@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_biomarker_quantity}
 \alias{plot_biomarker_quantity}
-\title{Plot Biomarker Quantities Across Time For All Individuals And Biomarkers}
+\title{Plot biomarker quantities across time for all individuals and biomarkers}
 \usage{
 plot_biomarker_quantity(biomarker_states)
 }
@@ -13,7 +13,7 @@ plot_biomarker_quantity(biomarker_states)
 A plot of biomarker quantities across all time steps for all individuals and biomarkers is returned
 }
 \description{
-Plot Biomarker Quantities Across Time For All Individuals And Biomarkers
+Plot biomarker quantities across time for all individuals and biomarkers
 }
 \examples{
 plot_biomarker_quantity(example_biomarker_states)
