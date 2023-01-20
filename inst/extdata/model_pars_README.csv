@@ -1,6 +1,6 @@
 exposure_id,biomarker_id,name,mean,sd,distribution
-ifxn,IgG_titer,boost,4,2,log-normal
-ifxn,IgG_titer,wane,0.0033,0.0005,log-normal
-NA,IgG_titer,obs_sd,,0.25,normal
-vacc,IgG_titer,boost,2,1,log-normal
-vacc,IgG_titer,wane,0.0016,0.0005,log-normal
+ifxn,IgG,boost,4,2,log-normal
+ifxn,IgG,wane,0.0033,0.0005,log-normal
+NA,IgG,obs_sd,,0.25,normal
+vacc,IgG,boost,2,1,log-normal
+vacc,IgG,wane,0.0016,0.0005,log-normal

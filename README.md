@@ -75,10 +75,10 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 25.50   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 53.50   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 59.06   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 92.25   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  1st Qu.: 25.75   1st Qu.: 26.00   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 63.00   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 61.42   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 92.50   3rd Qu.:121   3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -87,10 +87,10 @@ Set up the exposure IDs and biomarker IDs for the simulation which will
 determine which infection or vaccination events are occurring. Here, we
 will simulate one circulating pathogen (exposure_ID=ifxn) and one
 vaccine (exposure_ID=vacc) both of which will boost the same biomarker,
-IgG titers (biomarker_ID=IgG_titer). This biomarker map can be used for
-any simulations of vaccine preventable diseases like measles vaccination
-and measles natural infection. *runserosim* requires that exposure_id
-and biomarker_id are numeric so we will use the reformat_biomarker_map
+IgG titers (biomarker_ID=IgG). This biomarker map can be used for any
+simulations of vaccine preventable diseases like measles vaccination and
+measles natural infection. *runserosim* requires that exposure_id and
+biomarker_id are numeric so we will use the reformat_biomarker_map
 function to create a new version of the biomarker map. Users can go
 directly to numeric biomarker_map if they wish.
 
@@ -100,15 +100,15 @@ biomarker that is listed will not necessarily be labeled as 1.
 
 ``` r
 ## Create biomarker map
-biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
+biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG","IgG"))
 biomarker_map_original
 ```
 
     ## # A tibble: 2 × 2
     ##   exposure_id biomarker_id
     ##   <chr>       <chr>       
-    ## 1 ifxn        IgG_titer   
-    ## 2 vacc        IgG_titer
+    ## 1 ifxn        IgG         
+    ## 2 vacc        IgG
 
 ``` r
 ## Reformat biomarker_map for runserosim
@@ -146,7 +146,12 @@ foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
+
+## Examine the probability of exposure over time for the specified exposure model and foe_pars array
+plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 # 1.5 Immunity Model
 
@@ -204,11 +209,11 @@ model_pars_original
 ```
 
     ##   exposure_id biomarker_id   name   mean     sd distribution
-    ## 1        ifxn    IgG_titer  boost 4.0000 2.0000   log-normal
-    ## 2        ifxn    IgG_titer   wane 0.0033 0.0005   log-normal
-    ## 3        <NA>    IgG_titer obs_sd     NA 0.2500       normal
-    ## 4        vacc    IgG_titer  boost 2.0000 1.0000   log-normal
-    ## 5        vacc    IgG_titer   wane 0.0016 0.0005   log-normal
+    ## 1        ifxn          IgG  boost 4.0000 2.0000   log-normal
+    ## 2        ifxn          IgG   wane 0.0033 0.0005   log-normal
+    ## 3        <NA>          IgG obs_sd     NA 0.2500       normal
+    ## 4        vacc          IgG  boost 2.0000 1.0000   log-normal
+    ## 5        vacc          IgG   wane 0.0016 0.0005   log-normal
 
 ``` r
 ## Reformat model_pars for runserosim
@@ -226,7 +231,12 @@ model_pars
 ``` r
 ## Specify the draw_parameters function
 draw_parameters<-draw_parameters_random_fx
+
+## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
+plot_antibody_model(antibody_model_monophasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 # 1.7 Observation Model and observation_times
 
@@ -353,12 +363,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    71     2     1 boost 3.13           3.13   
-    ## 2     1    71     2     1 wane  0.00188        0.00188
-    ## 3     1   109     1     1 boost 2.89           2.89   
-    ## 4     1   109     1     1 wane  0.00282        0.00282
-    ## 5     2   111     2     1 boost 1.16           1.16   
-    ## 6     2   111     2     1 wane  0.00181        0.00181
+    ## 1     2    41     2     1 boost 1.61           1.61   
+    ## 2     2    41     2     1 wane  0.00195        0.00195
+    ## 3     2    63     1     1 boost 3.00           3.00   
+    ## 4     2    63     1     1 wane  0.00408        0.00408
+    ## 5     3    91     2     1 boost 2.39           2.39   
+    ## 6     3    91     2     1 wane  0.00141        0.00141
 
 ``` r
 ## Plots for the paper 

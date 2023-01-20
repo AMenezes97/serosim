@@ -345,7 +345,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=b),size=1) +
         theme_bw() +
         xlab("Time since infection") +
-        ylab("Titer") +
+        ylab("Biomarker quantity") +
         scale_color_viridis_d(name="Biomarker") +
         facet_wrap(x~b)
     return(p)
