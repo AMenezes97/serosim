@@ -2,7 +2,7 @@
 % Please edit documentation in R/immunity_models.R
 \name{immunity_model_all_successful}
 \alias{immunity_model_all_successful}
-\title{Immunity Model Where All Exposures Are Successful}
+\title{Null immunity model}
 \usage{
 immunity_model_all_successful(
   i,
@@ -17,27 +17,30 @@ immunity_model_all_successful(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{integer for the individual ID}
 
-\item{t}{time}
+\item{t}{integer for the time period}
 
-\item{x}{exposure}
+\item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
+\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
 
-\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
-\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
+\item{demography}{a tibble of demographic information for each individual in the simulation}
 
-\item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
+\item{biomarker_map}{a table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{model_pars}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{a tibble of parameters needed for the immunity model}
 
 \item{...}{}
 }
 \value{
-A probability of successful exposure is returned
+The probability of successful exposure
 }
 \description{
-Probability of success is 1 so all exposure events are successful
+All exposure trials are successful (probability of success is 1).
+}
+\examples{
+immunity_model_all_successful(1,1,1,NULL,NULL,NULL,NULL,NULL)
 }

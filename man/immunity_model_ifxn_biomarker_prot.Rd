@@ -2,7 +2,7 @@
 % Please edit documentation in R/immunity_models.R
 \name{immunity_model_ifxn_biomarker_prot}
 \alias{immunity_model_ifxn_biomarker_prot}
-\title{Immunity Model For Natural Infection Events With Biomarker Quantity Mediated Protection}
+\title{Immunity model for infection with biomarker-quantity-mediated protection}
 \usage{
 immunity_model_ifxn_biomarker_prot(
   i,
@@ -17,21 +17,21 @@ immunity_model_ifxn_biomarker_prot(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{integer for the individual ID}
 
-\item{t}{time}
+\item{t}{integer for the time period}
 
-\item{x}{exposure}
+\item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
+\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
 
-\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
-\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
+\item{demography}{a tibble of demographic information for each individual in the simulation}
 
-\item{biomarker_map}{A table specifying the relationship between exposure events and biomarker}
+\item{biomarker_map}{a table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{model_pars}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{a tibble of parameters needed for the immunity model}
 
 \item{...}{}
 }
@@ -39,5 +39,16 @@ immunity_model_ifxn_biomarker_prot(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used for natural infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified biomakrer_prot_midpoint and biomarker_prot_width within model_pars is used to calculate biomarker-mediated protection.
+This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified \code{biomakrer_prot_midpoint} and \code{biomarker_prot_width} within \code{model_pars} is used to calculate biomarker-mediated protection.
+}
+\examples{
+tmp_exposure_history <- array(0, dim=c(1, 10, 1))
+## Toy example: individual has 1 prior exposure
+tmp_exposure_history[1,1,1] <- 1
+## Set all biomarker states to 3 for sake of example
+tmp_biomarker_states <- array(0, dim=c(1,10,1))
+tmp_biomarker_states[1,,1] <- 3
+tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
+## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
+immunity_model_ifxn_biomarker_prot(1,8,1,,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=NULL, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
 }

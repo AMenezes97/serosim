@@ -2,7 +2,7 @@
 % Please edit documentation in R/immunity_models.R
 \name{immunity_model_vacc_ifxn_simple}
 \alias{immunity_model_vacc_ifxn_simple}
-\title{Simple Immunity Model For Vaccination Events and Natural Infection Events}
+\title{Simple immunity model for vaccination and infection events}
 \usage{
 immunity_model_vacc_ifxn_simple(
   i,
@@ -20,27 +20,27 @@ immunity_model_vacc_ifxn_simple(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{integer for the individual ID}
 
-\item{t}{time}
+\item{t}{integer for the time period}
 
-\item{x}{exposure}
+\item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure events}
+\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
 
-\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
-\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
+\item{demography}{a tibble of demographic information for each individual in the simulation}
 
-\item{biomarker_map}{A table specifying the relationship between exposure events and biomarker}
+\item{biomarker_map}{a table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{model_pars}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{a tibble of parameters needed for the immunity model}
 
-\item{max_events}{A vector of the maximum number of successful exposure events possible for each exposure event}
+\item{max_events}{a vector of the maximum number of successful exposure events possible for each exposure ID}
 
-\item{vacc_exposures}{A vector of exposure IDs (x) which represents vaccination events}
+\item{vacc_exposures}{a vector of exposure IDs (x)}
 
-\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA}
+\item{vacc_age}{a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input \code{NA}}
 
 \item{...}{}
 }
@@ -48,5 +48,15 @@ immunity_model_vacc_ifxn_simple(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used with vaccines and natural infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time t and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of a successful exposure event is 1. The probability of a successful natural infection event is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of a successful exposure event is 1.
+This immunity model should only be used with vaccines and infection. The probability of successful exposure for vaccination events depends on the number of vaccines an individual has received prior to time \code{t} and their current age. If the individual is under the maximum vaccinations allotted and is of an age eligible for vaccination then the probability of a successful exposure event is 1. The probability of a successful infection event is dependent on the total number of infections that individual has experienced thus far. If the individual is under the maximum number of infections allotted then the probability of a successful exposure event is 1.
+}
+\examples{
+tmp_exposure_history <- array(0, dim=c(1, 10, 2))
+## Toy example: individual has 3 early exposures with exposure ID 1
+tmp_exposure_history[1,1:3,1] <- 1
+tmp_demography <- tibble(i=1, birth=1)
+## Probability of successful exposure ID 1 at time 8 is 0, as all 3 allowable exposure events have occurred
+immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
+## Probability of successful exposure ID 2 at time 8 is 0, as <5 of the allowable exposure events have occurred
+immunity_model_vacc_ifxn_simple(1,8,2,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
 }

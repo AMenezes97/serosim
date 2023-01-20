@@ -2,7 +2,7 @@
 % Please edit documentation in R/immunity_models.R
 \name{immunity_model_vacc_only}
 \alias{immunity_model_vacc_only}
-\title{Immunity Model For Vaccination Events Only}
+\title{Vaccine-mediated immunity model}
 \usage{
 immunity_model_vacc_only(
   i,
@@ -19,31 +19,37 @@ immunity_model_vacc_only(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{integer for the individual ID}
 
-\item{t}{time}
+\item{t}{integer for the time period}
 
-\item{x}{exposure}
+\item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure event}
+\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
 
-\item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
+\item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
-\item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
+\item{demography}{a tibble of demographic information for each individual in the simulation}
 
-\item{biomarker_map}{A table specifying the relationship between exposure event and biomarker}
+\item{biomarker_map}{a table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{model_pars}{A tibble of parameters needed for the immunity model}
+\item{model_pars}{a tibble of parameters needed for the immunity model}
 
-\item{max_vacc_events}{A vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input NA}
+\item{max_vacc_events}{a vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input \code{NA}}
 
-\item{vacc_age}{A vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input NA}
+\item{vacc_age}{a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input \code{NA}}
 
 \item{...}{}
 }
 \value{
-A probability of successful exposure is returned
+The probability of successful exposure
 }
 \description{
-This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure(vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure event is 1.
+This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure (vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure event is 1.
+}
+\examples{
+tmp_exposure_history <- array(0, dim=c(1, 10, 1))
+tmp_exposure_history[1,1,1] <- 1
+tmp_demography <- tibble(i=1, birth=1)
+immunity_model_vacc_only(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_vacc_events=2,vacc_age=5)
 }

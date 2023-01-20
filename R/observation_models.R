@@ -1,33 +1,35 @@
-#' Observation Model For Continuous Assays With No Added Noise
+#' Observation model for continuous assays with no added noise
 #' 
-#' @description This observation model observes the latent biomarker quantities given a continuous assay with no added noise. Therefore the true biomarker quantity is the observed biomarker quantity.
+#' @description This observation model observes the latent biomarker quantities given a continuous assay with no added noise. Therefore the observed biomarker quantity is simply given by the true latent biomarker quantity.
 #'
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
+#' @param biomarker_states tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b
+#' @param model_pars a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' observation_model_continuous(example_biomarker_states, NULL)
 observation_model_continuous<-function(biomarker_states,model_pars, ...){
   biomarker_states$observed<-biomarker_states$value
   return(biomarker_states)
 }
 
-#' Observation Model For Continuous Assays With Detection Limits And No Added Noise
+#' Observation model for continuous assays with detection limits and no added noise
 #' 
 #' @description This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and no added noise.
 #'
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
-#' @param bounds A tibble containing the assay lower bound and upper bound for all biomarkers; column names=biomarker_id, name, and value where name is either "lower_bound" or "upper_bound"
+#' @inheritParams observation_model_continuous
+#' @param bounds a tibble containing the assay lower bound and upper bound for all biomarkers; column namesare 1) biomarker_id; 2) name; 3) value, where name is either `lower_bound` or `upper_bound`
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+#' observation_model_continuous(example_biomarker_states, NULL,bounds)
 observation_model_continuous_bounded<-function(biomarker_states,model_pars, bounds, ...){
   biomarker_states$observed<-biomarker_states$value
   biomarker_states_new<-NULL
@@ -39,7 +41,7 @@ observation_model_continuous_bounded<-function(biomarker_states,model_pars, boun
     biomarker_states<-data.table(biomarker_states)
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     ## Adjust the observed values given the assay upper and lower bounds
-    biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,0,biomarker_states_tmp$observed)
+    biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,lower_bound,biomarker_states_tmp$observed)
     biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed>upper_bound,upper_bound,biomarker_states_tmp$observed)
     biomarker_states_new<- rbind(biomarker_states_new, biomarker_states_tmp)
   }
