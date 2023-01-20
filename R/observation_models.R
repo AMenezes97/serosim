@@ -29,7 +29,7 @@ observation_model_continuous<-function(biomarker_states,model_pars, ...){
 #'
 #' @examples
 #' bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
-#' observation_model_continuous(example_biomarker_states, NULL,bounds)
+#' observation_model_continuous_bounded(example_biomarker_states, NULL,bounds)
 observation_model_continuous_bounded<-function(biomarker_states,model_pars, bounds, ...){
   biomarker_states$observed<-biomarker_states$value
   biomarker_states_new<-NULL
@@ -48,19 +48,21 @@ observation_model_continuous_bounded<-function(biomarker_states,model_pars, boun
   biomarker_states_new
 }
 
-#' Observation Model For Discrete Assays With No Added Noise
+#' Observation model for discrete assays with no added noise
 #' 
-#' @description This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within "discrete" argument and no added noise.
+#' @description This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within the "discrete" argument and no added noise.
 #'
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
-#' @param cutoffs A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.
+#' @inheritParams observation_model_continuous
+#' @param cutoffs a matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' breaks <- seq(0,8,by=1)
+#' cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
+#' observation_model_discrete(example_biomarker_states, NULL,cutoffs)
 observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
@@ -71,25 +73,26 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     biomarker_states_tmp$observed<-cut(biomarker_states_tmp$value, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
     biomarker_states_new<- rbind(biomarker_states_new, biomarker_states_tmp)
+    
   }
   biomarker_states_new
 }
 
-#' Observation Model For Continuous Assays With Detection Limits And Added Noise
+#' Observation model for continuous assays with detection limits and added noise
 #' 
-#' @description This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. 
+#' @description This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within `model_pars` as the `obs_sd` parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability `sensitivity`. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-`specificity`.
 #' 
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
-#' @param bounds A tibble containing the assay lower bound and upper bound for all biomarkers; column names=biomarker_id, name, and value where name is either "lower_bound" or "upper_bound"
+#' @inheritParams observation_model_continuous_bounded
 #' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
 #' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+#' observation_model_continuous_bounded_noise(example_biomarker_states, example_model_pars_numeric, bounds,0.95,0.99)
 observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars, bounds, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
@@ -98,42 +101,23 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
     upper_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="upper_bound"]
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
-      }
-      
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
-      
       biomarker_states_tmp$observed<-rlnorm(nrow(biomarker_states_tmp),normal_to_lognormal_mean(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]),normal_to_lognormal_sd(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]))
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,0,biomarker_states_tmp$observed)
+      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,lower_bound,biomarker_states_tmp$observed)
       biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed>upper_bound,upper_bound,biomarker_states_tmp$observed)
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<0,0,biomarker_states_tmp$observed)
     }
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
       biomarker_states_tmp$observed<-rnorm(nrow(biomarker_states_tmp),biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,0,biomarker_states_tmp$observed)
+      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<lower_bound,lower_bound,biomarker_states_tmp$observed)
       biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed>upper_bound,upper_bound,biomarker_states_tmp$observed)
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<0,0,biomarker_states_tmp$observed)
     }
     if(sensitivity!=1 | specificity!=1){
       ## Calculate the range of observed biomarker quantities 
-      pos<-biomarker_states_tmp %>% filter(biomarker_states_tmp$observed>0)
-      pos<-pos$observed
-      min<-min(pos)
-      max<-max(pos)
       ## Step through each individual 
       for(indiv in 1:length(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
         if(biomarker_states_tmp$value[indiv]==0){
           if(runif(1)>specificity){
-            biomarker_states_tmp$observed[indiv]<-sample(min:max,size=1)
+            biomarker_states_tmp$observed[indiv]<-runif(1,lower_bound,upper_bound)
           }
         }
         ## If the individual is truly seropositve take into account the assay sensitivity 
@@ -150,57 +134,42 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
   observed_states
 }
 
-#' Observation Model For Continuous Assays With Added Noise
+#' Observation model for continuous assays with no detection limits and added noise
 #' 
-#' @description This observation model observes the latent biomarker quantities given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. 
+#' @description This observation model observes the latent biomarker quantities given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the `obs_sd` parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability `sensitivity`. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-`specificity`.
 #' 
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
+#' @inheritParams observation_model_continuous_noise
 #' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
 #' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' observation_model_continuous_noise(example_biomarker_states, example_model_pars_numeric, 0.95,0.99)
 observation_model_continuous_noise<-function(biomarker_states,model_pars, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
   for(bs in unique(biomarker_states$b)){
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
-      }
-      
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
-      
       biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<0,0,biomarker_states_tmp$observed)
     }
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
       biomarker_states_tmp$observed<-rnorm(nrow(biomarker_states_tmp),biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<0,0,biomarker_states_tmp$observed)
     }
     if(sensitivity!=1 | specificity!=1){
       ## Calculate the range of observed biomarker quantities
-      pos<-biomarker_states_tmp %>% filter(biomarker_states_tmp$observed>0)
-      pos<-pos$observed
-      min<-min(pos)
-      max<-max(pos)
+        lower_bound <- min(biomarker_states_tmp$value,na.rm=TRUE)
+        upper_bound <- max(biomarker_states_tmp$value,na.rm=TRUE)
+        
       ## Step through each individual 
       for(indiv in 1:length(biomarker_states_tmp$value)){
       ## If the individual is truly seronegative take into account the assay specificity 
       if(biomarker_states_tmp$value[indiv]==0){
         if(runif(1)>specificity){
-          biomarker_states_tmp$observed[indiv]<-sample(min:max,size=1)
+            biomarker_states_tmp$observed[indiv]<-runif(1,lower_bound,upper_bound)
         }
       }
       ## If the individual is truly seropositve take into account the assay sensitivity 
@@ -219,60 +188,47 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
 
 #' Observation Model For Discrete Assays With Added Noise
 #' 
-#' @description  This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. 
+#' @description  This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability `sensitivity`. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-`specificity`.
 #'
-#' @param biomarker_states True biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of observation model parameters 
-#' @param cutoffs A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.
-#' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
-#' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
+#' @inheritParams observation_model_continuous_noise
+#' @inheritParams observation_model_discrete
 #' @param ... 
 #'
-#' @return biomarker_states is returned with a new column for observed biomarker quantities
+#' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @export
 #'
 #' @examples
+#' breaks <- seq(0,8,by=1)
+#' cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
+#' tmp_pars <- example_model_pars_numeric %>% mutate(sd=ifelse(name=="obs_sd",2,sd))
+#' observation_model_discrete_noise(example_biomarker_states, tmp_pars, cutoffs, 0.95,0.99)
 observation_model_discrete_noise<-function(biomarker_states,model_pars, cutoffs, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
   for(bs in unique(biomarker_states$b)){
-    cutoffs_b<-cutoffs[bs,]
-    cutoffs_tmp<-c(cutoffs_b,Inf)
-    biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
-    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
+      cutoffs_b<-cutoffs[bs,]
+      cutoffs_tmp<-c(cutoffs_b,Inf)
+      biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
+      
+      if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
+          biomarker_states_tmp$temp<-rnorm(nrow(biomarker_states_tmp),biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
       }
       
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
+    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
       biomarker_states_tmp$temp<-rlnorm(nrow(biomarker_states_tmp),normal_to_lognormal_mean(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]),normal_to_lognormal_sd(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]))
+    }
+      min_observable <- min(as.numeric(cutoffs_b),na.rm=TRUE)
+      biomarker_states_tmp$temp <- ifelse( biomarker_states_tmp$temp  < min_observable,min_observable,biomarker_states_tmp$temp)
       biomarker_states_tmp$observed<-cut(biomarker_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
       biomarker_states_tmp$temp<-NULL
-    }
-    if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
-      biomarker_states_tmp$temp<-rnorm(nrow(biomarker_states_tmp),biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
-      biomarker_states_tmp$observed<-cut(biomarker_states_tmp$temp, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
-      biomarker_states_tmp$temp<-NULL
-    }
+    
     if(sensitivity!=1 | specificity!=1){
-      ## Calculate the range of observed quantites for the biomarker
-      pos<-biomarker_states_tmp %>% filter(biomarker_states_tmp$observed>0)
-      pos<-pos$observed
-      min<-min(pos)
-      max<-max(pos)
       ## Step through each individual 
       for(indiv in 1:length(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
         if(biomarker_states_tmp$value[indiv]==0){
           if(runif(1)>specificity){
-            biomarker_states_tmp$observed[indiv]<-sample(min:max,size=1)
+              biomarker_states_tmp$observed[indiv]<-sample(cutoffs_b,1)
           }
         }
         ## If the individual is truly seropositve take into account the assay sensitivity 

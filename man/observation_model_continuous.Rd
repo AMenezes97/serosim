@@ -2,20 +2,23 @@
 % Please edit documentation in R/observation_models.R
 \name{observation_model_continuous}
 \alias{observation_model_continuous}
-\title{Observation Model For Continuous Assays With No Added Noise}
+\title{Observation model for continuous assays with no added noise}
 \usage{
 observation_model_continuous(biomarker_states, model_pars, ...)
 }
 \arguments{
-\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b}
 
-\item{model_pars}{Tibble of observation model parameters}
+\item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
 
 \item{...}{}
 }
 \value{
-biomarker_states is returned with a new column for observed biomarker quantities
+\code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities
 }
 \description{
-This observation model observes the latent biomarker quantities given a continuous assay with no added noise. Therefore the true biomarker quantity is the observed biomarker quantity.
+This observation model observes the latent biomarker quantities given a continuous assay with no added noise. Therefore the observed biomarker quantity is simply given by the true latent biomarker quantity.
+}
+\examples{
+observation_model_continuous(example_biomarker_states, NULL)
 }

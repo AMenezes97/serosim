@@ -2,7 +2,7 @@
 % Please edit documentation in R/observation_models.R
 \name{observation_model_continuous_bounded_noise}
 \alias{observation_model_continuous_bounded_noise}
-\title{Observation Model For Continuous Assays With Detection Limits And Added Noise}
+\title{Observation model for continuous assays with detection limits and added noise}
 \usage{
 observation_model_continuous_bounded_noise(
   biomarker_states,
@@ -14,11 +14,11 @@ observation_model_continuous_bounded_noise(
 )
 }
 \arguments{
-\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b}
 
-\item{model_pars}{Tibble of observation model parameters}
+\item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
 
-\item{bounds}{A tibble containing the assay lower bound and upper bound for all biomarkers; column names=biomarker_id, name, and value where name is either "lower_bound" or "upper_bound"}
+\item{bounds}{a tibble containing the assay lower bound and upper bound for all biomarkers; column namesare 1) biomarker_id; 2) name; 3) value, where name is either \code{lower_bound} or \code{upper_bound}}
 
 \item{sensitivity}{number between 0 and 1 to describe the assay's sensitivity; defaults to 1}
 
@@ -27,8 +27,12 @@ observation_model_continuous_bounded_noise(
 \item{...}{}
 }
 \value{
-biomarker_states is returned with a new column for observed biomarker quantities
+\code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities
 }
 \description{
-This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity.
+This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within \code{model_pars} as the \code{obs_sd} parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability \code{sensitivity}. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-\code{specificity}.
+}
+\examples{
+bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+observation_model_continuous_bounded_noise(example_biomarker_states, example_model_pars_numeric, bounds,0.95,0.99)
 }

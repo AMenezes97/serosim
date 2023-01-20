@@ -2,7 +2,7 @@
 % Please edit documentation in R/observation_models.R
 \name{observation_model_continuous_noise}
 \alias{observation_model_continuous_noise}
-\title{Observation Model For Continuous Assays With Added Noise}
+\title{Observation model for continuous assays with no detection limits and added noise}
 \usage{
 observation_model_continuous_noise(
   biomarker_states,
@@ -13,10 +13,6 @@ observation_model_continuous_noise(
 )
 }
 \arguments{
-\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
-
-\item{model_pars}{Tibble of observation model parameters}
-
 \item{sensitivity}{number between 0 and 1 to describe the assay's sensitivity; defaults to 1}
 
 \item{specificity}{number between 0 and 1 to describe the assay's specificity; defaults to 1}
@@ -24,8 +20,11 @@ observation_model_continuous_noise(
 \item{...}{}
 }
 \value{
-biomarker_states is returned with a new column for observed biomarker quantities
+\code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities
 }
 \description{
-This observation model observes the latent biomarker quantities given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity.
+This observation model observes the latent biomarker quantities given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the \code{obs_sd} parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability \code{sensitivity}. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-\code{specificity}.
+}
+\examples{
+observation_model_continuous_noise(example_biomarker_states, example_model_pars_numeric, 0.95,0.99)
 }

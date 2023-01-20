@@ -14,11 +14,11 @@ observation_model_discrete_noise(
 )
 }
 \arguments{
-\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b}
 
-\item{model_pars}{Tibble of observation model parameters}
+\item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
 
-\item{cutoffs}{A matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.}
+\item{cutoffs}{a matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.}
 
 \item{sensitivity}{number between 0 and 1 to describe the assay's sensitivity; defaults to 1}
 
@@ -27,8 +27,14 @@ observation_model_discrete_noise(
 \item{...}{}
 }
 \value{
-biomarker_states is returned with a new column for observed biomarker quantities
+\code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities
 }
 \description{
-This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity.
+This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability \code{sensitivity}. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-\code{specificity}.
+}
+\examples{
+breaks <- seq(0,8,by=1)
+cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
+tmp_pars <- example_model_pars_numeric \%>\% mutate(sd=ifelse(name=="obs_sd",2,sd))
+observation_model_discrete_noise(example_biomarker_states, tmp_pars, cutoffs, 0.95,0.99)
 }

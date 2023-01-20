@@ -407,3 +407,16 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
 convert_indices_matrix_to_vector <- function(i, j, n){
     (j-1)*n + i
 }
+
+## Create functions to convert normal distributions to log-normal distributions
+normal_to_lognormal_mean <- function(normmean, normsd) {
+    phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+    meanlog <- log(normmean ^ 2 / phi)
+    return(meanlog)
+}
+
+normal_to_lognormal_sd <- function(normmean, normsd) {
+    phi <- sqrt(normsd ^ 2 + normmean ^ 2)
+    sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
+    return(sdlog)
+}

@@ -2,22 +2,26 @@
 % Please edit documentation in R/observation_models.R
 \name{observation_model_continuous_bounded}
 \alias{observation_model_continuous_bounded}
-\title{Observation Model For Continuous Assays With Detection Limits And No Added Noise}
+\title{Observation model for continuous assays with detection limits and no added noise}
 \usage{
 observation_model_continuous_bounded(biomarker_states, model_pars, bounds, ...)
 }
 \arguments{
-\item{biomarker_states}{True biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b}
 
-\item{model_pars}{Tibble of observation model parameters}
+\item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
 
-\item{bounds}{A tibble containing the assay lower bound and upper bound for all biomarkers; column names=biomarker_id, name, and value where name is either "lower_bound" or "upper_bound"}
+\item{bounds}{a tibble containing the assay lower bound and upper bound for all biomarkers; column namesare 1) biomarker_id; 2) name; 3) value, where name is either \code{lower_bound} or \code{upper_bound}}
 
 \item{...}{}
 }
 \value{
-biomarker_states is returned with a new column for observed biomarker quantities
+\code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities
 }
 \description{
 This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and no added noise.
+}
+\examples{
+bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+observation_model_continuous_bounded(example_biomarker_states, NULL,bounds)
 }
