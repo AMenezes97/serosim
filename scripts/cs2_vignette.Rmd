@@ -199,7 +199,7 @@ dem_mod<-rbind(age_mod,mod)
 t_in_year=12
 
 ## Examine the probability of exposure over time for the specified exposure model
-# plot_exposure_model(exposure_model, times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod)
+plot_exposure_model(indivs=1:5,exposure_model, times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod,t_in_year=t_in_year)
 ```
 
 # 1.5 Immunity Model
@@ -358,7 +358,7 @@ plot_biomarker_dependent_boosting(start=0, end=2, by=.1, biomarker_ceiling_thres
 plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_threshold=100, biomarker_ceiling_gradient=0.009)
 
 ## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
-plot_antibody_model(antibody_model_biphasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
+plot_antibody_model(antibody_model_biphasic, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
 
 ```
 
@@ -427,7 +427,7 @@ res<- runserosim(
   dem_mod=dem_mod,
   t_in_year=t_in_year,
   VERBOSE=NULL,
-  attempt_precomputation = TRUE
+  attempt_precomputation = FALSE
 )
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```

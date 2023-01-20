@@ -130,7 +130,7 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
 draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- as.data.frame(model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),])
-      pars <- numeric(nrow(model_pars_tmp))
+    pars <- numeric(nrow(model_pars_tmp))
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 

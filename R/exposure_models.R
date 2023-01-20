@@ -98,7 +98,6 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #'     }
 #' }
 exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_in_year=1, ...){
-    #browser()
   ## Find the force of exposure
   p <- foe_pars[g, t, x]
   

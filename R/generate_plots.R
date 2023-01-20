@@ -317,25 +317,28 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
     indivs <- 1:N
     exposure_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
     antibody_states_all <- list()
-    for(index in 1:nrow(biomarker_map)){
-        x <- biomarker_map$exposure_id[index]
-        b <- biomarker_map$biomarker_id[index]
-    #for(x in exposure_ids){
-        antibody_states <- array(NA, dim=c(N, length(times)))
+        
+    for(x in exposure_ids){
+        biomarkers_tmp <- biomarker_map %>% filter(exposure_id == x) %>% pull(biomarker_id)
+        n_biomarkers_tmp <- length(biomarkers_tmp)
+        antibody_states <- array(0, dim=c(N, length(times),length(biomarker_ids)))
         kinetics_pars_tmp <- list()
         for(i in indivs){
             exposure_histories_tmp[i,1,x] <- 1
-            #for(b in biomarker_ids){
-            kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, b, demography,antibody_states, model_pars, ...))
-            kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
-            antibody_states[i,] <- sapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, kinetics_pars_tmp, biomarker_map, ...))
-            #}
+            for(b in biomarker_ids){
+                if(b %in% biomarkers_tmp){
+                    kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, b, demography,antibody_states, model_pars, ...))
+                    kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
+                    antibody_states[i,,b] <- sapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, kinetics_pars_tmp, biomarker_map, ...))
+                } else {
+                    antibody_states[i,,b] <- NA
+                }
+            }
         }
         antibody_states <- reshape2::melt(antibody_states) %>% drop_na()
-        colnames(antibody_states) <- c("i","t","titer")
-        antibody_states$b <- b
+        colnames(antibody_states) <- c("i","t","b","titer")
         antibody_states$x <- x
-        antibody_states_all[[index]] <- antibody_states
+        antibody_states_all[[x]] <- antibody_states
     }
     antibody_states_all <- do.call("bind_rows", antibody_states_all)
     antibody_states_all$x <- paste0("Exposure id: ", antibody_states_all$x)
@@ -350,7 +353,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         xlab("Time since infection") +
         ylab("Biomarker quantity") +
         scale_color_viridis_d(name="Biomarker") +
-        facet_grid(x~b,scales="free_y")
+        facet_grid(b~x,scales="free_y")
     return(p)
     
 }
@@ -386,15 +389,16 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
 #'                       )
 #' plot_exposure_model(exposure_model_sir, seq(1,365,by=1),n_groups = 2,n_exposures = 2,foe_pars=foe_pars)
 #'                     
-plot_exposure_model <- function(exposure_model, times, n_groups=1, n_exposures=1, foe_pars, demography=NULL, ...){
+plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_exposures=1, foe_pars, demography=NULL, ...){
     n_times <- length(times)
+    
     ## Solve exposure probability for each demographic element
     if(!is.null(demography)){
+        demography <- demography %>% filter(i %in% indivs)
         n_indivs <- length(unique(demography$i))
     } else {
         n_indivs <- 1
     }
-    
     ## Solve exposure probability for each exposure type, for each group, for each time
     foe_all <- NULL
     for(i in 1:n_indivs){
