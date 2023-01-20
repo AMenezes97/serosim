@@ -16,7 +16,7 @@ plot_antibody_model(
 )
 }
 \arguments{
-\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\emph{model_pars})}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})}
 
 \item{N}{Number of trajectories to simulate}
 
@@ -26,7 +26,7 @@ plot_antibody_model(
 
 \item{biomarker_map}{A tibble specifying the relationship between exposure IDs and biomarker IDs with two variables: 1) exposure_id: the numeric exposure ID; 2) biomarker_id: the numeric biomarker ID}
 
-\item{demography}{A tibble of necessary demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times. If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+\item{demography}{A tibble of demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times, see \code{\link{generate_pop_demography}} If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals}
 
 \item{draw_parameters_fn}{Pointer to function used for drawing random kinetics parameters, see \code{\link{draw_parameters_fixed_fx}}}
 }

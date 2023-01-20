@@ -2,19 +2,19 @@
 % Please edit documentation in R/misc_functions.R
 \name{simulate_birth_times}
 \alias{simulate_birth_times}
-\title{Simulate Random Birth Times}
+\title{Simulate random birth times}
 \usage{
 simulate_birth_times(N, times, age_min = 0)
 }
 \arguments{
-\item{N}{The number of individuals in the simulation.}
+\item{N}{The number of individuals in the simulation}
 
-\item{times}{A vector of each time step in the simulation.}
+\item{times}{A vector of each time step in the simulation}
 
-\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step.}
+\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step}
 }
 \value{
-A vector of simulated birth times for each individual is returned
+A vector of simulated birth times for each individual
 }
 \description{
 This function simulates uniformly distributed birth times for a specified number of individuals from a provided vector

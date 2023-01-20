@@ -25,7 +25,7 @@ plot_exposure_model(
 
 \item{foe_pars}{Generic object containing all parameters needed to solve \code{exposure_model}}
 
-\item{demography}{A tibble of necessary demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times. If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+\item{demography}{A tibble of demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times, see \code{\link{generate_pop_demography}} If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals}
 }
 \value{
 A ggplot2 object

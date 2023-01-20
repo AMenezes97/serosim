@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc_functions.R
 \name{generate_pop_demography}
 \alias{generate_pop_demography}
-\title{Generate Population Demography Data Set}
+\title{Generate population demography dataset}
 \usage{
 generate_pop_demography(
   N,
@@ -16,19 +16,19 @@ generate_pop_demography(
 )
 }
 \arguments{
-\item{N}{The number of individuals in the simulation.}
+\item{N}{The number of individuals in the simulation}
 
-\item{times}{A vector of each time step in the simulation.}
+\item{times}{A vector of each time step in the simulation}
 
-\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector.}
+\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if \code{birth_times} is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector}
 
-\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step.}
+\item{age_min}{A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step}
 
-\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
+\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0}
 
-\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
+\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to \code{max(times)}}
 
-\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to NA, then removal time will be max(times)+1}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to \code{NA}, then removal time will be \code{max(times)+1}}
 
 \item{aux}{An optional list of lists describing additional demographic factors. Each list must contain the variable name, a vector of possible factor levels, and their proportions to simulate from. Note that this is intended for categorical, uncorrelated variables. More complex demographic information should be added post-hoc. Defaults to NULL.}
 }
@@ -39,16 +39,16 @@ A tibble of relevant demographic information for each individual in the simulati
 Generates a tibble of random demographic information for each individual in the simulation. The returned \code{demography} tibble can be modified post-hoc to use user-specified distributions and values.
 }
 \examples{
-## Example 1
+## Example 1 -- default
 generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 
-## Example 2
+## Example 2 -- specified birth times
 birth_times <- rpois(100, 5)
 generate_pop_demography(N=100, times=1:120, birth_times=birth_times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 
-## Example 3
+## Example 3 -- using auxiliary variables
 aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=c(0.5,0.5)),
-            "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "proportion"=c(0.25,0.25,0.25,0.25)) )
+            "Group"=list("name"="group","options"=c(1, 2, 3, 4), "proportion"=c(0.25,0.25,0.25,0.25)) )
 generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 }
 \seealso{

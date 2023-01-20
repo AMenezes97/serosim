@@ -1,20 +1,21 @@
-#' Draw Parameters Fixed Effects
+#' Draw parameters fixed effects
 #'  
-#' @description This function draws parameters directly from model_pars for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
+#' @description Draws parameters directly from the distributions specified by `model_pars` for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 #'
-#' @param i Individual
+#' @param i individual
 #' @param t time
 #' @param x exposure
 #' @param b biomarker
-#' @param demography Demography information 
-#' @param biomarker_states An array of true biomarker quantities for all individuals across all time steps and biomarkers  
-#' @param model_pars Tibble of biomarker (antibody) kinetics parameters 
+#' @param demography demography information 
+#' @param biomarker_states an array of true biomarker quantities for all individuals across all time steps and biomarkers  
+#' @param model_pars tibble of biomarker (antibody) kinetics parameters 
 #' @param ... 
 #'
-#' @return A tibble with the parameters drawn is returned
+#' @return A tibble with the drawn parameters
 #' @export
 #'
 #' @examples
+#' draw_parameters_fixed_fx(1,1,1,1,demographu)
 draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
   model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]

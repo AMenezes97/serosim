@@ -25,11 +25,11 @@ runserosim(
 \arguments{
 \item{simulation_settings}{A list of parameters governing the simulation time step settings. Should contain integer entries for \emph{t_start} and \emph{t_end}}
 
-\item{demography}{A tibble of necessary demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times. If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals.}
+\item{demography}{A tibble of demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times, see \code{\link{generate_pop_demography}} If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals}
 
-\item{observation_times}{A tibble for observation times with three variables: 1) i: individual; 2) t: the timepoint of an observation; 3) b: the biomarker being measured. Defaults to NULL, where all latent biomarker states are returned.}
+\item{observation_times}{A tibble for observation times with three variables: 1) i: individual; 2) t: the timepoint of an observation; 3) b: the biomarker being measured. Defaults to NULL, in which case all latent biomarker states are returned}
 
-\item{foe_pars}{Any object class (usually a 3D array) providing the force of exposure for each exposure ID, group and time, or parameters of the model generating the FOEs}
+\item{foe_pars}{Any object class (usually a 3D array, but may be a list or other object) providing the force of exposure for each exposure ID, group and time, or parameters of the model generating the FOEs}
 
 \item{biomarker_map}{A tibble specifying the relationship between exposure IDs and biomarker IDs with two variables: 1) exposure_id: the numeric exposure ID; 2) biomarker_id: the numeric biomarker ID}
 
@@ -39,17 +39,17 @@ runserosim(
 
 \item{immunity_model}{A function determining the probability of an exposure leading to successful infection or vaccination for a given individual}
 
-\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\emph{model_pars})}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})}
 
-\item{observation_model}{A function generating observed biomarkers as a function of latent biomarkers and observation model parameters (\emph{model_pars})}
+\item{observation_model}{A function generating observed biomarkers as a function of latent biomarkers and observation model parameters (\code{model_pars})}
 
-\item{draw_parameters}{A function to simulate parameters for the antibody model, immunity model and observation model from \emph{model_pars}}
+\item{draw_parameters}{A function to simulate parameters for the antibody model, immunity model and observation model from \code{model_pars}}
 
-\item{exposure_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for any individuals.}
+\item{exposure_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual}
 
-\item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed.}
+\item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed}
 
-\item{attempt_precomputation}{If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway.}
+\item{attempt_precomputation}{If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway}
 }
 \value{
 a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters

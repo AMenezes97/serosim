@@ -17,3 +17,6 @@ A printed statement indicating an individual number is returned
 \description{
 This function is used within runserosim to produce messages to inform the user which individual the simulation is currently running
 }
+\examples{
+update(10, 100)
+}

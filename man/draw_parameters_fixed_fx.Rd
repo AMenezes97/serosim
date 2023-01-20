@@ -2,7 +2,7 @@
 % Please edit documentation in R/draw_parameters_options.R
 \name{draw_parameters_fixed_fx}
 \alias{draw_parameters_fixed_fx}
-\title{Draw Parameters Fixed Effects}
+\title{Draw parameters fixed effects}
 \usage{
 draw_parameters_fixed_fx(
   i,
@@ -16,7 +16,7 @@ draw_parameters_fixed_fx(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{individual}
 
 \item{t}{time}
 
@@ -24,17 +24,20 @@ draw_parameters_fixed_fx(
 
 \item{b}{biomarker}
 
-\item{demography}{Demography information}
+\item{demography}{demography information}
 
-\item{biomarker_states}{An array of true biomarker quantities for all individuals across all time steps and biomarkers}
+\item{biomarker_states}{an array of true biomarker quantities for all individuals across all time steps and biomarkers}
 
-\item{model_pars}{Tibble of biomarker (antibody) kinetics parameters}
+\item{model_pars}{tibble of biomarker (antibody) kinetics parameters}
 
 \item{...}{}
 }
 \value{
-A tibble with the parameters drawn is returned
+A tibble with the drawn parameters
 }
 \description{
-This function draws parameters directly from model_pars for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
+Draws parameters directly from the distributions specified by \code{model_pars} for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
+}
+\examples{
+draw_parameters_fixed_fx(1,1,1,1,demographu)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc_functions.R
 \name{simulate_removal_times}
 \alias{simulate_removal_times}
-\title{Simulate Removal Times for Individuals}
+\title{Simulate removal times for individuals}
 \usage{
 simulate_removal_times(
   N,
@@ -14,26 +14,26 @@ simulate_removal_times(
 )
 }
 \arguments{
-\item{N}{The number of individuals in the simulation.}
+\item{N}{The number of individuals in the simulation}
 
-\item{times}{A vector of each time step in the simulation.}
+\item{times}{A vector of each time step in the simulation}
 
-\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector.}
+\item{birth_times}{A vector of birth times for each individual; defaults to NULL; if \code{birth_times} is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector}
 
-\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0.}
+\item{removal_min}{The minimum age at which an individual can be removed from the population. Defaults to 0}
 
-\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to max(times).}
+\item{removal_max}{The maximum age at which an individual can be removed from the population. Defaults to \code{max(times)}}
 
-\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to NA, then removal time will be max(times)+1}
+\item{prob_removal}{The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to \code{NA}, then removal time will be \code{max(times)+1}}
 }
 \value{
-A vector of all individual's removal times is returned. NA represents no removal.
+A vector of all individual's removal times is returned. \code{NA} represents no removal
 }
 \description{
 This function simulates uniformly distributed removal times for a specified number of individuals from the provided times vector. This might represent e.g., death or study attrition.
 }
 \examples{
-## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
+## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
 simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
 }
 \seealso{

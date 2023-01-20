@@ -1,14 +1,14 @@
-#' Generate Population Demography Data Set 
+#' Generate population demography dataset 
 #' 
-#' @description Generates a tibble of random demographic information for each individual in the simulation. The returned `demography` tibble can be modified post-hoc to use user-specified distributions and values.
+#' @description Generates a tibble of random demographic information for each individual in the simulation. The returned \code{demography} tibble can be modified post-hoc to use user-specified distributions and values.
 #'
-#' @param N The number of individuals in the simulation.
-#' @param times A vector of each time step in the simulation.
-#' @param birth_times A vector of birth times for each individual; defaults to NULL; if birth_times is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector.
-#' @param age_min A number matching the time resolution of `times` giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step.
-#' @param removal_min The minimum age at which an individual can be removed from the population. Defaults to 0. 
-#' @param removal_max The maximum age at which an individual can be removed from the population. Defaults to max(times).
-#' @param prob_removal The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to NA, then removal time will be max(times)+1
+#' @param N The number of individuals in the simulation
+#' @param times A vector of each time step in the simulation
+#' @param birth_times A vector of birth times for each individual; defaults to NULL; if \code{birth_times} is not specified then the function will simulate uniformly distributed birth times for each individual from the times vector
+#' @param age_min A number matching the time resolution of \code{times} giving the youngest age possible by the end of the simulation; defaults to 0 which means individuals can be born up until the penultimate time step
+#' @param removal_min The minimum age at which an individual can be removed from the population. Defaults to 0
+#' @param removal_max The maximum age at which an individual can be removed from the population. Defaults to \code{max(times)}
+#' @param prob_removal The probability that an individual will be removed from the population during the simulation, representing e.g., death or study attrition. If set to \code{NA}, then removal time will be \code{max(times)+1}
 #' @param aux An optional list of lists describing additional demographic factors. Each list must contain the variable name, a vector of possible factor levels, and their proportions to simulate from. Note that this is intended for categorical, uncorrelated variables. More complex demographic information should be added post-hoc. Defaults to NULL.
 #'
 #' @return A tibble of relevant demographic information for each individual in the simulation is returned; this output matches the required `demography` input for the \code{\link{runserosim}} function.
@@ -16,16 +16,16 @@
 #' @export
 #'
 #' @examples 
-#' ## Example 1
+#' ## Example 1 -- default
 #' generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 #' 
-#' ## Example 2
+#' ## Example 2 -- specified birth times
 #' birth_times <- rpois(100, 5)
 #' generate_pop_demography(N=100, times=1:120, birth_times=birth_times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 #' 
-#' ## Example 3
+#' ## Example 3 -- using auxiliary variables
 #' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=c(0.5,0.5)),
-#'             "Group"=list("name"="group","options"=c("1", "2", "3", "4"), "proportion"=c(0.25,0.25,0.25,0.25)) )
+#'             "Group"=list("name"="group","options"=c(1, 2, 3, 4), "proportion"=c(0.25,0.25,0.25,0.25)) )
 #' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
 generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal_min=min(times), removal_max=max(times), prob_removal, aux=NULL){
     ## If no birth times provided, simulate
@@ -55,12 +55,12 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
     return(demog)
 }
 
-#' Simulate Random Birth Times
+#' Simulate random birth times
 #' 
 #' @description This function simulates uniformly distributed birth times for a specified number of individuals from a provided vector
 #' 
 #' @inheritParams generate_pop_demography
-#' @return A vector of simulated birth times for each individual is returned
+#' @return A vector of simulated birth times for each individual
 #' @family demography
 #' @export
 #'
@@ -77,17 +77,17 @@ simulate_birth_times <- function(N, times, age_min=0){
 }
 
 
-#' Simulate Removal Times for Individuals 
+#' Simulate removal times for individuals 
 #'
 #' @description This function simulates uniformly distributed removal times for a specified number of individuals from the provided times vector. This might represent e.g., death or study attrition.
 #' 
 #' @inheritParams generate_pop_demography
-#' @return A vector of all individual's removal times is returned. NA represents no removal. 
+#' @return A vector of all individual's removal times is returned. \code{NA} represents no removal 
 #' @family demography
 #' @export
 #'
 #' @examples
-#' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at sometime after they are 10 time steps old and before they are 99 time steps old 
+#' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
 #' simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal_max=max(times), prob_removal=0){
     if(removal_min < min(times)){
@@ -122,6 +122,7 @@ simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal
 #' @return A printed statement indicating an individual number is returned 
 #'
 #' @examples
+#' update(10, 100)
 update <- function(VERBOSE, i){ 
   if(!is.null(VERBOSE)){
    if(i %% VERBOSE == 0){
@@ -130,7 +131,7 @@ update <- function(VERBOSE, i){
   }
 }
 
-#' Reformat `biomarker_map` or `model_pars` exposure and biomarker variables
+#' Reformat \code{biomarker_map} or \code{model_pars} exposure and biomarker variables
 #' 
 #' @description This function will reformat the `biomarker_map` or `model_pars` objects so that exposure_ID and biomarker_ID are either both numeric (if passed as characters) or characters (if passed as numeric).
 #' 
@@ -165,9 +166,29 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
 }
 
 
-#' Check exposure model for pre-computation possibilities
+#' Pre-compute exposure probabilities
 #' 
-#' Checks if the provided exposure model can be solved in advance of the main simulation in fewer function calls than would be expected in the main simulation. Note that there is some overhead to checking for pre-computation, so this may not be quicker and may actually slow down the simulation. However, in some cases where many individuals share identical exposure probabilities, running this function can lead to massive speed ups.
+#' @description Checks if the provided exposure model can be solved in advance of the main simulation in fewer function calls than would be expected in the main simulation. Note that there is some overhead to checking for pre-computation, so this may not be quicker and may actually slow down the simulation. However, in some cases where many individuals share identical exposure probabilities, running this function can lead to massive speed ups.
+#' @param N integer number of individuals in the simulation
+#' @param times vector of time periods in the simulation
+#' @param exposure_ids integer vector of unique exposure IDs matching the `biomarker_map`
+#' @param groups integer vector of unique groups matching entries in `demography`
+#' @param exposure_model function pointer to the desired exposure model
+#' @param foe_pars object (usually an array, but may be a list or other class) corresponding to the `exposure_model` inputs
+#' @param demography tibble of demography variables used for the simulation
+#' @param VERBOSE (optional) if specified, an integer giving the frequency at which updates should be printed, as well as dictating whether progress messages are printed. Defaults to `NULL`
+#' @param check_correct if TRUE, computes the entire exposure probability array as would be done in `runserosim` with no pre-computation. This is usually quite slow, but can be used to check that the pre-computed exposure probability array is correct.
+#' @param ... other inputs to the `exposure_model`\
+#' @return a list containing: 1) a boolean set to `TRUE` if precomputation was successful; 2) a 3D array matching the dimensions of `N`, `times` and `exposure_ids` giving the individual probability of exposure in each time period
+#' 
+#' @examples 
+#' times <- seq(1,100,by=1)
+#' N <- 100
+#' n_exposure_ids <- 2
+#' n_groups <- 2
+#' demography <- generate_pop_demography(N=N, times=times,prob_removal=0,aux=list(Group=list(name="group",options=c(1,2),proportion=c(0.5,0.5))))
+#' foe_pars <- array(runif(n_exposure_ids*length(times)*n_groups),dim=c(n_groups,length(times),n_exposure_ids))
+#' res <- precomputation_checks(N, times=times, exposure_ids=1:2,groups=1:2,exposure_model_simple_FOE,foe_pars=foe_pars, demography=demography,VERBOSE=10,check_correct=TRUE)
 #' @export
 precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
                                   foe_pars, demography, VERBOSE, check_correct=FALSE,...){
@@ -371,6 +392,17 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
     return(list(flag=precomputation_successful,foe=exposure_force))
 }
 
+#' Convert 2D indexing to 1D indexing
+#' 
+#' @description R can treat matrices and arrays as 1D vectors, which can speed up indexing. This takes the row and column of the matrix and the number of rows (as R matrices are column-indexed) and returns the corresponding 1D index.
+#' @param i the row index
+#' @param j the column index
+#' @param n the number of rows
+#' @return the 1D indices corresponding to a collapsed matrix
+#' @examples 
+#' x <- matrix(runif(10*5),nrow=10,ncol=5)
+#' x[3,3]
+#' x[convert_indices_matrix_to_vector(3,3,10)]
 #' @export
 convert_indices_matrix_to_vector <- function(i, j, n){
     (j-1)*n + i
