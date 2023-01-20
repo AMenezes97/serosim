@@ -36,3 +36,11 @@ A biomarker_quantity is returned
 \description{
 
 }
+\examples{
+model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
+tmp_pars <- list()
+tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+tmp_exposure_history <- array(0,dim=c(1,11,2))
+tmp_exposure_history[1,1,1] <- 1
+antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)
+}

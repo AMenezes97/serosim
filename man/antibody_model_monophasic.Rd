@@ -38,3 +38,8 @@ A biomarker quantity is returned
 \description{
 This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and boost waning parameter
 }
+\examples{
+tmp_pars <- list()
+tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
+antibody_model_monophasic(1,1,1,example_exposure_histories, example_biomarker_states, tmp_pars, example_biomarker_map_numeric)
+}
