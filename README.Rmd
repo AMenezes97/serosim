@@ -67,7 +67,7 @@ summary(demography)
 Set up the exposure IDs and biomarker IDs for the simulation which will determine 
 which infection or vaccination events are occurring. Here, we will simulate one 
 circulating pathogen (exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both 
-of which will boost the same biomarker, IgG titers (biomarker_ID=IgG_titer). This 
+of which will boost the same biomarker, IgG titers (biomarker_ID=IgG). This 
 biomarker map can be used for any simulations of vaccine preventable diseases 
 like measles vaccination and measles natural infection. _runserosim_ requires that 
 exposure_id and biomarker_id are numeric so we will use the
@@ -79,7 +79,7 @@ biomarkers in alphabetical order so that the first exposure event or biomarker
 that is listed will not necessarily be labeled as 1.
 ```{r}
 ## Create biomarker map
-biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG_titer","IgG_titer"))
+biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG","IgG"))
 biomarker_map_original
 
 ## Reformat biomarker_map for runserosim
@@ -109,6 +109,9 @@ foe_pars[,,2] <- 0.1
 
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step. In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
 exposure_model<-exposure_model_simple_FOE
+
+## Examine the probability of exposure over time for the specified exposure model and foe_pars array
+plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ``` 
 
 # 1.5 Immunity Model
@@ -162,9 +165,12 @@ model_pars_original
 model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
 
-
 ## Specify the draw_parameters function
 draw_parameters<-draw_parameters_random_fx
+
+## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
+plot_antibody_model(antibody_model_monophasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+
 ```
 
 # 1.7 Observation Model and observation_times

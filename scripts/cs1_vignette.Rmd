@@ -140,6 +140,9 @@ foe_pars[,,2] <- 0.04
 ## Specify a simple exposure model which calculates the probability of exposure directly from the force of exposure at that time step
 exposure_model<-exposure_model_simple_FOE
 ## In this selected model, the probability of exposure is 1-exp(-FOE) where FOE is the force of exposure at that time.
+
+## Examine the probability of exposure over time for the specified exposure model
+plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
 # 1.5 Immunity Model
@@ -284,6 +287,9 @@ draw_parameters<-draw_parameters_random_fx_biomarker_dep
 plot_biomarker_dependent_boosting(start=0, end=1000, by=1, biomarker_ceiling_threshold=200, biomarker_ceiling_gradient=.0045)
 
 ## These parameters indicate that any individual with a titer level above 200 mIU/mL at the time of a second exposure event will only receive 10% of the regular boosting parameter for that event. Individuals with a measles titer of 0 will receive the full boost.
+
+## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
+plot_antibody_model(antibody_model_biphasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
 ```
 
 # 1.7 Observation Model and observation_times

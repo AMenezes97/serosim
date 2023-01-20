@@ -170,7 +170,6 @@ exposure_model<-exposure_model_dem_mod
 
 ## This exposure model requires dem_mod and t_in_year arguments
 
-
 ## Create a tibble with any relevant demography modifiers that affect exposure probability 
 ## For simplicity, we selected arbitrary numbers. 
 
@@ -198,6 +197,9 @@ dem_mod<-rbind(age_mod,mod)
 ## Specify the number of time steps within a year 
 ## We are simulating on the monthly scale
 t_in_year=12
+
+## Examine the probability of exposure over time for the specified exposure model
+# plot_exposure_model(exposure_model, times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod)
 ```
 
 # 1.5 Immunity Model
@@ -354,6 +356,9 @@ plot_biomarker_dependent_boosting(start=0, end=2, by=.1, biomarker_ceiling_thres
 
 ## Plot biomarker (in this case antibody titer) dependent boosting effects given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody)
 plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_threshold=100, biomarker_ceiling_gradient=0.009)
+
+## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
+plot_antibody_model(antibody_model_biphasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
 
 ```
 
