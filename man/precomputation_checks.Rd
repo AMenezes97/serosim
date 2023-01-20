@@ -35,6 +35,8 @@ precomputation_checks(
 \item{VERBOSE}{(optional) if specified, an integer giving the frequency at which updates should be printed, as well as dictating whether progress messages are printed. Defaults to \code{NULL}}
 
 \item{check_correct}{if TRUE, computes the entire exposure probability array as would be done in \code{runserosim} with no pre-computation. This is usually quite slow, but can be used to check that the pre-computed exposure probability array is correct.}
+
+\item{...}{other inputs to the \code{exposure_model}}
 }
 \value{
 a list containing: 1) a boolean set to \code{TRUE} if precomputation was successful; 2) a 3D array matching the dimensions of \code{N}, \code{times} and \code{exposure_ids} giving the individual probability of exposure in each time period

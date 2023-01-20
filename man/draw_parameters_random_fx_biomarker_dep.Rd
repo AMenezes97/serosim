@@ -39,6 +39,6 @@ A tibble with the simulated parameters for this exposure event
 his function adds biomarker quantity ceiling effects to the previous draw_parameters_random_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity  at the time of the exposure event.
 }
 \examples{
-model_pars <- reformat_biomarker_map(example_model_pars_biphasic) \%>\% filter(exposure_id != 3)
-draw_parameters_random_fx_biomarker_dep(2,100,1,1,example_demography, example_biomarker_states_wide, example_model_pars_biphasic)
+model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
+draw_parameters_random_fx_biomarker_dep(2,100,1,1,example_demography, example_biomarker_states_wide, model_pars)
 }

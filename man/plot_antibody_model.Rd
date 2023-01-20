@@ -39,7 +39,7 @@ Plots example trajectories of the provided antibody kinetics model
 \examples{
 model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") \%>\% drop_na()
 draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
-biomarker_map <- tibble(exposure_id=c(1,1,2,2),biomarker_id=c(1,2,1,2))
+biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
 plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
 plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 }
