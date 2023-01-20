@@ -199,7 +199,7 @@ dem_mod<-rbind(age_mod,mod)
 t_in_year=12
 
 ## Examine the probability of exposure over time for the specified exposure model
-plot_exposure_model(indivs=1:5,exposure_model, times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod,t_in_year=t_in_year)
+plot_exposure_model(indivs=1:5,exposure_model=exposure_model_dem_mod, times=times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod,t_in_year=t_in_year)
 ```
 
 # 1.5 Immunity Model

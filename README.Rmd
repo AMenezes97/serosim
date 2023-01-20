@@ -111,7 +111,7 @@ foe_pars[,,2] <- 0.1
 exposure_model<-exposure_model_simple_FOE
 
 ## Examine the probability of exposure over time for the specified exposure model and foe_pars array
-plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
+plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ``` 
 
 # 1.5 Immunity Model

@@ -75,11 +75,11 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 26.00   1st Qu.:121   1st Qu.: 30.75  
+    ##  1st Qu.: 25.75   1st Qu.: 29.75   1st Qu.:121   1st Qu.: 30.75  
     ##  Median : 50.50   Median : 63.00   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 61.42   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 92.50   3rd Qu.:121   3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
+    ##  Mean   : 50.50   Mean   : 61.07   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 90.00   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -148,7 +148,7 @@ foe_pars[,,2] <- 0.1
 exposure_model<-exposure_model_simple_FOE
 
 ## Examine the probability of exposure over time for the specified exposure model and foe_pars array
-plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
+plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
@@ -361,14 +361,14 @@ head(res$kinetics_parameters)
 ```
 
     ## # A tibble: 6 × 7
-    ##       i     t     x     b name    value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     2    41     2     1 boost 1.61           1.61   
-    ## 2     2    41     2     1 wane  0.00195        0.00195
-    ## 3     2    63     1     1 boost 3.00           3.00   
-    ## 4     2    63     1     1 wane  0.00408        0.00408
-    ## 5     3    91     2     1 boost 2.39           2.39   
-    ## 6     3    91     2     1 wane  0.00141        0.00141
+    ##       i     t     x     b name     value realized_value
+    ##   <int> <dbl> <dbl> <dbl> <chr>    <dbl>          <dbl>
+    ## 1     1    92     2     1 boost 0.844          0.844   
+    ## 2     1    92     2     1 wane  0.00157        0.00157 
+    ## 3     2   115     1     1 boost 6.66           6.66    
+    ## 4     2   115     1     1 wane  0.00387        0.00387 
+    ## 5     3   109     2     1 boost 0.844          0.844   
+    ## 6     3   109     2     1 wane  0.000966       0.000966
 
 ``` r
 ## Plots for the paper 
