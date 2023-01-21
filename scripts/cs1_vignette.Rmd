@@ -9,19 +9,20 @@ link-citations: yes
 
 
 
-Here, we will use the serosim package to generate a longitudinal serological 
+Here, we will use the _serosim_  package to generate a longitudinal serological 
 survey of a one pathogen system with vaccination and natural infection. The 
 overall structure and principles discussed within this case study are also 
 applicable to other vaccine preventable pathogens. In this simulation, 
 individuals can either be vaccinated against the pathogen, naturally infected 
 with the pathogen, a combination of both or neither. We will set up each of the required 
-arguments and models for runserosim in the order outlined in the methods section 
+arguments and models for _runserosim_  in the order outlined in the methods section 
 of the paper. 
 
 This case study is built around measles and we are interested in 
 tracking measles vaccination and infection across a 10 year period. We will 
 conduct a longitudinal serological survey with two sampling times where we 
-will use an ELISA kit to measure an individual's measles IgG titer.
+will use an ELISA kit to measure an individual's measles IgG titer. In this example,
+biomarker quantity, titer level and antibody level all mean the same thing. 
 
 We will use previously conducted measles serological surveys and any well 
 characterized epidemiological and immunological characteristics of measles to 
@@ -33,7 +34,7 @@ Enzygnost ELISA IgG test kits and utilized a measles serology review to select a
 few studies of relevance [@Thompson2016-ek]. We did not conduct an extensive 
 search of all measles serological surveys in order to parameterize our models as 
 it is beyond the scope of this case study. Our aim was to provide a simple 
-example of how users can use the literature to inform required serosim inputs. 
+example of how users can use the literature to inform required _serosim_  inputs. 
 Within each section below, we will briefly explain the rationale behind our 
 selected model inputs. We caution users to conduct their own research into the 
 models and associated parameters which best align with their disease system and 
@@ -42,7 +43,10 @@ biomarker test kits.
 
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
+## Install and load serosim 
 devtools::load_all("~/Documents/GitHub/serosim")
+
+## Load additional packages required 
 library(tidyverse)
 library(data.table)
 library(ggplot2)
@@ -68,9 +72,9 @@ simulation_settings <- list("t_start"=1,"t_end"=max(times))
 For this case study, we are not interested in tracking any demography information
 but we are interested in tracking individual's birth time. We will 
 use the generate_pop_demography function to create the demography tibble needed 
-for runserosim.
+for _runserosim_ .
 
-Note: The runserosim function, called later on, only requires a demography tibble 
+Note: The _runserosim_  function, called later on, only requires a demography tibble 
 with two columns (individuals and times). 
 ```{r}
 ## Specify the number of individuals in the simulation 
@@ -91,12 +95,16 @@ Now, we have to set up the exposure IDs and biomarker IDs for our desired
 simulation. Individuals can be seropositive either by measles natural infection 
 or by vaccination and we want to track both exposure types separately. 
 Here, we will simulate measles natural infection (exposure_ID=measles_ifxn) and 
-measles vaccination (exposure_ID=measles_vacc) both of which will boost titers 
-to the same biomarker (biomarker_ID=measles_IgG). Since we are only interested 
+measles vaccination (exposure_ID=measles_vacc) both of which will boost the same biomarker, IgG antibodies (biomarker_ID=measles_IgG). Since we are only interested 
 in tracking measles IgG antibody levels across time, we only need one biomarker 
-ID. runserosim requires that exposure_id and biomarker_id are numeric so we will 
+ID. _runserosim_  requires that exposure_id and biomarker_id are numeric so we will 
 use the reformat_biomarker_map function to create a new version of the biomarker 
 map. Users can go directly to numeric biomarker_map if they wish.
+
+Note that the 
+reformat_biomarker_map function  will number the exposures and biomarkers in 
+alphabetical order so that the first exposure event or biomarker that is listed
+will not necessarily be labeled as 1.
 ```{r}
 ## Create biomarker map
 biomarker_map_original <- tibble(exposure_id=c("measles_ifxn","measles_vacc"),biomarker_id=c("measles_IgG","measles_IgG"))
@@ -111,7 +119,7 @@ biomarker_map
 # 1.4 Force of Exposure and Exposure Model
 Now, we need to specify the foe_pars argument which contains the force of exposure
 for all exposure_IDs across all time steps and groups. We also specify the 
-exposure model which will be called within runserosim later. The exposure model 
+exposure model which will be called within _runserosim_  later. The exposure model 
 will determine the probability that an individual is exposed to a specific 
 exposure event.
 
@@ -147,13 +155,12 @@ plot_exposure_model(exposure_mode=exposure_model_simple_FOE, times=times, n_grou
 
 # 1.5 Immunity Model
 Here, we specify the immunity model which will determine the probability that an 
-exposure event is successful. Since we have both vaccination and natural 
-infection events, we will use immunity_model_vacc_ifxn_titer_prot. With this 
+exposure event is successful in producing an immunological response. Since we have both vaccination and natural 
+infection events, we will use immunity_model_vacc_ifxn_biomarker_prot. With this 
 immunity model, the probability of successful measles vaccination exposure 
 depends on the number of measles vaccines received prior to time t and the 
 individual's age at time t while the probability of successful measles infection 
-is dependent on the biomarker quantity, in this case antibody titer, at the time of exposure and an individual's total 
-number of measles infections.
+is dependent on the biomarker quantity, in this case antibody titer, at the time of exposure and an individual's total number of measles infections.
 
 Since measles is a fully immunizing pathogen, we have assumed that individuals 
 can only be infected once. Therefore, we have disregarded any complexities 
@@ -161,16 +168,15 @@ brought on by boosting events from additional measles exposure. This assumption
 can be loosened by removing the limit on infection events. 
 
 Within this selected immunity model, individuals can become infected despite 
-prior vaccination if their current titer is below the threshold of protection as 
-a result of waning or incomplete  immunity following vaccination. The 
-titer-mediated protection parameters used within this immunity model are defined 
-within model_pars which will be loaded in section 1.6. 
+prior vaccination if their current biomarker quantity is below the threshold of protection as 
+a result of waning or incomplete immunity following vaccination. The 
+biomarker quantity mediated protection parameters (also known as titer-mediated protection) used within this immunity model are defined within model_pars which will be loaded in section 1.6. 
 
 The Enzygnost ELISA kit reports that the threshold of seropositivity is 200 mIU/ml 
 and we have used this titer value to inform our titer-mediated protection curve. 
 In our simulation, individuals with titers below 200 mIU/ml will have a higher probability of becoming infected 
-when exposed to measles while all individuals with titers above 200 mIU/ml are 
-more ikelely to be protected from infection. It is important to note that, seropositivty and titer 
+when exposed to measles while individuals with titers above 200 mIU/ml are 
+more likely to be protected from infection. It is important to note that, seropositivty and titer 
 level is not a perfect correlate of protection against infection as it does not 
 directly account for neutralizing titers, cellular immunity and other 
 immunological complexities. With a more in-depth literature review on correlates 
@@ -188,18 +194,16 @@ vacc_exposures<-2
 ## Specify the age at which an individual is eligible for measles vaccination (9 months old); note non vaccine exposures are listed as NAs
 vacc_age<-c(NA,9)
 
-## Specify the maximum number of successful exposure events an individual can receive for each exposure types
+## Specify the maximum number of successful exposure events an individual can receive for each exposure type
 ## For this example, we are assuming that there is only one dose of the measles vaccine and one possible measles infection
 max_events<-c(1,1)
 
-## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1 (measles_IgG) which will be loaded in section 1.6
+## Plot biomarker-mediated protection curve (also known as titer-mediated protection) given parameters specified within model_pars for biomarker 1 (measles_IgG) which will be loaded in section 1.6
 plot_biomarker_mediated_protection(0:1000, biomarker_prot_midpoint=200, biomarker_prot_width=1)
 ```
 
 # 1.6  Antibody Model, Antibody Kinetics Parameters, and draw_parameters
-Now, we specify the antibody model to be used within runserosim which will 
-describe the within-host antibody kinetics following measles infection or 
-vaccination event. 
+Now, we specify the antibody model to be used within _runserosim_ to track antibody kinetics, or more broadly biomarker kinetics for each biomarker produced from successful exposure events.
 
 We will be using a biphasic boosting-waning model. This model assumes that for 
 each exposure there is a set of long-term boost, long-term boost waning, 
@@ -210,7 +214,7 @@ boosting-waning model was appropriate for our purposes
 
 The antibody kinetics parameters needed for the antibody model are pre-loaded
 within a csv file which will take on the argument name: model_pars.
-Users can edit the csv file to modify any parameters. runserosim requires that 
+Users can edit the csv file to modify any parameters. _runserosim_  requires that 
 exposure_id and biomarker_id are numeric within model_pars so we will use the 
 reformat_biomarker_map function again to create a new version of model_pars. 
 Users can go directly to numeric model_pars if they wish. 
@@ -218,7 +222,7 @@ Users can go directly to numeric model_pars if they wish.
 We selected a few measles serological surveys conducted with the Enzygnost ELISA 
 IgG test kits which measured titers following vaccination to inform the vaccine 
 induced boost and waning parameters. From the reported quantitative measles IgG 
-titer, we picked the conservative range of 2500-4500 mIU/mL for vaccine acquired 
+titers following vaccination, we picked the conservative range of 2500-4500 mIU/mL for vaccine acquired 
 full boost. After 10 years, only the long-term boost remains which ranges from 
 900-2000 mIU/mL. Therefore, the short-term boost ranges from 1600-2500 mIU/mL
 [@Berry2017-ci; @Lyamuya1999-nf; @Carryn2019-qv; @Trevisan2021-of]. Since we are only simulating a 10 year period, we assumed that there was minimal waning of the long-term boost for simplicity.
@@ -238,7 +242,7 @@ parameters directly from model_pars for the antibody model with random
 effects to represent individual heterogeneity in immunological responses. 
 Parameters are drawn randomly from a distribution with mean and standard 
 deviation specified within model_pars. This draw_parameters function also 
-incorporates titer-dependent boosting where an individual’s realized boost is 
+incorporates biomarker quantitiy dependent boosting (also known as titer-dependent boosting) where an individual’s realized boost is 
 dependent on their titer level at the time of the exposure event.
 
 There is contradictory evidence of whether there is a significant boost after 
@@ -342,6 +346,7 @@ VERBOSE<-10
 This is the core simulation where all simulation settings, models and parameters 
 are specified within the main simulation function. The run time for this step varies 
 depending on the number of individuals and the complexities of the specified models. 
+There is a built in pre-computation step within _runserosim_ where the simulation attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. Users can turn off this pre-computation by setting pre-computation to FALSE within _runserosim_.
 ```{r message=FALSE, warning=FALSE, eval=TRUE}
 ## Run the core simulation and save outputs in "res"
 res<- runserosim(
@@ -378,7 +383,7 @@ plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_lon
 
 ## Plot individual probability of exposure for all exposure types.
 ## This is the output of the exposure model.
-## Note: All individuals are under the same force of exposure since we specified a simple exposure model
+## Note: All individuals are under the same force of exposure since we specified a simple exposure model and constant foe_pars
 plot_exposure_force(res$exposure_force_long)
 
 ## Plot individual successful exposure probabilities for all exposure types
