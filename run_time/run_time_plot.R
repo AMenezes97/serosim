@@ -7,7 +7,7 @@ library(cowplot)
 run_time_path <- system.file("run_time", "serosim_run_times_new.csv", package = "serosim")
 df <- read.csv(file = run_time_path, header = TRUE)
 
-## Seperate run time by case study 
+## Separate run time by case study 
 df_readme <-  df %>% filter(df$example=="README")
 df_cs1<-df %>% filter(df$example=="CS1")
 df_cs2 <-df %>% filter(df$example=="CS2")
