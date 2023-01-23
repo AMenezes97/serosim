@@ -24,7 +24,10 @@ of the paper. We then run the simulation and examine its outputs
 Load necessary packages:
 
 ``` r
+## Install and load serosim 
 devtools::load_all("~/Documents/GitHub/serosim")
+
+## Load additional packages required 
 library(tidyverse)
 library(data.table)
 library(ggplot2)
@@ -63,7 +66,7 @@ individuals are born at the start of the simulation period.
 ## Generate the population demography tibble
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
-demography <- generate_pop_demography(N=100, times=times, removal_min=1, removal_max=120, prob_removal=0)
+demography <- generate_pop_demography(N=100, times=times, prob_removal=0)
 ```
 
     ## Joining, by = "i"
@@ -75,24 +78,24 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 26.00   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 63.00   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 61.42   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 92.50   3rd Qu.:121   3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
+    ##  1st Qu.: 25.75   1st Qu.: 39.25   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 66.00   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 63.04   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 92.00   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :116.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
-Set up the exposure IDs and biomarker IDs for the simulation which will
-determine which infection or vaccination events are occurring. Here, we
-will simulate one circulating pathogen (exposure_ID=ifxn) and one
-vaccine (exposure_ID=vacc) both of which will boost the same biomarker,
-IgG titers (biomarker_ID=IgG). This biomarker map can be used for any
-simulations of vaccine preventable diseases like measles vaccination and
-measles natural infection. *runserosim* requires that exposure_id and
-biomarker_id are numeric so we will use the reformat_biomarker_map
-function to create a new version of the biomarker map. Users can go
-directly to numeric biomarker_map if they wish.
+Now we set up the exposure IDs and biomarker IDs for the simulation
+which will determine which infection or vaccination events are
+occurring. Here, we will simulate one circulating pathogen
+(exposure_ID=ifxn) and one vaccine (exposure_ID=vacc) both of which will
+boost the same biomarker, IgG titers (biomarker_ID=IgG). This biomarker
+map can be used for any simulations of vaccine preventable diseases like
+measles vaccination and measles natural infection. *runserosim* requires
+that exposure_id and biomarker_id are numeric so we will use the
+reformat_biomarker_map function to create a new version of the biomarker
+map. Users can go directly to numeric biomarker_map if they wish.
 
 Note that the reformat_biomarker_map function will number the exposures
 and biomarkers in alphabetical order so that the first exposure event or
@@ -132,9 +135,12 @@ exposed to a specific exposure event. Since we did not specify different
 groups within demography, all individuals will automatically be assigned
 group 1. Therefore, we only need 1 row for dimension 1 in foe_pars.
 Groups can be used as an indicator of location if the user wishes to
-specify a location specific force of exposure. We specified the same
-force of exposure for all time steps within foe_pars for simplicity but
-users will likely have varying numbers to match real world settings.
+specify a location specific force of exposure. Dimension 3 of the
+foe_array must be in the same order as the exposure_id within the
+biomarker map. For example, the force of exposure for exposure_id 1 will
+be inputted within the foe_pars\[,,1\]. We specified the same force of
+exposure for all time steps within foe_pars for simplicity but users
+will likely have varying numbers to match real world settings.
 
 ``` r
 ## Create an empty array to store the force of exposure for all exposure types
@@ -148,7 +154,7 @@ foe_pars[,,2] <- 0.1
 exposure_model<-exposure_model_simple_FOE
 
 ## Examine the probability of exposure over time for the specified exposure model and foe_pars array
-plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
+plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
@@ -156,13 +162,14 @@ plot_exposure_model(exposure_model, times, n_groups = 1, n_exposures = 2, foe_pa
 # 1.5 Immunity Model
 
 Here, we specify the immunity model which will determine the probability
-that an exposure event is successful. We will use a simple immunity
-model (immunity_model_vacc_ifxn_simple) where successful exposure is
-only conditional on the total number of previous exposure events. With
-this model, the probability of successful vaccination exposure depends
-on the number of vaccines received prior to time t and the individual’s
-age at time t while the probability of successful infection is dependent
-on the number of infections prior to time t.
+that an exposure event is successful in producing an immunological
+response. We will use a simple immunity model
+(immunity_model_vacc_ifxn_simple) where successful exposure is only
+conditional on the total number of previous exposure events. With this
+model, the probability of successful vaccination exposure depends on the
+number of vaccines received prior to time t and the individual’s age at
+time t while the probability of successful infection is dependent on the
+number of infections prior to time t.
 
 ``` r
 ## Specify immunity model within runserosim function below 
@@ -179,23 +186,26 @@ max_events<-c(1,1)
 
 # 1.6 Antibody Model and Model Parameters
 
-Now, we specify the antibody model to be used within *runserosim*. We
-will be using a monophasic boosting-waning model. This model assumes
-that for each exposure there is a boost and boost waning parameter.The
+Now, we specify the antibody model to be used within *runserosim* to
+track antibody kinetics, or more broadly biomarker kinetics for each
+biomarker produced from successful exposure events. We will be using a
+monophasic boosting-waning model in this example. This model assumes
+that for each exposure there is a boost and boost waning parameter. The
 antibody kinetics parameters are pre-loaded within a csv file. Users can
 edit the csv file to specify their own parameters. All parameters needed
 for the user specified antibody model must be specified within the
-antibody kinetics parameters tibble (model_pars). Lastly, we define the
-draw_parameters function which determines how each individual’s antibody
-kinetics parameters are simulated from the within-host processes
-parameters tibble (model_pars). We will use a function which draws
-parameters directly from model_pars for the antibody model with random
-effects to represent individual heterogeneity in immunological
-responses. Parameters are drawn randomly from a distribution with mean
-and standard deviation specified within model_pars. *runserosim*
-requires that exposure_id and biomarker_id are numeric so we will use
-the reformat_model_pars function to create a new version of model_pars.
-Users can go directly to numeric model_pars if they wish.
+model_pars. Lastly, we define the draw_parameters function which
+determines how each individual’s antibody kinetics parameters are
+simulated from the within-host processes parameters tibble (model_pars).
+We will use a function which draws parameters directly from model_pars
+for the antibody model with random effects to represent individual
+heterogeneity in immunological responses. Parameters are drawn randomly
+from a distribution with mean and standard deviation specified within
+model_pars. *runserosim* requires that exposure_id and biomarker_id
+within model_pars are numeric and match the exposure to biomarker map so
+we will use the reformat_biomarker_map function again to create a new
+version of model_pars. Users can go directly to numeric model_pars if
+they wish.
 
 ``` r
 ## Specify the antibody model 
@@ -276,7 +286,11 @@ There are no optional arguments needed for this simulation.
 This is the core simulation where all simulation settings, models and
 parameters are specified within the main simulation function. Run time
 for this step varies depending on the number of individuals and the
-complexities of the specified models.
+complexities of the specified models. There is a built in
+pre-computation step within *runserosim* where the simulation attempts
+to perform as much pre-computation as possible for the exposure model to
+speed up the main simulation code. Users can turn off this
+pre-computation by setting pre-computation to FALSE within *runserosim*.
 
 ``` r
 ## Run the core simulation and save outputs in "res"
@@ -319,7 +333,7 @@ plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_lon
 ``` r
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
-## Note: All individuals are under the same force of exposure since we specified a simple exposure model
+## Note: All individuals are under the same force of exposure since we specified a simple exposure model and constant foe_pars
 plot_exposure_force(res$exposure_force_long)
 ```
 
@@ -328,7 +342,7 @@ plot_exposure_force(res$exposure_force_long)
 ``` r
 ## Plot individual successful exposure probabilities for all exposure types
 ## This is the output of the exposure model multiplied by the output of the immunity model.
-## In other words, this is the probability of exposure event being successful and inducing an immunological response
+## In other words, this is the probability of an exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
@@ -363,12 +377,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     2    41     2     1 boost 1.61           1.61   
-    ## 2     2    41     2     1 wane  0.00195        0.00195
-    ## 3     2    63     1     1 boost 3.00           3.00   
-    ## 4     2    63     1     1 wane  0.00408        0.00408
-    ## 5     3    91     2     1 boost 2.39           2.39   
-    ## 6     3    91     2     1 wane  0.00141        0.00141
+    ## 1     1    95     2     1 boost 2.62           2.62   
+    ## 2     1    95     2     1 wane  0.00237        0.00237
+    ## 3     2    51     1     1 boost 4.47           4.47   
+    ## 4     2    51     1     1 wane  0.00309        0.00309
+    ## 5     2    59     2     1 boost 2.79           2.79   
+    ## 6     2    59     2     1 wane  0.00159        0.00159
 
 ``` r
 ## Plots for the paper 

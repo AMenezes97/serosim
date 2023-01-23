@@ -80,7 +80,7 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, m
 
 #' Draw parameters fixed effects with biomarker-quantity-dependent boosting
 #'  
-#' @description Adds a biomarker quantity ceiling effects to the `draw_parameters_fixed_fx` function. Here, an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
+#' @description Adds biomarker quantity ceiling effects to the `draw_parameters_fixed_fx` function. Here, an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
 #' 
 #' @inheritParams draw_parameters_fixed_fx
 #'
@@ -117,7 +117,7 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
 
 #' Draw parameters random effects with biomarker-quantity-dependent boosting
 #'  
-#' @description his function adds biomarker quantity ceiling effects to the previous draw_parameters_random_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity  at the time of the exposure event.
+#' @description Adds biomarker quantity ceiling effects to the previous draw_parameters_random_fx function. Here an individual’s realized biomarker boost is dependent on their biomarker quantity at the time of the exposure event.
 #'
 #' @inheritParams draw_parameters_fixed_fx
 #'
