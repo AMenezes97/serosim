@@ -1,4 +1,4 @@
-## Run case study 1 up until line 339 (cs1_vignette.Rmd)
+## Run case study 1 up until line 344 (cs1_vignette.Rmd)
 
 full_runs<-NULL
 
@@ -37,12 +37,12 @@ for (runs in 1:100){
     mutate(vacc_time=t) %>% 
     select(i,vacc_time)
   
-  obs60<-res$observed_antibody_states %>% 
+  obs60<-res$observed_biomarker_states %>% 
     filter(t==60) %>% 
     mutate(obs_60=observed) %>% 
     select(i,obs_60)
   
-  obs120<-res$observed_antibody_states %>% 
+  obs120<-res$observed_biomarker_states %>% 
     filter(t==120) %>% 
     mutate(obs_120=observed) %>% 
     select(i,obs_120)
@@ -77,7 +77,7 @@ for(thds in 1:nrow(sens_spec)){
   
   ## Add a column to record whether each individual will be classified as seropositive or seronegative given the titer threshold
   data<-full_runs %>% 
-    mutate(test=ifelse(obs_120>=titer,"yes","no"))
+    mutate(test=ifelse(obs_120>titer,"yes","no"))
   
   ## Add a new column to record whether each individual is a true/false positive or a true/false negative
   new_data<- data %>% 
