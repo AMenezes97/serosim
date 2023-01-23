@@ -264,7 +264,7 @@ plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)
 
-## Plots for the paper 
+## Combine plots as seen in paper 
 # library(cowplot)
 # plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 # plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))

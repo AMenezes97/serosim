@@ -159,7 +159,7 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
   for(bs in unique(biomarker_states$b)){
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="log-normal"){
-      biomarker_states_tmp$observed<-ifelse(biomarker_states_tmp$observed<0,0,biomarker_states_tmp$observed)
+      biomarker_states_tmp$observed<-rlnorm(nrow(biomarker_states_tmp),normal_to_lognormal_mean(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]),normal_to_lognormal_sd(biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]))
     }
     if(model_pars$distribution[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"]=="normal"){
       biomarker_states_tmp$observed<-rnorm(nrow(biomarker_states_tmp),biomarker_states_tmp$value,model_pars$sd[model_pars$biomarker_id==bs & model_pars$name=="obs_sd"])
