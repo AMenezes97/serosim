@@ -17,7 +17,17 @@ cross-sectional serosurvey at the end of a 10 year simulation period for
 100 individuals who have either been vaccinated, infected, both or
 neither. We will set up each of the required arguments and models for
 the *runserosim* function in the order outlined in the methods section
-of the paper. We then run the simulation and examine its outputs
+of the paper. We then run the simulation and examine its outputs.
+
+There are two additional vignettes/case studies in the *vignettes*
+folder. Case study 1 provides an example of a longitudinal singular
+biomarker serological survey simulation structured around measles, a
+one-pathogen system with vaccination, but also applicable to other
+vaccine preventable diseases. Case study 2 provides an example of a
+cross-sectional multi-biomarker serological survey structured around
+diphtheria and pertussis, a two-pathogen system with bivalent
+vaccination, but also applicable to multi-pathogen systems with
+multivalent vaccines.
 
 # Installation
 
@@ -25,7 +35,8 @@ Load necessary packages:
 
 ``` r
 ## Install and load serosim 
-devtools::load_all("~/Documents/GitHub/serosim")
+devtools::install_github("AMenezes97/serosim")
+library(serosim)
 
 ## Load additional packages required 
 library(tidyverse)
@@ -78,10 +89,10 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 29.75   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 60.00   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 60.73   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 93.25   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  1st Qu.: 25.75   1st Qu.: 31.50   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 65.50   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 60.72   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 88.25   3rd Qu.:121   3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -377,39 +388,16 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    32     2     1 boost 2.68           2.68   
-    ## 2     1    32     2     1 wane  0.00112        0.00112
-    ## 3     2    12     2     1 boost 4.97           4.97   
-    ## 4     2    12     2     1 wane  0.00144        0.00144
-    ## 5     2    15     1     1 boost 4.44           4.44   
-    ## 6     2    15     1     1 wane  0.00390        0.00390
+    ## 1     1    81     2     1 boost 1.49           1.49   
+    ## 2     1    81     2     1 wane  0.00175        0.00175
+    ## 3     1   100     1     1 boost 2.79           2.79   
+    ## 4     1   100     1     1 wane  0.00416        0.00416
+    ## 5     3    67     1     1 boost 4.48           4.48   
+    ## 6     3    67     1     1 wane  0.00328        0.00328
 
 ``` r
 ## Combine plots as seen in paper 
-library(cowplot)
+# library(cowplot)
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 ```
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:patchwork':
-    ## 
-    ##     align_plots
-
-``` r
-plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-```
-
-![](README_files/figure-gfm/unnamed-chunk-10-7.png)<!-- -->
-
-``` r
-plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-```
-
-    ## Warning: Graphs cannot be vertically aligned unless the axis parameter is set.
-    ## Placing graphs unaligned.
-
-    ## Warning: Graphs cannot be horizontally aligned unless the axis parameter is set.
-    ## Placing graphs unaligned.
-
-![](README_files/figure-gfm/unnamed-chunk-10-8.png)<!-- -->

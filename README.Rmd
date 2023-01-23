@@ -17,13 +17,23 @@ serosurvey at the end of a 10 year simulation period for 100 individuals who
 have either been vaccinated, infected, both or neither. We will set up each of the 
 required arguments and models for the _runserosim_ function in the order 
 outlined in the methods section of the paper. We then run the simulation and 
-examine its outputs
+examine its outputs.
+
+There are two additional vignettes/case studies in the _vignettes_ folder. 
+Case study 1 provides an example of a longitudinal singular biomarker serological 
+survey simulation structured around measles, a one-pathogen system with 
+vaccination, but also applicable to other vaccine preventable diseases. Case 
+study 2 provides an example of a cross-sectional multi-biomarker serological 
+survey structured around diphtheria and pertussis, a two-pathogen system with 
+bivalent vaccination, but also applicable to multi-pathogen systems with multivalent 
+vaccines. 
 
 # Installation
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
 ## Install and load serosim 
-devtools::load_all("~/Documents/GitHub/serosim")
+devtools::install_github("AMenezes97/serosim")
+library(serosim)
 
 ## Load additional packages required 
 library(tidyverse)
