@@ -29,7 +29,7 @@ Generic wrapper function to allow the probability of exposure for each individua
 }
 \examples{
 times <- seq(0,365,by=1)
-n_indivs <- 1:100
+n_indivs <- 100
 n_exposures <- 1
 foe_pars <- array(0.01, dim=c(n_indivs,length(times),n_exposures))
 exposure_model_indiv_fixed(1,1,1,1,foe_pars,NULL) 

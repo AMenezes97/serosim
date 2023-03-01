@@ -16,5 +16,5 @@ A plot of individual exposure probabilities across time for all exposure events 
 Plot individual exposure probabilities across time for all individuals and exposure events
 }
 \examples{
-plot_exposure_force(example_force_long)
+plot_exposure_force(example_exposure_force)
 }

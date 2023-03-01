@@ -75,8 +75,8 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
     cutoffs_tmp<-c(cutoffs_b,Inf)
     biomarker_states_tmp<-biomarker_states[biomarker_states$b==bs,]
     biomarker_states_tmp$observed<-cut(biomarker_states_tmp$value, breaks=cutoffs_tmp, right=FALSE, labels=cutoffs_b)
+    biomarker_states_tmp$observed<-as.numeric(as.character(biomarker_states_tmp$observed))
     biomarker_states_new<- rbind(biomarker_states_new, biomarker_states_tmp)
-    
   }
   biomarker_states_new
 }

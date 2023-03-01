@@ -48,20 +48,6 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, m
   ## For each parameter; randomly sample from the distribution given the mean and sd 
   for(par in 1:nrow(model_pars_tmp)){
     if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
-      
-      ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
-      }
-      
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
-      
       pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
       par_names[par] <- model_pars_tmp$name[par]
     }
@@ -141,18 +127,6 @@ draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biom
       } else if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
       
       ## Create functions to convert normal distributions to log-normal distributions
-      normal_to_lognormal_mean <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        meanlog <- log(normmean ^ 2 / phi)
-        return(meanlog)
-      }
-      
-      normal_to_lognormal_sd <- function(normmean, normsd) {
-        phi <- sqrt(normsd ^ 2 + normmean ^ 2)
-        sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
-        return(sdlog)
-      }
-      
       pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
       par_names[par] <- model_pars_tmp$name[par]
     } else if(model_pars_tmp$distribution[par]=="normal"){

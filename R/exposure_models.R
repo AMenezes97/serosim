@@ -82,7 +82,7 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' 
 #' ## Create demography modifiers
 #' ## Example with two individuals, one in low SES -and one in high SES
-#' demography <- tibble(i = rep(1:n_indiv, each=n_times), t=rep(times,2),SES=rep(c("low","high"),each=n_times))
+#' demography <- tibble(i = rep(1:n_indiv, each=n_times), times=rep(times,2),SES=rep(c("low","high"),each=n_times))
 #' 
 #' ## Create example where for exposure ID 1, high SES gives 25% reduction in FOE.
 #' ## high SES gives 50% reduction in FOE for exposure ID 2
@@ -145,9 +145,9 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
         p <- p*modifier
       }
     }
-    p_exp<-1-exp(-p)
-    p_exp
   }
+  p_exp<-1-exp(-p)
+  p_exp
 }
 
 #' SIR Exposure Model
@@ -168,7 +168,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' foe_pars <- data.frame(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),values=c(0.2,1/7,1/10000,0,50))
 #' ## Solve over all times as example
 #' sir_prob <- exposure_model_sir(1, times, 1, 1, foe_pars)
-#' plot_exposure_model(exposure_model_sir,seq(1,365,by=1),n_groups=1,n_exposures=1,foe_pars=foe_pars)
+#' plot_exposure_model(exposure_model=exposure_model_sir,times=seq(1,365,by=1),n_groups=1,n_exposures=1,foe_pars=foe_pars)
 exposure_model_sir <- function(i, t, x, g, foe_pars, 
                                demography=NULL,
                                time_res=1,...){
@@ -275,7 +275,7 @@ exposure_model_gaussian_process <- function(i, t, x, g, foe_pars, demography, ..
     
     l <- foe_pars_tmp["l"]
     sigma <- foe_pars_tmp["sigma"]
-    K <- sigma^2 * exp(-(dist^2) / (2*l^2))
+    K <- sigma^2 * exp(-(t_dist^2) / (2*l^2))
     ## Add 0.01 to the diagonal of K to ensure positive definite
     diag(K) <- diag(K) + 1e-8
     
@@ -304,7 +304,7 @@ exposure_model_gaussian_process <- function(i, t, x, g, foe_pars, demography, ..
 #' @export
 #' @examples
 #' times <- seq(0,365,by=1)
-#' n_indivs <- 1:100
+#' n_indivs <- 100
 #' n_exposures <- 1
 #' foe_pars <- array(0.01, dim=c(n_indivs,length(times),n_exposures))
 #' exposure_model_indiv_fixed(1,1,1,1,foe_pars,NULL) 

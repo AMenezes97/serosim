@@ -34,7 +34,8 @@ This function simulates uniformly distributed removal times for a specified numb
 }
 \examples{
 ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
-simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
+birth_times<-simulate_birth_times(500, 1:100, age_min=9) 
+simulate_removal_times(500,1:100,birth_times, removal_min=10,removal_max=99, prob_removal=0.4)
 }
 \seealso{
 Other demography: 

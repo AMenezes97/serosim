@@ -57,6 +57,6 @@ tmp_exposure_history[1,1:3,1] <- 1
 tmp_demography <- tibble(i=1, birth=1)
 ## Probability of successful exposure ID 1 at time 8 is 0, as all 3 allowable exposure events have occurred
 immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
-## Probability of successful exposure ID 2 at time 8 is 0, as <5 of the allowable exposure events have occurred
+## Probability of successful exposure ID 2 at time 8 is 1, as <5 of the allowable exposure events have occurred
 immunity_model_vacc_ifxn_simple(1,8,2,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
 }

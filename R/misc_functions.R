@@ -88,7 +88,8 @@ simulate_birth_times <- function(N, times, age_min=0){
 #'
 #' @examples
 #' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
-#' simulate_removal_times(500,1:100,removal_min=10,removal_max=99, prob_removal=0.4)
+#' birth_times<-simulate_birth_times(500, 1:100, age_min=9) 
+#' simulate_removal_times(500,1:100,birth_times, removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal_max=max(times), prob_removal=0){
     if(removal_min < min(times)){
         message(cat("removal_min is less than the first time step. Setting to min(times)."))
@@ -408,13 +409,32 @@ convert_indices_matrix_to_vector <- function(i, j, n){
     (j-1)*n + i
 }
 
-## Create functions to convert normal distributions to log-normal distributions
+#' Convert normal distributions to log-normal distributions and return mean
+#'
+#' @param normmean Mean of the normal distribution 
+#' @param normsd Standard deviation of the normal distribution 
+#'
+#' @return Mean of the log-normal distribution 
+#' @export
+#'
+#' @examples
+#' normal_to_lognormal_mean(50,10)
 normal_to_lognormal_mean <- function(normmean, normsd) {
     phi <- sqrt(normsd ^ 2 + normmean ^ 2)
     meanlog <- log(normmean ^ 2 / phi)
     return(meanlog)
 }
 
+#' Convert normal distributions to log-normal distributions and return standard deviation
+#'
+#' @param normmean Mean of the normal distribution 
+#' @param normsd Standard deviation of the normal distribution 
+#'
+#' @return Standard deviation of the log-normal distribution 
+#' @export
+#'
+#' @examples
+#' normal_to_lognormal_sd(50,10)
 normal_to_lognormal_sd <- function(normmean, normsd) {
     phi <- sqrt(normsd ^ 2 + normmean ^ 2)
     sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))

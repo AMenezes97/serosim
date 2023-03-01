@@ -82,7 +82,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' tmp_demography <- tibble(i=1, birth=1)
 #' ## Probability of successful exposure ID 1 at time 8 is 0, as all 3 allowable exposure events have occurred
 #' immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
-#' ## Probability of successful exposure ID 2 at time 8 is 0, as <5 of the allowable exposure events have occurred
+#' ## Probability of successful exposure ID 2 at time 8 is 1, as <5 of the allowable exposure events have occurred
 #' immunity_model_vacc_ifxn_simple(1,8,2,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
 immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories, 
                                      biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age, ...){
@@ -139,7 +139,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' tmp_biomarker_states[1,,1] <- 3
 #' tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 #' ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
-#' immunity_model_ifxn_biomarker_prot(1,8,1,,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=NULL, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
+#' immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=NULL, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
 immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
                               biomarker_states, demography, biomarker_map, model_pars, ...){
     ## Find biomarkers which are boosted by this exposure type
