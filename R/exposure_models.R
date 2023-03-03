@@ -112,11 +112,11 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
     
     ## Pull individual's information within demography 
     individualnum<-i
-    demography_tmp<-data.table(demography)
+    demography_tmp<-data.table::data.table(demography)
     demography_tmp<-demography_tmp[demography_tmp$i==individualnum & demography_tmp$times==t,]
     
     ## Convert dem_mod to data table
-    mod2<-data.table(dem_mod)
+    mod2<-data.table::data.table(dem_mod)
     for (col in seq_along(cols)){ ## For each unique column entry in dem_mod 
       ## Pull the column name
       colname<-cols[col] 

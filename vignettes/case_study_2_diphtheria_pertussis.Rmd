@@ -1,11 +1,14 @@
 ---
-title: 'Paper case study 2: Multi-pathogen system with multivalent vaccinaton (Diphtheria and Pertussis)'
-author: "Arthur Menezes"
-date: '2022-08-24'
-output: html_document
+title: "Paper case study 2: Multi-pathogen system with multivalent vaccinaton (Diphtheria and Pertussis)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{case_study_2_diphtheria_pertussis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 bibliography: cs2_DP_PT_citations.bib
 link-citations: yes
 ---
+
 Here, we will use the _serosim_  package to generate a cross-sectional serosurvey of 
 a multi-pathogen system with multivalent vaccination. The overall structure 
 and principles discussed within this case study are applicable to pathogen 
@@ -149,7 +152,7 @@ two groups, there are 2 rows in the first foe_pars dimension to specify the grou
 specific force of exposure.
 
 
-```{r}
+```{r, fig.dim = c(5, 6)}
 ## Create an empty array to store the force of exposure for all exposure types across all time steps and groups
 ## Dimension 1: Group
 ## Dimension 2: Times
@@ -243,7 +246,7 @@ Pertussis:
 1. Low anti-pertussis IgG antibodies have shown significant correlation with pertussis susceptibility [@Storsaeter2003-uk] but a protective threshold has not been established [@Saso2020-gd] since there is no established immunological correlate of protection against disease [@Plotkin2008-oi].
 2. Given the information presented above, we have chosen that antibody levels between 40-100 IU/mL will confer higher level of protection since they are indicative of serpositivity and of recent pertussis infection or pertussis vaccination [@noauthor_undated-hp; @Chen2016-ka].
 
-```{r}
+```{r, fig.dim = c(4, 4.5)}
 ## Specify immunity model within the runserosim function below 
 immunity_model<-immunity_model_vacc_ifxn_biomarker_prot
 
@@ -357,7 +360,9 @@ model_pars
 
 ## Specify the draw_parameters function to use 
 draw_parameters<-draw_parameters_random_fx_biomarker_dep
+```
 
+```{r, fig.dim = c(5, 4)}
 ## Plot biomarker (in this case antibody titer) dependent boosting effects given parameters specified within model_pars for biomarker 1, diphtheria antibody (DP_antibody)
 plot_biomarker_dependent_boosting(start=0, end=2, by=.1, biomarker_ceiling_threshold=1.7, biomarker_ceiling_gradient=0.529411)
 
@@ -366,7 +371,6 @@ plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_thre
 
 ## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
 plot_antibody_model(antibody_model_biphasic, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
-
 ```
 
 # 1.7 Observation Model 
@@ -441,34 +445,50 @@ res<- runserosim(
 
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
-```{r} 
+```{r, fig.dim = c(6, 4)} 
 ## Plot diphtheria biomarker kinetics and exposure histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$exposure_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
+```
 
+```{r, fig.dim = c(6, 4)} 
 ## Plot pertussis biomarker kinetics and exposure histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$exposure_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
+```
 
+```{r, fig.dim = c(5, 6)} 
 ## Plot individual probability of exposure for all exposure types.
 ## This is the output of the exposure model.
 plot_exposure_force(res$exposure_force_long)
+```
 
+```{r, fig.dim = c(5, 6)} 
 ## Plot individual successful exposure probabilities for all exposure types
 ## This is the output of the exposure model multiplied by the output of the immunity model.
 ## In other words, this is the probability of exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
+```
 
+```{r, fig.dim = c(5, 6)} 
 ## Plot individual exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
+```
 
+```{r, fig.dim = c(4, 4.5)} 
 ## Plot diphtheria antibody (biomarker 1) states for all individuals (true biomarker quantities)
 plot_biomarker_quantity(res$biomarker_states %>% filter(b==1))
+```
 
+```{r, , fig.dim = c(4, 4.5)} 
 ## Plot pertussis antibody (biomarker 2) states for all individuals (true biomarker quantities)
 plot_biomarker_quantity(res$biomarker_states %>% filter(b==2))
+```
 
+```{r, fig.dim = c(4, 4.5)} 
 ## Plot the diphtheria serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states %>% filter(b==1))
+```
 
+```{r, fig.dim = c(4, 4.5)} 
 ## Plot the pertussis serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states %>% filter(b==2))
 

@@ -2,10 +2,9 @@ Package: serosim
 Title: Serosurvey simulation
 Version: 0.0.0.9000
 Authors@R: 
-    person("Arthur", "Menezes" , "am83@princeton.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-    person("James", "Hay", , "jhay@hsph.harvard.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    c(person("Arthur", "Menezes" , email="am83@princeton.edu", role = c("aut", "cre")),
+    person("James", "Hay", email="jhay@hsph.harvard.edu", role = "aut"))
+Maitaner: Arthur Menezes <am83@princeton.edu>
 Description: serosim is an open source R package designed to aid inference from serological surveys, by simulating data arising from user-specified vaccine and infection-generated antibody kinetics processes using a random effects model. serosim allows users to specify and adjust model inputs representing underlying processes responsible for generating the observed titer values like time-varying patterns of infection and vaccination, population demography, immunity and antibody kinetics, and serological survey sampling design in order to best represent the population and disease system(s) of interest.
 License: GPL (>= 3)
 Depends: 
@@ -14,15 +13,18 @@ Imports:
     data.table,
     dplyr,
     ggplot2,
-    MASS,
     patchwork,
     reshape2,
     tidyr,
-    tidyverse
+    tidyverse,
+    deSolve
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+VignetteBuilder: knitr
