@@ -39,7 +39,7 @@ immunity_model_vacc_only(
 
 \item{vacc_age}{a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input \code{NA}}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 The probability of successful exposure

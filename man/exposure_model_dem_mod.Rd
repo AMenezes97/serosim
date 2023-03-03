@@ -33,7 +33,7 @@ exposure_model_dem_mod(
 
 \item{t_in_year}{The number of time steps in a year; defaults to 1}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 A probability of exposure is returned

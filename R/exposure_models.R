@@ -27,7 +27,7 @@ exposure_model_fixed <- function(i, t, x, g, foe_pars, demography, ...){
 #' @param g group
 #' @param foe_pars A 3D array providing the force of exposure for each exposure ID, group and time.
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return A probability of exposure is returned
 #' @export
@@ -64,7 +64,7 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' @param demography A tibble of relevant demographic information for each individual in the simulation.
 #' @param dem_mod A tibble specifying the modifier (how much each input affects probability of exposure) for each demographic elements; column names are column, value, modifier. Entries in column and value must match format in demography table. All column and value combinations in demography must have a modifier value within this tibble. Users can also add age modifier (how much each age affects probability of exposure). The column name will be "age" with the entry being individual's ages. 
 #' @param t_in_year The number of time steps in a year; defaults to 1
-#' @param ... 
+#' @param ... Additional arguments
 #'  
 #' @return A probability of exposure is returned
 #' @export
@@ -156,7 +156,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' @inheritParams exposure_model_simple_FOE
 #' @param foe_pars Data frame containing SIR model parameters for each group and exposure combination. Variable names: x (exposure ID), g (group ID), name (parameter name), value (parameter value). Parameters needed are: beta (transmission rate), gamma (recovery rate), I0 (per capita infected population seed size), R0 (per capita recovered population seed size) and t0 (seeding time). See example for format.
 #' @param time_res Time steps to solve the ODEs. Set lower for higher accuracy.
-#' @param ... Additional arguments.
+#' @param ... Additional arguments
 #' @return Probability of exposure for the requested time step
 #' @export
 #' @examples 

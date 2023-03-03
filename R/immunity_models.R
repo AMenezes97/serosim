@@ -10,7 +10,7 @@
 #' @param demography a tibble of demographic information for each individual in the simulation
 #' @param biomarker_map a table specifying the relationship between exposure IDs and biomarker IDs
 #' @param model_pars a tibble of parameters needed for the immunity model
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return The probability of successful exposure
 #' @export
@@ -29,7 +29,7 @@ immunity_model_all_successful <- function(i, t, x, exposure_histories,
 #' @inheritParams immunity_model_all_successful
 #' @param max_vacc_events a vector of the maximum number of vaccination events possible for each exposure type; If an exposure type is not a vaccination event then input `NA`
 #' @param vacc_age a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input `NA`
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return The probability of successful exposure
 #' @export
@@ -70,7 +70,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' @param max_events a vector of the maximum number of successful exposure events possible for each exposure ID
 #' @param vacc_exposures a vector of exposure IDs (x)
 #' @param vacc_age a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input `NA`
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return  A probability of successful exposure is returned
 #' @export
@@ -125,7 +125,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' @description This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified `biomakrer_prot_midpoint` and `biomarker_prot_width` within `model_pars` is used to calculate biomarker-mediated protection.   
 #'    
 #' @inheritParams immunity_model_all_successful
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return A probability of successful exposure is returned
 #' @export
@@ -170,7 +170,7 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' @description This immunity model should be used if exposures represent vaccination and infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the biomarker quantity at the time of exposure and the total number of successful infections prior to that point.
 #' 
 #' @inheritParams immunity_model_vacc_ifxn_simple
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return A probability of successful exposure is returned
 #' @export

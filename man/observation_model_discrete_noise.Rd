@@ -24,7 +24,7 @@ observation_model_discrete_noise(
 
 \item{specificity}{number between 0 and 1 to describe the assay's specificity; defaults to 1}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 \code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities

@@ -33,7 +33,7 @@ immunity_model_ifxn_biomarker_prot(
 
 \item{model_pars}{a tibble of parameters needed for the immunity model}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 A probability of successful exposure is returned

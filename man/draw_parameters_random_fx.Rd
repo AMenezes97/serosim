@@ -30,7 +30,7 @@ draw_parameters_random_fx(
 
 \item{model_pars}{tibble of biomarker (antibody) kinetics parameters with variables: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution; 6) distribution: character description of the parameter distribution type (e.g., log-normal, normal)}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 A tibble with the simulated parameters for this exposure event

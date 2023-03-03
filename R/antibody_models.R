@@ -9,7 +9,7 @@
 #' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all biomarkers 
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return A biomarker quantity is returned 
 #' @export

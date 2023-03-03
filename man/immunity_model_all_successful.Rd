@@ -33,7 +33,7 @@ immunity_model_all_successful(
 
 \item{model_pars}{a tibble of parameters needed for the immunity model}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 The probability of successful exposure

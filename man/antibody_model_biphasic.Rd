@@ -30,7 +30,7 @@ antibody_model_biphasic(
 
 \item{biomarker_map}{A table specifying the relationship between exposure IDs and biomarker IDs}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 A biomarker quantity is returned

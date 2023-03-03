@@ -21,7 +21,7 @@ exposure_model_sir(i, t, x, g, foe_pars, demography = NULL, time_res = 1, ...)
 
 \item{time_res}{Time steps to solve the ODEs. Set lower for higher accuracy.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments}
 }
 \value{
 Probability of exposure for the requested time step

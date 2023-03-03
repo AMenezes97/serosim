@@ -4,7 +4,7 @@
 #'
 #' @param biomarker_states tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b
 #' @param model_pars a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
@@ -23,7 +23,7 @@ observation_model_continuous<-function(biomarker_states,model_pars, ...){
 #'
 #' @inheritParams observation_model_continuous
 #' @param bounds a tibble containing the assay lower bound and upper bound for all biomarkers; column namesare 1) biomarker_id; 2) name; 3) value, where name is either `lower_bound` or `upper_bound`
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
@@ -56,7 +56,7 @@ observation_model_continuous_bounded<-function(biomarker_states,model_pars, boun
 #'
 #' @inheritParams observation_model_continuous
 #' @param cutoffs a matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
@@ -88,7 +88,7 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 #' @inheritParams observation_model_continuous_bounded
 #' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
 #' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
@@ -145,7 +145,7 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
 #' @inheritParams observation_model_continuous_noise
 #' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
 #' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
@@ -197,7 +197,7 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
 #'
 #' @inheritParams observation_model_continuous_noise
 #' @inheritParams observation_model_discrete
-#' @param ... 
+#' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model

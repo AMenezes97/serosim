@@ -11,7 +11,7 @@ observation_model_continuous(biomarker_states, model_pars, ...)
 
 \item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 \code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities

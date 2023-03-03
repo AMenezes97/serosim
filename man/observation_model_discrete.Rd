@@ -13,7 +13,7 @@ observation_model_discrete(biomarker_states, model_pars, cutoffs, ...)
 
 \item{cutoffs}{a matrix containing the assay cutoffs for each biomarker. Each row contains all of the cutoffs for that biomarker starting with 0. For example, all of the cutoffs for the assay measuring biomarker 1 quantity are in the first row of this matrix.}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 \code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities

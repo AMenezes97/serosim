@@ -13,7 +13,7 @@ observation_model_continuous_bounded(biomarker_states, model_pars, bounds, ...)
 
 \item{bounds}{a tibble containing the assay lower bound and upper bound for all biomarkers; column namesare 1) biomarker_id; 2) name; 3) value, where name is either \code{lower_bound} or \code{upper_bound}}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 \code{biomarker_states} is returned with a new column, \code{observed}, for observed biomarker quantities

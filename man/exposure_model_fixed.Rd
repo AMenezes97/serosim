@@ -19,7 +19,7 @@ exposure_model_fixed(i, t, x, g, foe_pars, demography, ...)
 
 \item{demography}{A tibble of relevant demographic information for each individual in the simulation.}
 
-\item{...}{}
+\item{...}{Additional arguments}
 }
 \value{
 A probability of exposure from the foe_pars array
