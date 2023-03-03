@@ -33,7 +33,9 @@ A vector of all individual's removal times is returned. \code{NA} represents no 
 This function simulates uniformly distributed removal times for a specified number of individuals from the provided times vector. This might represent e.g., death or study attrition.
 }
 \examples{
-## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
+## Simulate random removal times for all individuals; Individuals have a 0.4 probability 
+## of being removed at some time after they are 10 time steps old and before 
+## they are 99 time steps old 
 birth_times<-simulate_birth_times(500, 1:100, age_min=9) 
 simulate_removal_times(500,1:100,birth_times, removal_min=10,removal_max=99, prob_removal=0.4)
 }

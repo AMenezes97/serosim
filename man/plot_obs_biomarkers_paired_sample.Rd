@@ -16,7 +16,8 @@ A plot of observed biomarker quantities for all individuals and biomarkers is re
 This function should be used when there were multiple time step in which biomarker quantities were observed
 }
 \examples{
+library(dplyr)
 example_biomarker_states$observed <- example_biomarker_states$value
-example_biomarker_states_subset <- example_biomarker_states \%>\% filter(t \%in\% c(1,120))
+example_biomarker_states_subset <- example_biomarker_states \%>\% dplyr::filter(t \%in\% c(1,120))
 plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
 }

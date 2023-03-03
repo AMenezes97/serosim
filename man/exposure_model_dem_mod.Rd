@@ -54,11 +54,12 @@ foe_pars[1,,2] <- 0.005
 
 ## Create demography modifiers
 ## Example with two individuals, one in low SES -and one in high SES
-demography <- tibble(i = rep(1:n_indiv, each=n_times), times=rep(times,2),SES=rep(c("low","high"),each=n_times))
+demography <- dplyr::tibble(i = rep(1:n_indiv, each=n_times), times=rep(times,2),
+SES=rep(c("low","high"),each=n_times))
 
 ## Create example where for exposure ID 1, high SES gives 25\% reduction in FOE.
 ## high SES gives 50\% reduction in FOE for exposure ID 2
-dem_mod <- tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
+dem_mod <- dplyr::tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
                  value=c("low","high","low","high"),modifier=c(1,0.75,1,0.5))
 
 ## Solve the model for each time point for each group.
@@ -66,7 +67,8 @@ dem_mod <- tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
 foe <- array(NA, dim=c(n_indiv, n_times, n_exposures))
 for(i in 1:n_indiv){
     for(x in 1:n_exposures){
-       foe[i,,x] <- unlist(sapply(times, function(t) exposure_model_dem_mod(i, t, x, 1, foe_pars, demography, dem_mod)))
+       foe[i,,x] <- unlist(sapply(times, function(t) exposure_model_dem_mod(i, 
+       t, x, 1, foe_pars, demography, dem_mod)))
     }
 }
 }

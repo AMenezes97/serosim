@@ -5,7 +5,7 @@ test_that("Check that runserosim works for README example", {
   demography <- generate_pop_demography(N=10, times=times, prob_removal=0)
   biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG","IgG"))
   biomarker_map <-reformat_biomarker_map(biomarker_map_original)
-  foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
+  foe_pars <- array(0, dim=c(1,max(times),dplyr::n_distinct(biomarker_map$exposure_id)))
   foe_pars[,,1] <- 0.01
   foe_pars[,,2] <- 0.1
   model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
@@ -43,7 +43,7 @@ test_that("Check that runserosim works for case study 1 example", {
   demography <- generate_pop_demography(10, times, age_min=0, prob_removal=0)
   biomarker_map_original <- tibble(exposure_id=c("measles_ifxn","measles_vacc"),biomarker_id=c("measles_IgG","measles_IgG"))
   biomarker_map <-reformat_biomarker_map(biomarker_map_original)
-  foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
+  foe_pars <- array(0, dim=c(1,max(times),dplyr::n_distinct(biomarker_map$exposure_id)))
   foe_pars[,,1] <- 0.02
   foe_pars[,,2] <- 0.04
   model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
@@ -88,7 +88,7 @@ test_that("Check that runserosim works for case study 2 example", {
   demography <- generate_pop_demography(10, times, age_min=0, removal_min=1, removal_max=120, prob_removal=0.2, aux=aux)
   biomarker_map_original <- tibble(exposure_id=c("DP_ifxn","PT_ifxn","vacc","vacc"),biomarker_id=c("DP_antibody","PT_antibody","DP_antibody","PT_antibody"))
   biomarker_map <-reformat_biomarker_map(biomarker_map_original)
-  foe_pars <- array(0, dim=c(n_distinct(demography$group),max(times), n_distinct(biomarker_map$exposure_id)))
+  foe_pars <- array(0, dim=c(dplyr::n_distinct(demography$group),max(times), dplyr::n_distinct(biomarker_map$exposure_id)))
   foe_pars[1,,1] <- 0.04
   foe_pars[2,,1] <- 0.03
   foe_pars[1,,2] <- 0.02 

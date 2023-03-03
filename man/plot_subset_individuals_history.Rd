@@ -30,5 +30,6 @@ A plot of  biomarker states and exposure histories for a subset of individuals i
 Plot biomarker states and exposure histories for a subset of individuals
 }
 \examples{
-plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,3,example_demography)
+plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,
+3,example_demography)
 }

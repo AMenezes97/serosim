@@ -50,5 +50,7 @@ tmp_biomarker_states <- array(0, dim=c(1,10,1))
 tmp_biomarker_states[1,,1] <- 3
 tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
-immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=NULL, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
+immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+biomarker_states=tmp_biomarker_states, demography=NULL, 
+biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
 }

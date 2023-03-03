@@ -33,6 +33,7 @@ observation_model_discrete_noise(
 This observation model observes the latent biomarker quantities given a discrete assay with user-specified ranges within discrete and added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the “obs_sd” parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to the assay's lower bound with probability \code{sensitivity}. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-\code{specificity}.
 }
 \examples{
+library(dplyr)
 breaks <- seq(0,8,by=1)
 cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
 tmp_pars <- example_model_pars_numeric \%>\% mutate(sd=ifelse(name=="obs_sd",2,sd))

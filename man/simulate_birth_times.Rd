@@ -20,7 +20,8 @@ A vector of simulated birth times for each individual
 This function simulates uniformly distributed birth times for a specified number of individuals from a provided vector
 }
 \examples{
-## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
+## Simulate random birth times for 500 individuals over 100 time steps and ensures 
+## that all individuals are above 9 time steps old by the last time step
 simulate_birth_times(500, 1:100, age_min=9) 
 }
 \seealso{

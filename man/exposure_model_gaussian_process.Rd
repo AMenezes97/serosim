@@ -34,6 +34,6 @@ tmp_x1 <- simulate_gaussian_process(pars_x1)
 tmp_x2 <- simulate_gaussian_process(pars_x2)
 foe_pars1 <- data.frame(name=names(tmp_x1$pars), value=unname(tmp_x1$pars),x=1,g=1)
 foe_pars2 <- data.frame(name=names(tmp_x2$pars), value=unname(tmp_x2$pars),x=2,g=1)
-foe_pars <- bind_rows(foe_pars1, foe_pars2)
+foe_pars <- dplyr::bind_rows(foe_pars1, foe_pars2)
 exposure_model_gaussian_process(1, 365, 1, 1, foe_pars, NULL)
 }

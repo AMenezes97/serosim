@@ -296,8 +296,9 @@ return(p)
 #' @export
 #'
 #' @examples 
+#' library(dplyr)
 #' example_biomarker_states$observed <- example_biomarker_states$value
-#' example_biomarker_states_subset <- example_biomarker_states %>% filter(t %in% c(1,120))
+#' example_biomarker_states_subset <- example_biomarker_states %>% dplyr::filter(t %in% c(1,120))
 #' plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
 plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states){
 p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = i)) + 
@@ -347,7 +348,8 @@ return(p)
 #' @export
 #'
 #' @examples
-#' plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,3,example_demography)
+#' plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,
+#' 3,example_demography)
 plot_subset_individuals_history <- function(biomarker_states, exposure_histories, subset, demography, removal=FALSE){
   exposure_histories$x <- paste0("Exposure: ", exposure_histories$x)
   biomarker_states$b <- paste0("Biomarker: ", biomarker_states$b)
@@ -415,11 +417,15 @@ plot_subset_individuals_history <- function(biomarker_states, exposure_histories
 #' @importFrom stats complete.cases
 #' @export
 #' @examples
-#' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
+#' library(dplyr)
+#' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% 
+#' tidyr::drop_na()
 #' draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
-#' biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
-#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
-#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
+#' biomarker_map <- dplyr::tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
+#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,
+#' draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+#' plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,
+#' draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
                                 demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
     exposure_ids <- unique(biomarker_map$exposure_id)
@@ -500,20 +506,27 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
 #' foe_pars[1,,1] <- 0.01
 #' foe_pars[1,,2] <- 0.005 
 #' aux <- list("SES"=list("name"="SES","options"=c("low","high"), "distribution"=c(0.5,0.5)))
-#' demography <- generate_pop_demography(N=5, times, age_min=0, removal_min=1, removal_max=120, prob_removal=0.2, aux=aux)
-#' dem_mod <- tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
+#' demography <- generate_pop_demography(N=5, times, age_min=0, removal_min=1, 
+#' removal_max=120, prob_removal=0.2, aux=aux)
+#' dem_mod <- dplyr::tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
 #'                  value=c("low","high","low","high"),modifier=c(1,0.75,1,0.5))
 #' 
-#' plot_exposure_model(indivs=1:5, exposure_model=exposure_model_dem_mod, times=times,1,2,foe_pars=foe_pars,demography = demography,dem_mod=dem_mod)
+#' plot_exposure_model(indivs=1:5, exposure_model=exposure_model_dem_mod, 
+#' times=times,1,2,foe_pars=foe_pars,demography = demography,dem_mod=dem_mod)
 #'                     
 #' ## SIR model with two groups and two exposure types                 
-#' foe_pars <- bind_rows(
-#'                       tibble(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),value=c(0.3,0.2,0.00001,0,0)),
-#'                       tibble(x=2,g=1,name=c("beta","gamma","I0","R0","t0"),value=c(0.35,0.25,0.00001,0,200)),
-#'                       tibble(x=1,g=2,name=c("beta","gamma","I0","R0","t0"),value=c(0.5,0.2,0.00005,0,0)),
-#'                       tibble(x=2,g=2,name=c("beta","gamma","I0","R0","t0"),value=c(0.27,0.2,0.00001,0,50))
+#' foe_pars <- dplyr::bind_rows(
+#'                       dplyr::tibble(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),
+#'                       value=c(0.3,0.2,0.00001,0,0)),
+#'                       dplyr::tibble(x=2,g=1,name=c("beta","gamma","I0","R0","t0"),
+#'                       value=c(0.35,0.25,0.00001,0,200)),
+#'                       dplyr::tibble(x=1,g=2,name=c("beta","gamma","I0","R0","t0"),
+#'                       value=c(0.5,0.2,0.00005,0,0)),
+#'                       dplyr::tibble(x=2,g=2,name=c("beta","gamma","I0","R0","t0"),
+#'                       value=c(0.27,0.2,0.00001,0,50))
 #'                       )
-#' plot_exposure_model(exposure_model=exposure_model_sir, times=seq(1,365,by=1),n_groups = 2,n_exposures = 2,foe_pars=foe_pars)
+#' plot_exposure_model(exposure_model=exposure_model_sir, times=seq(1,365,by=1),
+#' n_groups = 2,n_exposures = 2,foe_pars=foe_pars)
 #'                     
 plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_exposures=1, foe_pars, demography=NULL, ...){
     n_times <- length(times)

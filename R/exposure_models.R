@@ -44,7 +44,8 @@ exposure_model_fixed <- function(i, t, x, g, foe_pars, demography, ...){
 #' ## but is kept for compatibility with other functions.
 #' foe <- matrix(NA, nrow=n_groups,ncol=length(times))
 #' for(g in 1:nrow(foe)){
-#'     foe[g,] <- unlist(sapply(times, function(t) exposure_model_simple_FOE(NULL, t, 1, g, foe_pars, NULL)))
+#'     foe[g,] <- unlist(sapply(times, function(t) exposure_model_simple_FOE(NULL, 
+#'     t, 1, g, foe_pars, NULL)))
 #' }
 exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
   p <- foe_pars[g, t, x]
@@ -83,11 +84,12 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' 
 #' ## Create demography modifiers
 #' ## Example with two individuals, one in low SES -and one in high SES
-#' demography <- tibble(i = rep(1:n_indiv, each=n_times), times=rep(times,2),SES=rep(c("low","high"),each=n_times))
+#' demography <- dplyr::tibble(i = rep(1:n_indiv, each=n_times), times=rep(times,2),
+#' SES=rep(c("low","high"),each=n_times))
 #' 
 #' ## Create example where for exposure ID 1, high SES gives 25% reduction in FOE.
 #' ## high SES gives 50% reduction in FOE for exposure ID 2
-#' dem_mod <- tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
+#' dem_mod <- dplyr::tibble(exposure_id=c(1,1,2,2),column=c("SES","SES","SES","SES"),
 #'                  value=c("low","high","low","high"),modifier=c(1,0.75,1,0.5))
 #' 
 #' ## Solve the model for each time point for each group.
@@ -95,7 +97,8 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' foe <- array(NA, dim=c(n_indiv, n_times, n_exposures))
 #' for(i in 1:n_indiv){
 #'     for(x in 1:n_exposures){
-#'        foe[i,,x] <- unlist(sapply(times, function(t) exposure_model_dem_mod(i, t, x, 1, foe_pars, demography, dem_mod)))
+#'        foe[i,,x] <- unlist(sapply(times, function(t) exposure_model_dem_mod(i, 
+#'        t, x, 1, foe_pars, demography, dem_mod)))
 #'     }
 #' }
 exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_in_year=1, ...){
@@ -170,7 +173,8 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' foe_pars <- data.frame(x=1,g=1,name=c("beta","gamma","I0","R0","t0"),values=c(0.2,1/7,1/10000,0,50))
 #' ## Solve over all times as example
 #' sir_prob <- exposure_model_sir(1, times, 1, 1, foe_pars)
-#' plot_exposure_model(exposure_model=exposure_model_sir,times=seq(1,365,by=1),n_groups=1,n_exposures=1,foe_pars=foe_pars)
+#' plot_exposure_model(exposure_model=exposure_model_sir,times=seq(1,365,by=1),
+#' n_groups=1,n_exposures=1,foe_pars=foe_pars)
 exposure_model_sir <- function(i, t, x, g, foe_pars, 
                                demography=NULL,
                                time_res=1,...){
@@ -257,7 +261,7 @@ simulate_gaussian_process <- function(pars){
 #' tmp_x2 <- simulate_gaussian_process(pars_x2)
 #' foe_pars1 <- data.frame(name=names(tmp_x1$pars), value=unname(tmp_x1$pars),x=1,g=1)
 #' foe_pars2 <- data.frame(name=names(tmp_x2$pars), value=unname(tmp_x2$pars),x=2,g=1)
-#' foe_pars <- bind_rows(foe_pars1, foe_pars2)
+#' foe_pars <- dplyr::bind_rows(foe_pars1, foe_pars2)
 #' exposure_model_gaussian_process(1, 365, 1, 1, foe_pars, NULL)
 #' @export
 exposure_model_gaussian_process <- function(i, t, x, g, foe_pars, demography, ...){

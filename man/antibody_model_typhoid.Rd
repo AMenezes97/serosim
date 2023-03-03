@@ -39,7 +39,7 @@ A biomarker_quantity is returned
 Power law antibody boosting and waning model
 }
 \examples{
-model_pars <- readr::read_csv("inst/extdata/model_pars_typhoid.csv")
+model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_typhoid.csv")
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 tmp_exposure_history <- array(0,dim=c(1,11,2))

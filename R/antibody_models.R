@@ -17,7 +17,8 @@
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_monophasic(1,1,1,example_exposure_histories, example_biomarker_states, tmp_pars, example_biomarker_map_numeric)
+#' antibody_model_monophasic(1,1,1,example_exposure_histories, example_biomarker_states, 
+#' tmp_pars, example_biomarker_map_numeric)
 antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   ## Find which successful exposures correspond to this biomarker 
   exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==b]
@@ -117,7 +118,7 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_sta
 #' @export
 #'
 #' @examples
-#' model_pars <- readr::read_csv("inst/extdata/model_pars_typhoid.csv")
+#' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_typhoid.csv")
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 #' tmp_exposure_history <- array(0,dim=c(1,11,2))

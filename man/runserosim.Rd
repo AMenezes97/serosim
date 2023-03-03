@@ -60,5 +60,5 @@ a list containing the following elements: force of exposure, exposure probabilit
 Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed biomarker quantities. See README for full details.
 }
 \examples{
-See package README.
+## See package README.
 }

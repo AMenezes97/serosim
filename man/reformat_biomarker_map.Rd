@@ -21,11 +21,11 @@ This function will reformat the \code{biomarker_map} or \code{model_pars} object
 }
 \examples{
 ## Convert characters to numeric
-biomarker_map <- tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
+biomarker_map <- dplyr::tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
 reformat_biomarker_map(biomarker_map)
 
 ## Convert numeric to characters
-biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
+biomarker_map <- dplyr::tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
 reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
 }
 \concept{misc}

@@ -40,16 +40,20 @@ Generates a tibble of random demographic information for each individual in the 
 }
 \examples{
 ## Example 1 -- default
-generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, 
+removal_max=120, prob_removal=0.3)
 
 ## Example 2 -- specified birth times
 birth_times <- rpois(100, 5)
-generate_pop_demography(N=100, times=1:120, birth_times=birth_times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+generate_pop_demography(N=100, times=1:120, birth_times=birth_times, 
+age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 
 ## Example 3 -- using auxiliary variables
 aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=c(0.5,0.5)),
-            "Group"=list("name"="group","options"=c(1, 2, 3, 4), "proportion"=c(0.25,0.25,0.25,0.25)) )
-generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+            "Group"=list("name"="group","options"=c(1, 2, 3, 4), 
+            "proportion"=c(0.25,0.25,0.25,0.25)) )
+generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, 
+prob_removal=0.3, aux=aux)
 }
 \seealso{
 Other demography: 

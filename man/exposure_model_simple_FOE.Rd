@@ -39,6 +39,7 @@ foe_pars[2,,] <- 0.005
 ## but is kept for compatibility with other functions.
 foe <- matrix(NA, nrow=n_groups,ncol=length(times))
 for(g in 1:nrow(foe)){
-    foe[g,] <- unlist(sapply(times, function(t) exposure_model_simple_FOE(NULL, t, 1, g, foe_pars, NULL)))
+    foe[g,] <- unlist(sapply(times, function(t) exposure_model_simple_FOE(NULL, 
+    t, 1, g, foe_pars, NULL)))
 }
 }

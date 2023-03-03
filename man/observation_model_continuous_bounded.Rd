@@ -22,7 +22,7 @@ observation_model_continuous_bounded(biomarker_states, model_pars, bounds, ...)
 This observation model observes the latent biomarker quantities given a continuous assay with user-specified lower and upper limits and no added noise.
 }
 \examples{
-bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+bounds <- dplyr::tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
 observation_model_continuous_bounded(example_biomarker_states, NULL,bounds)
 }
 \seealso{

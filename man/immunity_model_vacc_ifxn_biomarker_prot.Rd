@@ -57,11 +57,19 @@ tmp_exposure_history[1,1:3,1] <- 1
 ## Set all biomarker states to 3 for sake of example
 tmp_biomarker_states <- array(0, dim=c(1,10,1))
 tmp_biomarker_states[1,,1] <- 3
-tmp_demography <- tibble(i=1, birth=1)
+tmp_demography <- dplyr::tibble(i=1, birth=1)
 tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
-## Successful exposure probability for exposure ID 1 (representing vaccination) is 1 or 0 depending on exposure history
-immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3),vacc_exposures=c(1),vacc_age=c(1))
+## Successful exposure probability for exposure ID 1 (representing vaccination) 
+## is 1 or 0 depending on exposure history
+immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
+biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,
+max_events=c(3),vacc_exposures=c(1),vacc_age=c(1))
 
-## Successful exposure probability for exposure ID 2 (representing infection) is conditional on titer
-immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),vacc_exposures=c(1),vacc_age=c(1))
+## Successful exposure probability for exposure ID 2 (representing infection) 
+## is conditional on titer
+immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, 
+biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
+biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),
+vacc_exposures=c(1),vacc_age=c(1))
 }

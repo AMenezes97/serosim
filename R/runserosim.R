@@ -21,9 +21,12 @@
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr arrange 
+#' @importFrom dplyr distinct
+#' @importFrom dplyr select
 #' @importFrom reshape2 melt
 #' @export
-#' @examples See package README.
+#' @examples 
+#' ## See package README.
 runserosim <- function(
     ## SIMULATION SETTINGS
     simulation_settings, ## List of parameters governing the simulation settings

@@ -49,7 +49,10 @@ times <- seq(1,100,by=1)
 N <- 100
 n_exposure_ids <- 2
 n_groups <- 2
-demography <- generate_pop_demography(N=N, times=times,prob_removal=0,aux=list(Group=list(name="group",options=c(1,2),proportion=c(0.5,0.5))))
-foe_pars <- array(runif(n_exposure_ids*length(times)*n_groups),dim=c(n_groups,length(times),n_exposure_ids))
-res <- precomputation_checks(N, times=times, exposure_ids=1:2,groups=1:2,exposure_model_simple_FOE,foe_pars=foe_pars, demography=demography,VERBOSE=10,check_correct=TRUE)
+demography <- generate_pop_demography(N=N, times=times,prob_removal=0,
+aux=list(Group=list(name="group",options=c(1,2),proportion=c(0.5,0.5))))
+foe_pars <- array(runif(n_exposure_ids*length(times)*n_groups),dim=c(n_groups,
+length(times),n_exposure_ids))
+res <- precomputation_checks(N, times=times, exposure_ids=1:2,groups=1:2,
+exposure_model_simple_FOE,foe_pars=foe_pars, demography=demography,VERBOSE=10,check_correct=TRUE)
 }

@@ -50,6 +50,7 @@ This immunity model should only be used if all exposures are vaccination events.
 \examples{
 tmp_exposure_history <- array(0, dim=c(1, 10, 1))
 tmp_exposure_history[1,1,1] <- 1
-tmp_demography <- tibble(i=1, birth=1)
-immunity_model_vacc_only(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_vacc_events=2,vacc_age=5)
+tmp_demography <- dplyr::tibble(i=1, birth=1)
+immunity_model_vacc_only(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, 
+NULL,max_vacc_events=2,vacc_age=5)
 }

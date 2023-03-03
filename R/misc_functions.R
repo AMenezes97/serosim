@@ -17,21 +17,26 @@
 #' @importFrom dplyr tibble
 #' @importFrom dplyr mutate
 #' @importFrom dplyr %>% 
+#' @importFrom dplyr bind_cols
 #' @importFrom tidyr expand_grid
 #' @export
 #'
 #' @examples 
 #' ## Example 1 -- default
-#' generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' generate_pop_demography(10, times=1:120, age_min=0, removal_min=0, 
+#' removal_max=120, prob_removal=0.3)
 #' 
 #' ## Example 2 -- specified birth times
 #' birth_times <- rpois(100, 5)
-#' generate_pop_demography(N=100, times=1:120, birth_times=birth_times, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
+#' generate_pop_demography(N=100, times=1:120, birth_times=birth_times, 
+#' age_min=0, removal_min=0, removal_max=120, prob_removal=0.3)
 #' 
 #' ## Example 3 -- using auxiliary variables
 #' aux <- list("Sex"=list("name"="sex","options"=c("male", "female"), "proportion"=c(0.5,0.5)),
-#'             "Group"=list("name"="group","options"=c(1, 2, 3, 4), "proportion"=c(0.25,0.25,0.25,0.25)) )
-#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, prob_removal=0.3, aux=aux)
+#'             "Group"=list("name"="group","options"=c(1, 2, 3, 4), 
+#'             "proportion"=c(0.25,0.25,0.25,0.25)) )
+#' generate_pop_demography(10, 1:120, age_min=0, removal_min=0, removal_max=120, 
+#' prob_removal=0.3, aux=aux)
 generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal_min=min(times), removal_max=max(times), prob_removal, aux=NULL){
     ## If no birth times provided, simulate
     if(is.null(birth_times)){
@@ -70,7 +75,8 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
 #' @export
 #'
 #' @examples 
-#' ## Simulate random birth times for 500 individuals over 100 time steps and ensures that all individuals are above 9 time steps old by the last time step
+#' ## Simulate random birth times for 500 individuals over 100 time steps and ensures 
+#' ## that all individuals are above 9 time steps old by the last time step
 #' simulate_birth_times(500, 1:100, age_min=9) 
 simulate_birth_times <- function(N, times, age_min=0){
     if(age_min >= max(times)){
@@ -93,7 +99,9 @@ simulate_birth_times <- function(N, times, age_min=0){
 #' @export
 #'
 #' @examples
-#' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability of being removed at some time after they are 10 time steps old and before they are 99 time steps old 
+#' ## Simulate random removal times for all individuals; Individuals have a 0.4 probability 
+#' ## of being removed at some time after they are 10 time steps old and before 
+#' ## they are 99 time steps old 
 #' birth_times<-simulate_birth_times(500, 1:100, age_min=9) 
 #' simulate_removal_times(500,1:100,birth_times, removal_min=10,removal_max=99, prob_removal=0.4)
 simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal_max=max(times), prob_removal=0){
@@ -129,7 +137,7 @@ simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal
 #' @return A printed statement indicating an individual number is returned 
 #'
 #' @examples
-#' update(10, 100)
+#' ## update(10, 100)
 update <- function(VERBOSE, i){ 
   if(!is.null(VERBOSE)){
    if(i %% VERBOSE == 0){
@@ -151,11 +159,11 @@ update <- function(VERBOSE, i){
 #'
 #' @examples
 #' ## Convert characters to numeric
-#' biomarker_map <- tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
+#' biomarker_map <- dplyr::tibble(exposure_id=c("infection","vaccination"),biomarker_id=c("IgG","IgG"))
 #' reformat_biomarker_map(biomarker_map)
 #' 
 #' ## Convert numeric to characters
-#' biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
+#' biomarker_map <- dplyr::tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
 #' reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
 reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NULL){
     if(any(apply(input_map, 2, class) == "character")){
@@ -201,9 +209,12 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
 #' N <- 100
 #' n_exposure_ids <- 2
 #' n_groups <- 2
-#' demography <- generate_pop_demography(N=N, times=times,prob_removal=0,aux=list(Group=list(name="group",options=c(1,2),proportion=c(0.5,0.5))))
-#' foe_pars <- array(runif(n_exposure_ids*length(times)*n_groups),dim=c(n_groups,length(times),n_exposure_ids))
-#' res <- precomputation_checks(N, times=times, exposure_ids=1:2,groups=1:2,exposure_model_simple_FOE,foe_pars=foe_pars, demography=demography,VERBOSE=10,check_correct=TRUE)
+#' demography <- generate_pop_demography(N=N, times=times,prob_removal=0,
+#' aux=list(Group=list(name="group",options=c(1,2),proportion=c(0.5,0.5))))
+#' foe_pars <- array(runif(n_exposure_ids*length(times)*n_groups),dim=c(n_groups,
+#' length(times),n_exposure_ids))
+#' res <- precomputation_checks(N, times=times, exposure_ids=1:2,groups=1:2,
+#' exposure_model_simple_FOE,foe_pars=foe_pars, demography=demography,VERBOSE=10,check_correct=TRUE)
 #' @export
 precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model,
                                   foe_pars, demography, VERBOSE, check_correct=FALSE,...){

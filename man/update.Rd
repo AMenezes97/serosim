@@ -18,5 +18,5 @@ A printed statement indicating an individual number is returned
 This function is used within runserosim to produce messages to inform the user which individual the simulation is currently running
 }
 \examples{
-update(10, 100)
+## update(10, 100)
 }

@@ -31,7 +31,7 @@ observation_model_continuous<-function(biomarker_states,model_pars, ...){
 #' @export
 #'
 #' @examples
-#' bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+#' bounds <- dplyr::tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
 #' observation_model_continuous_bounded(example_biomarker_states, NULL,bounds)
 observation_model_continuous_bounded<-function(biomarker_states,model_pars, bounds, ...){
   biomarker_states$observed<-biomarker_states$value
@@ -102,8 +102,9 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 #' @export
 #'
 #' @examples
-#' bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
-#' observation_model_continuous_bounded_noise(example_biomarker_states, example_model_pars_numeric, bounds,0.95,0.99)
+#' bounds <- dplyr::tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
+#' observation_model_continuous_bounded_noise(example_biomarker_states, 
+#' example_model_pars_numeric, bounds,0.95,0.99)
 observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars, bounds, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
@@ -217,9 +218,11 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
 #' @importFrom stats rnorm
 #' @importFrom stats rlnorm
 #' @importFrom dplyr arrange
+#' @importFrom dplyr "%>%"
 #' @export
 #'
 #' @examples
+#' library(dplyr)
 #' breaks <- seq(0,8,by=1)
 #' cutoffs <- matrix(breaks,nrow=1,ncol=length(breaks))
 #' tmp_pars <- example_model_pars_numeric %>% mutate(sd=ifelse(name=="obs_sd",2,sd))

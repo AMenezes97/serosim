@@ -39,5 +39,6 @@ A tibble with the simulated parameters for this exposure event
 Draws parameters directly from \code{model_pars} for the antibody model with random effects. Parameters are drawn randomly from a distribution with mean and standard deviation specified within \code{model_pars}.
 }
 \examples{
-draw_parameters_random_fx(1,1,1,1,example_demography, example_biomarker_states, example_model_pars_numeric)
+draw_parameters_random_fx(1,1,1,1,example_demography, example_biomarker_states, 
+example_model_pars_numeric)
 }

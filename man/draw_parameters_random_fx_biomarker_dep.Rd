@@ -40,5 +40,6 @@ Adds biomarker quantity ceiling effects to the previous draw_parameters_random_f
 }
 \examples{
 model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
-draw_parameters_random_fx_biomarker_dep(2,100,1,1,example_demography, example_biomarker_states_wide, model_pars)
+draw_parameters_random_fx_biomarker_dep(2,100,1,1,example_demography, 
+example_biomarker_states_wide, model_pars)
 }
