@@ -36,6 +36,22 @@ Load necessary packages:
 ``` r
 ## Install and load serosim 
 devtools::install_github("AMenezes97/serosim")
+```
+
+    ## deSolve (1.30 -> 1.34) [CRAN]
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/hz/p73gx8v941q29dz9n1xr5t500000gn/T//RtmpoAWNYR/downloaded_packages
+    ##      checking for file ‘/private/var/folders/hz/p73gx8v941q29dz9n1xr5t500000gn/T/RtmpoAWNYR/remotes13aa9404d61e8/AMenezes97-serosim-8ec1762/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/hz/p73gx8v941q29dz9n1xr5t500000gn/T/RtmpoAWNYR/remotes13aa9404d61e8/AMenezes97-serosim-8ec1762/DESCRIPTION’
+    ##   ─  preparing ‘serosim’:
+    ##      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+    ##   ─  checking for LF line-endings in source and make files and shell scripts
+    ##   ─  checking for empty or unneeded directories
+    ##   ─  building ‘serosim_0.0.0.9000.tar.gz’
+    ##      
+    ## 
+
+``` r
 library(serosim)
 
 ## Load additional packages required 
@@ -80,7 +96,7 @@ individuals are born at the start of the simulation period.
 demography <- generate_pop_demography(N=100, times=times, prob_removal=0)
 ```
 
-    ## Joining, by = "i"
+    ## Joining with `by = join_by(i)`
 
 ``` r
 ## Examine the generated demography tibble
@@ -88,11 +104,11 @@ summary(demography)
 ```
 
     ##        i              birth           removal        times       
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 28.75   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 66.50   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 63.31   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 96.25   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Min.   :  1.00   Min.   :  2.00   Min.   :121   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 30.50   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 59.50   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 62.98   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 98.50   3rd Qu.:121   3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -388,12 +404,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     2   111     2     1 boost 4.66           4.66   
-    ## 2     2   111     2     1 wane  0.00127        0.00127
-    ## 3     3    57     2     1 boost 1.37           1.37   
-    ## 4     3    57     2     1 wane  0.00107        0.00107
-    ## 5     3   120     1     1 boost 4.54           4.54   
-    ## 6     3   120     1     1 wane  0.00345        0.00345
+    ## 1     1    12     1     1 boost 5.56           5.56   
+    ## 2     1    12     1     1 wane  0.00273        0.00273
+    ## 3     1    22     2     1 boost 2.69           2.69   
+    ## 4     1    22     2     1 wane  0.00104        0.00104
+    ## 5     2    85     1     1 boost 7.53           7.53   
+    ## 6     2    85     1     1 wane  0.00313        0.00313
 
 ``` r
 ## Combine plots as seen in paper 
