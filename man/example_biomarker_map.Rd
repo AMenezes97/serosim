@@ -7,8 +7,8 @@
 \format{
 A data frame with 2 rows and 2 variables:
 \describe{
-\item{exposure_ID}{name of each exposure type}
-\item{biomarker_ID}{name of each biomarkers present within each exposure type}
+\item{exposure_id}{name of each exposure type}
+\item{biomarker_id}{name of each biomarkers present within each exposure type}
 }
 }
 \usage{

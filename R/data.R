@@ -24,8 +24,8 @@
 #' @usage data(example_biomarker_map)
 #' @format A data frame with 2 rows and 2 variables:
 #' \describe{
-#'     \item{exposure_ID}{name of each exposure type}
-#'     \item{biomarker_ID}{name of each biomarkers present within each exposure type}
+#'     \item{exposure_id}{name of each exposure type}
+#'     \item{biomarker_id}{name of each biomarkers present within each exposure type}
 #' }
 #' @family example_data
 "example_biomarker_map"
@@ -39,8 +39,8 @@
 #' @usage data(example_biomarker_map_numeric)
 #' @format A data frame with 2 rows and 2 variables:
 #' \describe{
-#'     \item{exposure_ID}{numeric values for each exposure type}
-#'     \item{biomarker_ID}{numeric values for each biomarker present within each exposure type}
+#'     \item{exposure_id}{numeric values for each exposure type}
+#'     \item{biomarker_id}{numeric values for each biomarker present within each exposure type}
 #' }
 #' @family example_data
 "example_biomarker_map_numeric"
@@ -72,8 +72,8 @@
 #' @usage data(example_model_pars)
 #' @format A data frame with 5 rows and 6 variables:
 #' \describe{
-#'     \item{exposure_ID}{name of each exposure type present in example biomarker_map}
-#'     \item{biomarker_ID}{name of each biomarker present within each exposure type present in example biomarker_map}
+#'     \item{exposure_id}{name of each exposure type present in example biomarker_map}
+#'     \item{biomarker_id}{name of each biomarker present within each exposure type present in example biomarker_map}
 #'     \item{name}{names of model parameters}
 #'     \item{mean}{numeric values for the true paramter means}
 #'     \item{sd}{numeric values for the true paramter standard deviation}
@@ -92,8 +92,8 @@
 #' @usage data(example_model_pars_biphasic)
 #' @format A data frame with 5 rows and 6 variables:
 #' \describe{
-#'     \item{exposure_ID}{name of each exposure type present in example biomarker_map}
-#'     \item{biomarker_ID}{name of each biomarker present within each exposure type present in example biomarker_map}
+#'     \item{exposure_id}{name of each exposure type present in example biomarker_map}
+#'     \item{biomarker_id}{name of each biomarker present within each exposure type present in example biomarker_map}
 #'     \item{name}{names of model parameters}
 #'     \item{mean}{numeric values for the true paramter means}
 #'     \item{sd}{numeric values for the true paramter standard deviation}
@@ -114,8 +114,8 @@
 #' @usage data(example_model_pars_numeric)
 #' @format A data frame with 5 rows and 6 variables:
 #' \describe{
-#'     \item{exposure_ID}{numeric values for each exposure type present in example biomarker_map}
-#'     \item{biomarker_ID}{numeric values for each biomarker type present within each exposure type present in example biomarker_map}
+#'     \item{exposure_id}{numeric values for each exposure type present in example biomarker_map}
+#'     \item{biomarker_id}{numeric values for each biomarker type present within each exposure type present in example biomarker_map}
 #'     \item{name}{names of model parameters}
 #'     \item{mean}{numeric values for the true paramter means}
 #'     \item{sd}{numeric values for the true paramter standard deviation}
@@ -164,7 +164,7 @@
 #' 
 #' @docType data
 #' @name example_exposure_force
-#' @usage data(example_exposure_force
+#' @usage data(example_exposure_force)
 #' @format A data frame with 24000 rows and 4 variables:
 #' \describe{
 #'     \item{i}{string numeric values for each individual}

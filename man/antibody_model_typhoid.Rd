@@ -18,6 +18,8 @@ antibody_model_typhoid(
 \arguments{
 \item{i}{Individual}
 
+\item{t}{time}
+
 \item{b}{biomarker}
 
 \item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
@@ -34,10 +36,10 @@ antibody_model_typhoid(
 A biomarker_quantity is returned
 }
 \description{
-
+Power law antibody boosting and waning model
 }
 \examples{
-model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
+model_pars <- readr::read_csv("inst/extdata/model_pars_typhoid.csv")
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 tmp_exposure_history <- array(0,dim=c(1,11,2))

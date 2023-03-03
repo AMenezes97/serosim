@@ -7,8 +7,8 @@
 \format{
 A data frame with 5 rows and 6 variables:
 \describe{
-\item{exposure_ID}{numeric values for each exposure type present in example biomarker_map}
-\item{biomarker_ID}{numeric values for each biomarker type present within each exposure type present in example biomarker_map}
+\item{exposure_id}{numeric values for each exposure type present in example biomarker_map}
+\item{biomarker_id}{numeric values for each biomarker type present within each exposure type present in example biomarker_map}
 \item{name}{names of model parameters}
 \item{mean}{numeric values for the true paramter means}
 \item{sd}{numeric values for the true paramter standard deviation}

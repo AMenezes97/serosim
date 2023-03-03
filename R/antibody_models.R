@@ -55,15 +55,18 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
 #' @description Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term boost waning, short-term boost, and short-term boost waning parameters
 #'
 #' @inheritParams antibody_model_monophasic
-#'
+#' 
+#' 
 #' @return A biomarker quantity is returned 
+#' @importFrom data.table data.table
 #' @export
 #'
 #' @examples
 #' model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,1,NULL, NULL, model_pars)
-#' antibody_model_biphasic(1,1,1,example_exposure_histories, example_biomarker_states, tmp_pars, example_biomarker_map_numeric)
+#' antibody_model_biphasic(1,1,1,example_exposure_histories, example_biomarker_states, 
+#' tmp_pars, example_biomarker_map_numeric)
 antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
 
   ## Find which successful exposures correspond to this biomarker 
@@ -105,15 +108,16 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_sta
 
 #' Power law antibody boosting and waning
 #' 
-#' @description 
+#' @description Power law antibody boosting and waning model
 #'
 #' @inheritParams antibody_model_monophasic
+#' @param t time 
 #'
 #' @return A biomarker_quantity is returned 
 #' @export
 #'
 #' @examples
-#' model_pars <- read_csv("inst/extdata/model_pars_typhoid.csv")
+#' model_pars <- readr::read_csv("inst/extdata/model_pars_typhoid.csv")
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 #' tmp_exposure_history <- array(0,dim=c(1,11,2))

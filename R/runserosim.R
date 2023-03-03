@@ -16,9 +16,12 @@
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed
 #' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway
+#' @param ... Any additional arguments needed
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
-#' 
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr arrange 
+#' @importFrom reshape2 melt
 #' @export
 #' @examples See package README.
 runserosim <- function(

@@ -24,7 +24,7 @@ plot_subset_individuals_history(
 \item{removal}{Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE}
 }
 \value{
-
+A plot of  biomarker states and exposure histories for a subset of individuals is returned
 }
 \description{
 Plot biomarker states and exposure histories for a subset of individuals

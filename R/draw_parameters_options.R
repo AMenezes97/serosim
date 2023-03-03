@@ -12,6 +12,7 @@
 #' @param ... Additional arguments
 #'
 #' @return A tibble with the simulated parameters for this exposure event
+#' @importFrom dplyr tibble
 #' @export
 #' @family draw_parameters
 #' @examples
@@ -36,6 +37,9 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, m
 #' @inheritParams draw_parameters_fixed_fx
 #'
 #' @return A tibble with the simulated parameters for this exposure event
+#' @importFrom dplyr tibble
+#' @importFrom stats rlnorm
+#' @importFrom stats rnorm
 #' @export
 #'
 #' @examples
@@ -71,6 +75,7 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, m
 #' @inheritParams draw_parameters_fixed_fx
 #'
 #' @return A tibble with the simulated parameters for this exposure event
+#' @importFrom dplyr tibble
 #' @export
 #'
 #' @examples
@@ -108,6 +113,9 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
 #' @inheritParams draw_parameters_fixed_fx
 #'
 #' @return A tibble with the simulated parameters for this exposure event
+#' @importFrom dplyr tibble
+#' @importFrom stats rlnorm
+#' @importFrom stats rnorm
 #' @export
 #'
 #' @examples

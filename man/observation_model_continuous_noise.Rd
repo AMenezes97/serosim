@@ -13,6 +13,10 @@ observation_model_continuous_noise(
 )
 }
 \arguments{
+\item{biomarker_states}{tibble containing true biomarker quantities for all individuals across all time steps and biomarkers. Variables should include: 1) i: the individual ID; 2) t: the time period; 3) b: the biomarker ID; 4) value: the latent biomarker quantity for the given i, t and b}
+
+\item{model_pars}{a tibble containing information for all parameters needed to simulate the observation process. This should usually contain: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution}
+
 \item{sensitivity}{number between 0 and 1 to describe the assay's sensitivity; defaults to 1}
 
 \item{specificity}{number between 0 and 1 to describe the assay's specificity; defaults to 1}

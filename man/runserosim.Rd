@@ -50,6 +50,8 @@ runserosim(
 \item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed}
 
 \item{attempt_precomputation}{If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway}
+
+\item{...}{Any additional arguments needed}
 }
 \value{
 a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters

@@ -42,5 +42,6 @@ Biphasic antibody boosting-waning model. This model assumes that for each exposu
 model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,1,NULL, NULL, model_pars)
-antibody_model_biphasic(1,1,1,example_exposure_histories, example_biomarker_states, tmp_pars, example_biomarker_map_numeric)
+antibody_model_biphasic(1,1,1,example_exposure_histories, example_biomarker_states, 
+tmp_pars, example_biomarker_map_numeric)
 }

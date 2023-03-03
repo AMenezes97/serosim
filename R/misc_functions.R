@@ -13,6 +13,11 @@
 #'
 #' @return A tibble of relevant demographic information for each individual in the simulation is returned; this output matches the required `demography` input for the \code{\link{runserosim}} function.
 #' @family demography
+#' @importFrom dplyr left_join
+#' @importFrom dplyr tibble
+#' @importFrom dplyr mutate
+#' @importFrom dplyr %>% 
+#' @importFrom tidyr expand_grid
 #' @export
 #'
 #' @examples 
@@ -84,6 +89,7 @@ simulate_birth_times <- function(N, times, age_min=0){
 #' @inheritParams generate_pop_demography
 #' @return A vector of all individual's removal times is returned. \code{NA} represents no removal 
 #' @family demography
+#' @importFrom stats runif
 #' @export
 #'
 #' @examples
@@ -181,7 +187,15 @@ reformat_biomarker_map<-function(input_map, exposure_key=NULL, biomarker_key=NUL
 #' @param check_correct if TRUE, computes the entire exposure probability array as would be done in `runserosim` with no pre-computation. This is usually quite slow, but can be used to check that the pre-computed exposure probability array is correct.
 #' @param ... other inputs to the `exposure_model`
 #' @return a list containing: 1) a boolean set to `TRUE` if precomputation was successful; 2) a 3D array matching the dimensions of `N`, `times` and `exposure_ids` giving the individual probability of exposure in each time period
-#' 
+#' @importFrom dplyr n 
+#' @importFrom dplyr group_by
+#' @importFrom dplyr select 
+#' @importFrom dplyr filter
+#' @importFrom dplyr mutate 
+#' @importFrom dplyr rename
+#' @importFrom dplyr ungroup 
+#' @importFrom dplyr distinct 
+#' @importFrom dplyr across
 #' @examples 
 #' times <- seq(1,100,by=1)
 #' N <- 100

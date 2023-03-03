@@ -14,7 +14,7 @@ A data frame with 24000 rows and 4 variables:
 }
 }
 \usage{
-data(example_exposure_force
+data(example_exposure_force)
 }
 \description{
 Example force of exposure \code{runserosim} output. This example data set output contains the force of exposure for individuals at all time steps for each exposure ID

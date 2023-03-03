@@ -5,6 +5,13 @@
 #' @param biomarker_prot_width Determines the shape of the curve
 #'
 #' @return A plot of the probability of infection given an individual's biomarker quantity at exposure
+#' @importFrom dplyr tibble
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlab
 #' @export
 #'
 #' @examples
@@ -37,6 +44,15 @@ plot_biomarker_mediated_protection <- function(biomarker_range, biomarker_prot_m
 #' @param biomarker_ceiling_gradient (1-A)/B; Where A is the proportion of the full boost received at or above the biomarker_ceiling_threshold (B)
 #'
 #' @return A plot displaying biomarker quantity dependent boosting is returned
+#' @importFrom dplyr tibble
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 xlim
 #' @export
 #'
 #' @examples
@@ -58,6 +74,16 @@ plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_
 #' @param exposure_probabilities_long The reshaped data set containing the probability of a successful exposure event for individuals at all time steps for each exposure event
 #'
 #' @return A plot of the probability of a successful exposure event across time for all individuals and exposure events is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
 #' @export
 #'
 #' @examples
@@ -89,6 +115,17 @@ plot_exposure_prob<-function(exposure_probabilities_long){
 #' @param exposure_force_long The reshaped data set containing the probability of an exposure event for individuals at all time steps for each exposure event
 #'
 #' @return A plot of individual exposure probabilities across time for all exposure events is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_fill_viridis_c
+#' @importFrom ggplot2 element_text
 #' @export
 #'
 #' @examples
@@ -116,9 +153,22 @@ plot_exposure_force<-function(exposure_force_long){
 }
 #' Plot individual exposure histories
 #'
-#' @param expsoure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
+#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
 #'
 #' @return A plot of individual exposures histories across time for all individuals and exposure events is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_fill_viridis_d
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 guides
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 guide_legend
 #' @export
 #'
 #' @examples
@@ -147,6 +197,17 @@ plot_exposure_histories <- function(exposure_histories){
 #' @param biomarker_states The reshaped data set containing biomarker quantity for individuals at all time steps for each biomarker 
 #'
 #' @return A plot of biomarker quantities across all time steps for all individuals and biomarkers is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_fill_viridis_c
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
 #' @export
 #'
 #' @examples
@@ -180,6 +241,14 @@ plot_biomarker_quantity<- function(biomarker_states){
 #' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
 #'
 #' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_jitter
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom dplyr filter
 #' @export
 #'
 #' @examples
@@ -211,6 +280,19 @@ return(p)
 #' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
 #'
 #' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_colour_discrete
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 element_line
+#' @importFrom ggplot2 element_blank
 #' @export
 #'
 #' @examples 
@@ -249,7 +331,19 @@ return(p)
 #' @param demography Tibble of removal time for each individual
 #' @param removal Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE
 #'
-#' @return
+#' @return A plot of  biomarker states and exposure histories for a subset of individuals is returned
+#' @importFrom dplyr filter
+#' @importFrom tidyr drop_na
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_vline
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_color_hue
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 margin
 #' @export
 #'
 #' @examples
@@ -305,6 +399,20 @@ plot_subset_individuals_history <- function(biomarker_states, exposure_histories
 #' @param draw_parameters_fn Pointer to function used for drawing random kinetics parameters, see \code{\link{draw_parameters_fixed_fx}}
 #' @inheritParams runserosim
 #' @return A ggplot2 object
+#' @importFrom dplyr filter
+#' @importFrom dplyr group_by 
+#' @importFrom dplyr summarize 
+#' @importFrom dplyr pull
+#' @importFrom reshape2 melt
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_fill_viridis_d
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlab
+#' @importFrom stats complete.cases
 #' @export
 #' @examples
 #' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
@@ -370,6 +478,18 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
 #' @param n_exposures Number of exposure types corresponding to \code{foe_pars}
 #' @param foe_pars Generic object containing all parameters needed to solve \code{exposure_model}
 #' @return A ggplot2 object
+#' @importFrom dplyr filter
+#' @importFrom reshape2 melt
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 facet_grid
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 xlim
+#' @importFrom ggplot2 scale_color_viridis_d
+#' @importFrom dplyr %>% 
 #' @export
 #' @examples 
 #' ## Basic exposure model with demography modifier

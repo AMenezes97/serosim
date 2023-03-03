@@ -27,6 +27,7 @@ observation_model_continuous<-function(biomarker_states,model_pars, ...){
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
+#' @importFrom data.table data.table
 #' @export
 #'
 #' @examples
@@ -60,6 +61,7 @@ observation_model_continuous_bounded<-function(biomarker_states,model_pars, boun
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
+#' @importFrom data.table data.table
 #' @export
 #'
 #' @examples
@@ -91,7 +93,12 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 #' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
+#' @importFrom data.table data.table
 #' @family observation_model
+#' @importFrom stats rnorm
+#' @importFrom stats rlnorm
+#' @importFrom stats runif
+#' @importFrom dplyr arrange
 #' @export
 #'
 #' @examples
@@ -142,13 +149,18 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
 #' 
 #' @description This observation model observes the latent biomarker quantities given a continuous assay with added noise. The added noise represents assay variability and is done by sampling from a distribution with the latent biomarker quantity as the mean and the measurement error as the standard deviation. The observation standard deviation and distribution are defined within model_pars as the `obs_sd` parameter. The user can also use the optional sensitivity and specificity arguments to account for assay sensitivity and specificity. False negatives are simulated by setting an observed quantity to 0 with probability `sensitivity`. False positives are simulated by drawing a random quantity from the bounded range for a true 0 biomarker quantity with probability 1-`specificity`.
 #' 
-#' @inheritParams observation_model_continuous_noise
+#' @inheritParams observation_model_continuous
 #' @param sensitivity number between 0 and 1 to describe the assay's sensitivity; defaults to 1
 #' @param specificity number between 0 and 1 to describe the assay's specificity; defaults to 1
 #' @param ... Additional arguments
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
+#' @importFrom data.table data.table
+#' @importFrom stats rnorm
+#' @importFrom stats rlnorm
+#' @importFrom stats runif
+#' @importFrom dplyr arrange
 #' @export
 #'
 #' @examples
@@ -201,6 +213,10 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
 #'
 #' @return `biomarker_states` is returned with a new column, `observed`, for observed biomarker quantities
 #' @family observation_model
+#' @importFrom data.table data.table
+#' @importFrom stats rnorm
+#' @importFrom stats rlnorm
+#' @importFrom dplyr arrange
 #' @export
 #'
 #' @examples

@@ -67,6 +67,7 @@ exposure_model_simple_FOE <- function(i, t, x, g, foe_pars, demography, ...){
 #' @param ... Additional arguments
 #'  
 #' @return A probability of exposure is returned
+#' @importFrom data.table data.table
 #' @export
 #'
 #' @examples
@@ -158,6 +159,7 @@ exposure_model_dem_mod <- function(i, t, x, g, foe_pars, demography, dem_mod, t_
 #' @param time_res Time steps to solve the ODEs. Set lower for higher accuracy.
 #' @param ... Additional arguments
 #' @return Probability of exposure for the requested time step
+#' @importFrom deSolve ode
 #' @export
 #' @examples 
 #' times <- seq(0,365,by=1)
@@ -204,6 +206,7 @@ exposure_model_sir <- function(i, t, x, g, foe_pars,
 #' @description Simulates an incidence curve (probability of infection per unit time) and associated parameters from a Gaussian Process model assuming that the covariance function (kernel) on time follows the squared exponential.
 #' @param pars Vector of model parameters, must have entries 1) l: the lengthscale of the covariance function (length of the wiggles); 2) sigma: the output variance (average distance of function from mean); 3) scale_factor: parameter to scale the incidence curve to give a desired "overall probability" of infection (specifically, solves the model, transforms each entry to unit scale, and then scales the entire vector as scale_factor*p/(sum(p))); 4) tmax: the maximum time to solve the model over, generating a time vector starting at 0 and ending at tmax in increments of 1.
 #' @return a list with two elements: 1) a vector giving the probability of infection at each timestep; 2) a vector giving the parameters used to solve the model
+#' @importFrom stats rnorm
 #' @examples
 #' pars <- c("sigma"=1,"l"=100,"scale_factor"=1, "tmax"=365)
 #' tmp <- simulate_gaussian_process(pars)
