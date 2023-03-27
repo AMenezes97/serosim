@@ -47,7 +47,7 @@ biomarker test kits.
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
 ## Install and load serosim 
-devtools::install_github("AMenezes97/serosim")
+## devtools::install_github("AMenezes97/serosim")
 library(serosim)
 
 ## Load additional packages required 
