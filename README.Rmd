@@ -3,6 +3,10 @@ title: "README"
 output: github_document
 ---
 
+ <!-- badges: start -->
+  [![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
 # Motivation 
 The _serosim_ package is designed to simulate serological survey data arising from 
 user-specified vaccine or infection-generated and antibody kinetics processes. 
