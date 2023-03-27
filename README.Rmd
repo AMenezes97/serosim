@@ -3,7 +3,7 @@ title: "README"
 output: github_document
 ---
 
- <!-- badges: start -->
+  <!-- badges: start -->
   [![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 

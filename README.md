@@ -42,47 +42,12 @@ Load necessary packages:
 devtools::install_github("AMenezes97/serosim")
 ```
 
-    ## pillar       (1.8.1 -> 1.9.0 ) [CRAN]
-    ## vctrs        (0.6.0 -> 0.6.1 ) [CRAN]
-    ## cli          (3.6.0 -> 3.6.1 ) [CRAN]
-    ## selectr      (NA    -> 0.4-2 ) [CRAN]
-    ## rmarkdown    (2.20  -> 2.21  ) [CRAN]
-    ## rematch      (NA    -> 1.0.1 ) [CRAN]
-    ## cellranger   (NA    -> 1.1.0 ) [CRAN]
-    ## timechange   (NA    -> 0.2.0 ) [CRAN]
-    ## forcats      (NA    -> 1.0.0 ) [CRAN]
-    ## uuid         (NA    -> 1.1-0 ) [CRAN]
-    ## ids          (NA    -> 1.0.1 ) [CRAN]
-    ## googledrive  (NA    -> 2.1.0 ) [CRAN]
-    ## gargle       (NA    -> 1.3.0 ) [CRAN]
-    ## DBI          (NA    -> 1.1.3 ) [CRAN]
-    ## blob         (NA    -> 1.2.4 ) [CRAN]
-    ## rvest        (NA    -> 1.0.3 ) [CRAN]
-    ## reprex       (NA    -> 2.0.2 ) [CRAN]
-    ## readxl       (NA    -> 1.4.2 ) [CRAN]
-    ## modelr       (NA    -> 0.1.11) [CRAN]
-    ## lubridate    (NA    -> 1.9.2 ) [CRAN]
-    ## haven        (NA    -> 2.5.2 ) [CRAN]
-    ## googleshe... (NA    -> 1.1.0 ) [CRAN]
-    ## dtplyr       (NA    -> 1.3.1 ) [CRAN]
-    ## dbplyr       (NA    -> 2.3.2 ) [CRAN]
-    ## conflicted   (NA    -> 1.2.0 ) [CRAN]
-    ## tidyverse    (NA    -> 2.0.0 ) [CRAN]
-    ## patchwork    (NA    -> 1.1.2 ) [CRAN]
-    ## deSolve      (NA    -> 1.35  ) [CRAN]
     ## 
-    ##   There is a binary version available but the source version is later:
-    ##           binary source needs_compilation
-    ## rmarkdown   2.20   2.21             FALSE
-    ## 
-    ## 
-    ## The downloaded binary packages are in
-    ##  /var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T//RtmpExU9CM/downloaded_packages
     ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpExU9CM/remotes11fa1dfe6c69/AMenezes97-serosim-9500829/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpExU9CM/remotes11fa1dfe6c69/AMenezes97-serosim-9500829/DESCRIPTION’
-    ##   ─  preparing ‘serosim’: (1.1s)
+    ##      checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpFC4WGo/remotes14a0510b206c/AMenezes97-serosim-f8bf76c/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpFC4WGo/remotes14a0510b206c/AMenezes97-serosim-f8bf76c/DESCRIPTION’ (474ms)
+    ##   ─  preparing ‘serosim’: (1s)
     ##      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts (1.1s)
+    ##   ─  checking for LF line-endings in source and make files and shell scripts (1.2s)
     ##   ─  checking for empty or unneeded directories
     ##   ─  building ‘serosim_0.0.0.9000.tar.gz’
     ##      
@@ -142,10 +107,10 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 40.75   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 59.00   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 62.41   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 92.00   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  1st Qu.: 25.75   1st Qu.: 31.00   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 53.50   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 56.74   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 82.00   3rd Qu.:121   3rd Qu.: 90.25  
     ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
@@ -441,12 +406,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    17     2     1 boost 2.58           2.58   
-    ## 2     1    17     2     1 wane  0.00229        0.00229
-    ## 3     1   104     1     1 boost 2.67           2.67   
-    ## 4     1   104     1     1 wane  0.00401        0.00401
-    ## 5     2    13     2     1 boost 1.74           1.74   
-    ## 6     2    13     2     1 wane  0.00166        0.00166
+    ## 1     1    30     2     1 boost 1.88           1.88   
+    ## 2     1    30     2     1 wane  0.00106        0.00106
+    ## 3     1   107     1     1 boost 2.93           2.93   
+    ## 4     1   107     1     1 wane  0.00392        0.00392
+    ## 5     2   116     2     1 boost 0.883          0.883  
+    ## 6     2   116     2     1 wane  0.00130        0.00130
 
 ``` r
 ## Combine plots as seen in paper 
