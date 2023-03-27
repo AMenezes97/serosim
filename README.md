@@ -1,6 +1,10 @@
 README
 ================
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # Motivation
 
 The *serosim* package is designed to simulate serological survey data
@@ -38,13 +42,51 @@ Load necessary packages:
 devtools::install_github("AMenezes97/serosim")
 ```
 
+    ## pillar       (1.8.1 -> 1.9.0 ) [CRAN]
+    ## vctrs        (0.6.0 -> 0.6.1 ) [CRAN]
+    ## cli          (3.6.0 -> 3.6.1 ) [CRAN]
+    ## selectr      (NA    -> 0.4-2 ) [CRAN]
+    ## rmarkdown    (2.20  -> 2.21  ) [CRAN]
+    ## rematch      (NA    -> 1.0.1 ) [CRAN]
+    ## cellranger   (NA    -> 1.1.0 ) [CRAN]
+    ## timechange   (NA    -> 0.2.0 ) [CRAN]
+    ## forcats      (NA    -> 1.0.0 ) [CRAN]
+    ## uuid         (NA    -> 1.1-0 ) [CRAN]
+    ## ids          (NA    -> 1.0.1 ) [CRAN]
+    ## googledrive  (NA    -> 2.1.0 ) [CRAN]
+    ## gargle       (NA    -> 1.3.0 ) [CRAN]
+    ## DBI          (NA    -> 1.1.3 ) [CRAN]
+    ## blob         (NA    -> 1.2.4 ) [CRAN]
+    ## rvest        (NA    -> 1.0.3 ) [CRAN]
+    ## reprex       (NA    -> 2.0.2 ) [CRAN]
+    ## readxl       (NA    -> 1.4.2 ) [CRAN]
+    ## modelr       (NA    -> 0.1.11) [CRAN]
+    ## lubridate    (NA    -> 1.9.2 ) [CRAN]
+    ## haven        (NA    -> 2.5.2 ) [CRAN]
+    ## googleshe... (NA    -> 1.1.0 ) [CRAN]
+    ## dtplyr       (NA    -> 1.3.1 ) [CRAN]
+    ## dbplyr       (NA    -> 2.3.2 ) [CRAN]
+    ## conflicted   (NA    -> 1.2.0 ) [CRAN]
+    ## tidyverse    (NA    -> 2.0.0 ) [CRAN]
+    ## patchwork    (NA    -> 1.1.2 ) [CRAN]
+    ## deSolve      (NA    -> 1.35  ) [CRAN]
     ## 
-    ## * checking for file ‘/private/var/folders/hz/p73gx8v941q29dz9n1xr5t500000gn/T/RtmpbITF0P/remotes13b9e75b36f0d/AMenezes97-serosim-eaed2a2/DESCRIPTION’ ... OK
-    ## * preparing ‘serosim’:
-    ## * checking DESCRIPTION meta-information ... OK
-    ## * checking for LF line-endings in source and make files and shell scripts
-    ## * checking for empty or unneeded directories
-    ## * building ‘serosim_0.0.0.9000.tar.gz’
+    ##   There is a binary version available but the source version is later:
+    ##           binary source needs_compilation
+    ## rmarkdown   2.20   2.21             FALSE
+    ## 
+    ## 
+    ## The downloaded binary packages are in
+    ##  /var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T//RtmpExU9CM/downloaded_packages
+    ## ── R CMD build ─────────────────────────────────────────────────────────────────
+    ##      checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpExU9CM/remotes11fa1dfe6c69/AMenezes97-serosim-9500829/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpExU9CM/remotes11fa1dfe6c69/AMenezes97-serosim-9500829/DESCRIPTION’
+    ##   ─  preparing ‘serosim’: (1.1s)
+    ##      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+    ##   ─  checking for LF line-endings in source and make files and shell scripts (1.1s)
+    ##   ─  checking for empty or unneeded directories
+    ##   ─  building ‘serosim_0.0.0.9000.tar.gz’
+    ##      
+    ## 
 
 ``` r
 library(serosim)
@@ -100,11 +142,11 @@ summary(demography)
 
     ##        i              birth           removal        times       
     ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 32.50   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 71.50   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 65.33   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.:100.00   3rd Qu.:121   3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
+    ##  1st Qu.: 25.75   1st Qu.: 40.75   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 59.00   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 62.41   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 92.00   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -399,12 +441,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    74     2     1 boost 1.21           1.21   
-    ## 2     1    74     2     1 wane  0.00219        0.00219
-    ## 3     2    92     2     1 boost 1.95           1.95   
-    ## 4     2    92     2     1 wane  0.00216        0.00216
-    ## 5     2   116     1     1 boost 5.88           5.88   
-    ## 6     2   116     1     1 wane  0.00388        0.00388
+    ## 1     1    17     2     1 boost 2.58           2.58   
+    ## 2     1    17     2     1 wane  0.00229        0.00229
+    ## 3     1   104     1     1 boost 2.67           2.67   
+    ## 4     1   104     1     1 wane  0.00401        0.00401
+    ## 5     2    13     2     1 boost 1.74           1.74   
+    ## 6     2    13     2     1 wane  0.00166        0.00166
 
 ``` r
 ## Combine plots as seen in paper 
