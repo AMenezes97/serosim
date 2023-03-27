@@ -6,8 +6,12 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: cs2_DP_PT_citations.bib
-link-citations: yes
+link-citations: no
 ---
+
+```{r, echo=FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
 
 Here, we will use the _serosim_  package to generate a cross-sectional serosurvey of 
 a multi-pathogen system with multivalent vaccination. The overall structure 
