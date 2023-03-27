@@ -90,7 +90,7 @@ test_that("Check that plot_subset_individuals_history function works", {
 test_that("Check that plot_antibody_model function works with fixed effects (draw_parameters_fixed_fx)", {
   
   ## Load in example data and necessary arguments
-  model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
+  model_pars <-  read.csv(system.file("extdata", "model_pars_test_1.csv", package="serosim")) %>% drop_na()
   biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
   
   ## Expect that plotting function works properly with no errors
@@ -101,7 +101,7 @@ test_that("Check that plot_antibody_model function works with fixed effects (dra
 test_that("Check that plot_antibody_model function works with random effects (draw_parameters_random_fx)", {
   
   ## Load in example data and necessary arguments
-  model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") %>% drop_na()
+  model_pars <- read.csv(system.file("extdata", "model_pars_test_1.csv", package="serosim")) %>% drop_na()
   biomarker_map <- tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
   
   ## Expect that plotting function works properly with no errors
