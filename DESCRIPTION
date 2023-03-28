@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     c(person("Arthur", "Menezes" , email="am83@princeton.edu", role = c("aut", "cre")),
     person("James", "Hay", email="jhay@hsph.harvard.edu", role = "aut"))
-Maitaner: Arthur Menezes <am83@princeton.edu>
+Maitainer: Arthur Menezes <am83@princeton.edu>
 Description: serosim is an open source R package designed to aid inference from serological surveys, by simulating data arising from user-specified vaccine and infection-generated antibody kinetics processes using a random effects model. serosim allows users to specify and adjust model inputs representing underlying processes responsible for generating the observed titer values like time-varying patterns of infection and vaccination, population demography, immunity and antibody kinetics, and serological survey sampling design in order to best represent the population and disease system(s) of interest.
 License: GPL (>= 3)
 Depends: 

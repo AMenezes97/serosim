@@ -62,7 +62,7 @@ plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_
     boost_modifier <- (1-biomarker_ceiling_gradient*test_titres)
     boost_modifier_dat <- tidyr::tibble(boost_mod=boost_modifier,starting_biomarkers=seq(start,end, by=by))
     
-    g<-ggplot2::ggplot(boost_modifier_dat) + ggplot2::geom_line(ggplot2::aes(x=starting_biomarkers, y=boost_mod)) + ggplot2::theme_bw() +
+    g<-ggplot2::ggplot(data=boost_modifier_dat) + ggplot2::geom_line(ggplot2::aes(x=starting_biomarkers, y=boost_mod)) + ggplot2::theme_bw() +
       ggplot2::xlab("Starting Biomarker") +
       ggplot2::ylab("Proportion of full boost experienced") + ggplot2::scale_y_continuous(limits=c(0,1)) + ggplot2::xlim(start,end)
     return(g)
@@ -89,7 +89,7 @@ plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_
 #' @examples
 #' plot_exposure_prob(example_exposure_probabilities)
 plot_exposure_prob<-function(exposure_probabilities_long){
-  p <- ggplot2::ggplot(exposure_probabilities_long) + 
+  p <- ggplot2::ggplot(data=exposure_probabilities_long) + 
     ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
     ggplot2::facet_wrap(~x,nrow=2) + 
     ggplot2::theme_bw() + 
@@ -213,7 +213,7 @@ plot_exposure_histories <- function(exposure_histories){
 #' @examples
 #' plot_biomarker_quantity(example_biomarker_states)
 plot_biomarker_quantity<- function(biomarker_states){
-  p <- ggplot2::ggplot(biomarker_states) + 
+  p <- ggplot2::ggplot(data=biomarker_states) + 
     ggplot2::geom_tile(aes(x=t,y=i,fill=value)) + 
     ggplot2::facet_wrap(~b,nrow=2) + 
     ggplot2::theme_bw() + 
