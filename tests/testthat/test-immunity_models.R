@@ -78,7 +78,7 @@ test_that("Check that immunity_model_vacc_ifxn_simple function works if individu
   tmp_demography <- tibble(i=1, birth=1)
   
   ## Expect that the output of immunity_model_vacc_ifxn_simple function is 0
-  expect_equal(immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=c(2),vacc_age=c(1,1)),0)
+  expect_equal(immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(3,5),vacc_exposures=2,vacc_age=c(1,1)),0)
 })
 
 
@@ -91,7 +91,7 @@ test_that("Check that immunity_model_vacc_ifxn_simple function works if individu
   tmp_demography <- tibble(i=1, birth=1)
   
   ## Expect that the output of immunity_model_vacc_ifxn_simple function is 1
-  expect_equal(immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(4,5),vacc_exposures=c(2),vacc_age=c(1,1)),1)
+  expect_equal(immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, NULL,max_events=c(4,5),vacc_exposures=2,vacc_age=c(1,1)),1)
 })
 
 
@@ -124,7 +124,8 @@ test_that("Check that immunity_model_vacc_ifxn_biomarker_prot function works for
   tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 
   ## Expect that the output of immunity_model_vacc_ifxn_biomarker_prot function is 1
-  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(4),vacc_exposures=c(1),vacc_age=c(1))
+  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
+                                                       biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=4,vacc_exposures=1,vacc_age=1)
 ,1)
 })
 
@@ -142,7 +143,8 @@ test_that("Check that immunity_model_vacc_ifxn_biomarker_prot function works for
   tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
   
   ## Expect that the output of immunity_model_vacc_ifxn_biomarker_prot function is 0
-  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3),vacc_exposures=c(1),vacc_age=c(1)),0)
+  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, 
+                                                       model_pars=tmp_pars,max_events=3,vacc_exposures=1,vacc_age=1),0)
 })
 
 
@@ -159,7 +161,7 @@ test_that("Check that immunity_model_vacc_ifxn_biomarker_prot function works for
   tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
   
   ## Expect that the output of immunity_model_vacc_ifxn_biomarker_prot function is  0.9999039
-  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),vacc_exposures=c(1),vacc_age=c(1)), 0.9999039)
+  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),vacc_exposures=1,vacc_age=1), 0.9999039)
 })
 
 
@@ -176,7 +178,8 @@ test_that("Check that immunity_model_vacc_ifxn_biomarker_prot function works for
   tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
   
   ## Expect that the output of immunity_model_vacc_ifxn_biomarker_prot function is 0
-  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,3),vacc_exposures=c(1),vacc_age=c(1)),0)
+  expect_equal(immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
+                                                       biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,3),vacc_exposures=1,vacc_age=1),0)
 })
 
 

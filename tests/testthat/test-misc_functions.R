@@ -75,7 +75,7 @@ test_that("Check that reformat_biomarker_map function works to convert numbers t
   
   ## Load in example data and necessary arguments
   biomarker_map <- tibble(exposure_id=c(1,2),biomarker_id=c(1,1))
-  biomarker_map <- reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=c(1))
+  biomarker_map <- reformat_biomarker_map(biomarker_map, exposure_key=c("infection","vaccination"),biomarker_key=1)
 
   ## Expect that reformat_biomarker_map function works properly with no errors
   expect_equal(is.numeric(biomarker_map$exposure_id),FALSE)

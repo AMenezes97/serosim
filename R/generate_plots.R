@@ -446,7 +446,8 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
                 if(b %in% biomarkers_tmp){
                     kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, b, demography,antibody_states, model_pars, ...))
                     kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
-                    antibody_states[i,,b] <- sapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, kinetics_pars_tmp, biomarker_map, ...))
+                    antibody_states[i,,b] <- vapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, 
+                                                                                     kinetics_pars_tmp, biomarker_map, ...), numeric(1))
                 } else {
                     antibody_states[i,,b] <- NA
                 }
@@ -544,7 +545,7 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
         foe <- array(NA, dim=c(n_groups,n_times,n_exposures))
         for(g in 1:n_groups){
             for(x in 1:n_exposures){
-                foe[g,,x] <- unlist(sapply(times, function(t) exposure_model(i, t, x, g, foe_pars, demography, ...)))
+                foe[g,,x] <- unlist(vapply(times, function(t) exposure_model(i, t, x, g, foe_pars, demography, ...),numeric(1)))
             }
         }
         foe <- reshape2::melt(foe)

@@ -59,7 +59,7 @@ generate_pop_demography<-function(N, times, birth_times=NULL, age_min=0, removal
             colnames(vars[[var]])[1] <- aux[[var]]["name"]
         }
         vars <- do.call("bind_cols",vars)
-        vars <- vars %>% mutate(i=1:n())
+        vars <- vars %>% mutate(i=seq_len(n()))
         demog<- demog %>% left_join(vars, by="i")
     }
     return(demog)
@@ -118,10 +118,10 @@ simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal
   ## For each individual, randomly sample a removal time with probability prob_removal
   ## between removal_min and removal_max
   if(removal_min == removal_max){
-      return(sapply(birth_times, function(x) ifelse(runif(1)<prob_removal, 
-                                                    max(x, removal_min), max(times)+1)))
+      return(vapply(birth_times, function(x) ifelse(runif(1)<prob_removal, 
+                                                    max(x, removal_min), max(times)+1),numeric(1)))
   } else {
-    return(sapply(birth_times, function(x) ifelse(runif(1)<prob_removal, sample(max(x, removal_min):removal_max, 1), max(times)+1)))
+    return(vapply(birth_times, function(x) ifelse(runif(1)<prob_removal, sample(max(x, removal_min):removal_max, 1), max(times)+1),numeric(1)))
   }
 }
 
@@ -239,7 +239,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         ## Consider time as a demography variable
         time_flag <- TRUE
         unique_demography <- demography %>% group_by(across(c(-i)))%>% 
-            mutate(index=1:n()) %>% 
+            mutate(index=seq_len(n())) %>% 
             filter(index==min(index)) %>% 
             select(-index) %>%
             rename(match=i) %>% ungroup()
@@ -247,7 +247,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         ## Don't consider time as a demography variable
         time_flag <- FALSE
         unique_demography <- demography %>% group_by(across(c(-i,-times)))%>% 
-            mutate(index=1:n()) %>% 
+            mutate(index=seq_len(n())) %>% 
             filter(index==min(index)) %>% 
             select(c(-index,-times)) %>%
             rename(match=i) %>% ungroup()
@@ -299,7 +299,8 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
         ## return the right values. If this applies to individuals but not individual 1,
         ## this check will not pick that up.
         ptm <- Sys.time()
-        tmp_exp <- sapply(times, function(t) exposure_model(1, t, 1, 1, foe_pars, demography,...))
+        tmp_exp <- vapply(times, function(t) exposure_model(1, t, 1, 1, foe_pars, demography,...), numeric(1))
+        
         if(!is.null(VERBOSE)) message(cat("Solving the model for one individual without vectorization would take: ", Sys.time() - ptm, " seconds\n"))
         
         ## Try to solve exposure_model in one function call. If an error, warning or incorrect
@@ -344,7 +345,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
                     if(can_vectorize){
                         foe_pars_precomputed[g,,x] <- exposure_model(1, times, x, g, foe_pars, demography,...)
                     } else {
-                        foe_pars_precomputed[g,,x] <- sapply(times, function(t) exposure_model(1, t, x, g, foe_pars, demography,...))
+                        foe_pars_precomputed[g,,x] <- vapply(times, function(t) exposure_model(1, t, x, g, foe_pars, demography,...),numeric(1))
                     }
                 }
             }
@@ -367,7 +368,8 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
             }
             
             ## For each individual with unique demography
-            for(index in 1:nrow(unique_ids)){
+            for(index in seq_len(nrow(unique_ids))){
+            #for(index in 1:nrow(unique_ids)){
                 ## Use only times that we need for solving
                 solve_i <- unique_ids$match[index]
                 tmp_times <- as.data.frame(unique_demography)[unique_demography$match == solve_i, "times"]

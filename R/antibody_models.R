@@ -172,7 +172,6 @@ antibody_model_typhoid <- function(i, t, b, exposure_histories=NULL, biomarker_s
         if(length(t_inf)>1){
             for(x in 2:length(t_inf)){
                 y0 <- typhoid(t_inf[x]-t_inf[x-1], y0, y1s[x-1], alphas[x-1], rs[x-1], t1s[x-1])
-                if(length(y0) != 1) browser()
             }
         }
         y <- typhoid(t-t_inf[length(t_inf)], y0, y1s[length(t1s)], alphas[length(alphas)],rs[length(rs)],t1s[length(t1s)])

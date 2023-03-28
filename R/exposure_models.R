@@ -272,7 +272,7 @@ exposure_model_gaussian_process <- function(i, t, x, g, foe_pars, demography, ..
     names(foe_pars_tmp) <- par_names
     
     times <- seq(0,foe_pars_tmp["tmax"],by=1)
-    use_names <- c("eta",paste0("eta",1:length(times)))
+    use_names <- c("eta",paste0("eta",seq_along(times)))
     k <- foe_pars_tmp[which(par_names%in%use_names)]
     
     ## Create a matrix of times

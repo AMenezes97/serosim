@@ -184,7 +184,7 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
         upper_bound <- max(biomarker_states_tmp$value,na.rm=TRUE)
         
       ## Step through each individual 
-      for(indiv in 1:length(biomarker_states_tmp$value)){
+      for(indiv in seq_along(biomarker_states_tmp$value)){
       ## If the individual is truly seronegative take into account the assay specificity 
       if(biomarker_states_tmp$value[indiv]==0){
         if(runif(1)>specificity){

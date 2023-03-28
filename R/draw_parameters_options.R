@@ -24,9 +24,9 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, m
   pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(model_pars_tmp)){
-    pars[par] <- model_pars_tmp$mean[par]
-    par_names[par] <- model_pars_tmp$name[par]
+  for(par in seq_len(nrow(model_pars_tmp))){
+    pars[par_name] <- model_pars_tmp$mean[par_name]
+    par_names[par_name] <- model_pars_tmp$name[par_name]
   }
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
   return(all_pars)
@@ -52,18 +52,18 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, m
     pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(model_pars_tmp)){
-    if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
-      pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
-      par_names[par] <- model_pars_tmp$name[par]
+  for(par_name in seq_len(nrow(model_pars_tmp))){
+    if(model_pars_tmp$distribution[par_name] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+      pars[par_name] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]), normal_to_lognormal_sd(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]))
+      par_names[par_name] <- model_pars_tmp$name[par_name]
     }
-    if(model_pars_tmp$distribution[par]==""){
-      pars[par] <- model_pars_tmp$mean[par]
-      par_names[par] <- model_pars_tmp$name[par]
+    if(model_pars_tmp$distribution[par_name]==""){
+      pars[par_name] <- model_pars_tmp$mean[par_name]
+      par_names[par_name] <- model_pars_tmp$name[par_name]
     }
-    if(model_pars_tmp$distribution[par]=="normal"){
-      pars[par] <- rnorm(1, model_pars_tmp$mean[par], model_pars_tmp$sd[par])
-      par_names[par] <- model_pars_tmp$name[par]
+    if(model_pars_tmp$distribution[par_name]=="normal"){
+      pars[par_name] <- rnorm(1, model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name])
+      par_names[par_name] <- model_pars_tmp$name[par_name]
     }
   }
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=pars) 
@@ -92,16 +92,16 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(model_pars_tmp)){
-    pars[par] <- model_pars_tmp$mean[par]
-    realized[par] <- model_pars_tmp$mean[par]
-    par_names[par] <- model_pars_tmp$name[par]
-    if(par_names[par] %in% c("boost_short","boost_long","boost")){
+  for(par in seq_len(nrow(model_pars_tmp))){
+    pars[par_name] <- model_pars_tmp$mean[par_name]
+    realized[par_name] <- model_pars_tmp$mean[par_name]
+    par_names[par_name] <- model_pars_tmp$name[par_name]
+    if(par_names[par_name] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
-      biomarker<-model_pars_tmp$biomarker_id[par]
+      biomarker<-model_pars_tmp$biomarker_id[par_name]
       biomarker_threshold <- min(biomarker_states[i,t,biomarker], model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
       ## Replace realized biomarker quantity for boost parameters
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
+      realized[par_name] <- pars[par_name]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
     }
   }
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
@@ -131,32 +131,32 @@ draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biom
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in 1:nrow(model_pars_tmp)){
-      if(is.na(model_pars_tmp$distribution[par]) | model_pars_tmp$distribution[par]==""){
-          pars[par] <- model_pars_tmp$mean[par]
-          par_names[par] <- model_pars_tmp$name[par]
-      } else if(model_pars_tmp$distribution[par] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+  for(par in seq_len(nrow(model_pars_tmp))){
+      if(is.na(model_pars_tmp$distribution[par_name]) | model_pars_tmp$distribution[par_name]==""){
+          pars[par_name] <- model_pars_tmp$mean[par_name]
+          par_names[par_name] <- model_pars_tmp$name[par_name]
+      } else if(model_pars_tmp$distribution[par_name] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
       
       ## Create functions to convert normal distributions to log-normal distributions
-      pars[par] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par], model_pars_tmp$sd[par]), normal_to_lognormal_sd(model_pars_tmp$mean[par], model_pars_tmp$sd[par]))
-      par_names[par] <- model_pars_tmp$name[par]
-    } else if(model_pars_tmp$distribution[par]=="normal"){
-      pars[par] <- rnorm(1, model_pars_tmp$mean[par], model_pars_tmp$sd[par])
-      par_names[par] <- model_pars_tmp$name[par]
+      pars[par_name] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]), normal_to_lognormal_sd(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]))
+      par_names[par_name] <- model_pars_tmp$name[par_name]
+    } else if(model_pars_tmp$distribution[par_name]=="normal"){
+      pars[par_name] <- rnorm(1, model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name])
+      par_names[par_name] <- model_pars_tmp$name[par_name]
     } else {
-        pars[par] <- model_pars_tmp$mean[par]
-        par_names[par] <- model_pars_tmp$name[par]
+        pars[par_name] <- model_pars_tmp$mean[par_name]
+        par_names[par_name] <- model_pars_tmp$name[par_name]
     }
-    if(par_names[par] %in% c("boost_short","boost_long","boost")){
+    if(par_names[par_name] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
-      biomarker<-model_pars_tmp$biomarker_id[par]
+      biomarker<-model_pars_tmp$biomarker_id[par_name]
       t1<-t-1
       biomarker_threshold <- min(biomarker_states[i,t1,biomarker], model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_threshold" & model_pars_tmp$biomarker_id==biomarker, "mean"])
-      realized[par] <- pars[par]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
+      realized[par_name] <- pars[par_name]*(1-model_pars_tmp[model_pars_tmp$name=="biomarker_ceiling_gradient" & model_pars_tmp$biomarker_id==biomarker, "mean"]*biomarker_threshold)
     }
-    if(!(par_names[par] %in% c("boost_short","boost_long","boost"))){
+    if(!(par_names[par_name] %in% c("boost_short","boost_long","boost"))){
       ## Non-boost realized parameters don't get affected by biomarker quantity ceiling
-      realized[par] <- pars[par]
+      realized[par_name] <- pars[par_name]
     }
   }
   all_pars <- tibble(i=rep(i,nrow(model_pars_tmp)),t=rep(t,nrow(model_pars_tmp)), x=rep(x,nrow(model_pars_tmp)), b=model_pars_tmp$biomarker_id, name=par_names, value=pars, realized_value=realized) 
