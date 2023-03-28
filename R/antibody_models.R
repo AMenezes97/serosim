@@ -17,7 +17,7 @@
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_monophasic(1,1,1,example_exposure_histories, example_biomarker_states, 
+#' antibody_model_monophasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
 antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   ## Find which successful exposures correspond to this biomarker 
@@ -66,7 +66,7 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
 #' model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,1,NULL, NULL, model_pars)
-#' antibody_model_biphasic(1,1,1,example_exposure_histories, example_biomarker_states, 
+#' antibody_model_biphasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
 antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
 

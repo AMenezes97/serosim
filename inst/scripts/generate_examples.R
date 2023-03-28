@@ -8,7 +8,7 @@ library(tidyverse)
 library(data.table)
 library(ggplot2)
 
-
+set.seed(1)
 
 ## Specify the number of time steps in the simulation
 times <- seq(1,120,by=1) 
@@ -70,26 +70,29 @@ res<- runserosim(
 
 ## Save select runserosim outputs 
 example_exposure_histories<-res$exposure_histories_long
+example_exposure_histories_wide<-res$exposure_histories
 example_exposure_probabilities<-res$exposure_probabilities_long
 example_exposure_force <- res$exposure_force_long
 example_biomarker_states<-res$biomarker_states
 example_observed_biomarker_states<-res$observed_biomarker_states
-
+example_biomarker_states_wide <- xtabs(value ~ i + t + b, data=example_biomarker_states)
 
 
 
 ## Save all generated data
-save(example_demography, 
-     example_biomarker_map,
-     example_biomarker_map_numeric,
-     example_foe_pars,
-     example_model_pars,
-     example_model_pars_numeric,
-     example_exposure_histories,
-     example_exposure_probabilities,
-     example_exposure_force,
-     example_biomarker_states,
-     example_observed_biomarker_states,
-     file="~/Documents/GitHub/serosim/data/example.RData")
+save(example_demography,file="~/Documents/GitHub/serosim/data/example_demography.rda") 
+save(example_biomarker_map,file="~/Documents/GitHub/serosim/data/example_biomarker_map.rda") 
+save(example_biomarker_map_numeric,file="~/Documents/GitHub/serosim/data/example_biomarker_map_numeric.rda") 
+save(example_foe_pars,file="~/Documents/GitHub/serosim/data/example_foe_pars.rda") 
+save(example_model_pars,file="~/Documents/GitHub/serosim/data/example_model_pars.rda") 
+save(example_model_pars_numeric,file="~/Documents/GitHub/serosim/data/example_model_pars_numeric.rda") 
+save(example_exposure_histories,file="~/Documents/GitHub/serosim/data/example_exposure_histories.rda") 
+save(example_exposure_histories_wide,file="~/Documents/GitHub/serosim/data/example_exposure_histories_wide.rda") 
+save(example_exposure_probabilities,file="~/Documents/GitHub/serosim/data/example_exposure_probabilities.rda") 
+save(example_exposure_force,file="~/Documents/GitHub/serosim/data/example_exposure_force.rda") 
+save(example_biomarker_states,file="~/Documents/GitHub/serosim/data/example_biomarker_states.rda") 
+save(example_biomarker_states_wide,file="~/Documents/GitHub/serosim/data/example_biomarker_states_wide.rda") 
+save(example_observed_biomarker_states,file="~/Documents/GitHub/serosim/data/example_observed_biomarker_states.rda") 
+
 
 

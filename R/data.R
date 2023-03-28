@@ -141,6 +141,19 @@
 #' @family example_data
 "example_exposure_histories"
 
+
+#' Example exposure histories (wide)
+#'
+#' Example exposure history `runserosim` output. This example data set output contains exposure history for individuals at all time steps for each exposure ID. This is identical to `example_exposure_histories`, but is converted into a 3D array giving the format expected by most antibody model functions.
+#' 
+#' @docType data
+#' @name example_exposure_histories_wide
+#' @usage data(example_exposure_histories_wide)
+#' @format A 3D array with dimensions corresponding to 1) individual; 2) time; 3) exposure ID, and values giving the exposure state
+#' @family example_data
+"example_exposure_histories_wide"
+
+
 #' Example exposure probability 
 #'
 #' Example exposure probability `runserosim` output. This example data set output contains exposure probability for individuals at all time steps for each exposure ID
