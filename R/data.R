@@ -82,6 +82,27 @@
 #' @family example_data
 "example_model_pars"
 
+#' Example model parameters for typhoid model (`model_pars_typhoid`)
+#'
+#' Example model parameters for typhoid model (`model_pars_typhoid`). This example `model_pars` is for a simulation with one exposure event type and one biomarker ID.
+#'  
+#' 
+#' @docType data
+#' @name example_model_pars_typhoid
+#' @usage data(example_model_pars_typhoid)
+#' @format A data frame with 6 rows and 6 variables:
+#' \describe{
+#'     \item{exposure_id}{name of each exposure type present in example biomarker_map}
+#'     \item{biomarker_id}{name of each biomarker present within each exposure type present in example biomarker_map}
+#'     \item{name}{names of model parameters}
+#'     \item{mean}{numeric values for the true paramter means}
+#'     \item{sd}{numeric values for the true paramter standard deviation}
+#'     \item{distribution}{distribution type from which the draw_paramaters function will be sampling a parameter }
+#' }
+#' @family example_data
+"example_model_pars_typhoid"
+
+
 #' Example model parameters for biphasic waning model
 #'
 #' This example `model_pars` is for a simulation three different exposure events (one vaccination, two infection types) corresponding to two biomarkers. `model_pars` argument is responsible for storing parameter information needed for the antibody model, observation model and immunity model. In this example, `model_pars` has parameters for a biphasic antibody model and for an observational model with noise. This `model_pars` input must be converted to the numeric version (`reformat_biomarker_map`) before being input into `runserosim`. 

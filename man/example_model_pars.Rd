@@ -36,6 +36,7 @@ Other example_data:
 \code{\link{example_foe_pars}},
 \code{\link{example_model_pars_biphasic}},
 \code{\link{example_model_pars_numeric}},
+\code{\link{example_model_pars_typhoid}},
 \code{\link{example_observed_biomarker_states}}
 }
 \concept{example_data}

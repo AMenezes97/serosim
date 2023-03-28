@@ -40,8 +40,7 @@ Plots example trajectories of the provided antibody kinetics model
 }
 \examples{
 library(dplyr)
-model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_test_1.csv") \%>\% 
-tidyr::drop_na()
+model_pars <- reformat_biomarker_map(example_model_pars_biphasic)\%>\% tidyr::drop_na()
 draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
 biomarker_map <- dplyr::tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
 plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,

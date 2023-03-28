@@ -77,7 +77,9 @@ example_biomarker_states<-res$biomarker_states
 example_observed_biomarker_states<-res$observed_biomarker_states
 example_biomarker_states_wide <- xtabs(value ~ i + t + b, data=example_biomarker_states)
 
-
+## Additional example data
+model_pars_path <- system.file("extdata", "model_pars_typhoid.csv", package = "serosim")
+example_model_pars_typhoid <- read.csv(file = model_pars_path, header = TRUE)
 
 ## Save all generated data
 save(example_demography,file="~/Documents/GitHub/serosim/data/example_demography.rda") 
@@ -93,6 +95,7 @@ save(example_exposure_force,file="~/Documents/GitHub/serosim/data/example_exposu
 save(example_biomarker_states,file="~/Documents/GitHub/serosim/data/example_biomarker_states.rda") 
 save(example_biomarker_states_wide,file="~/Documents/GitHub/serosim/data/example_biomarker_states_wide.rda") 
 save(example_observed_biomarker_states,file="~/Documents/GitHub/serosim/data/example_observed_biomarker_states.rda") 
+save(example_model_pars_typhoid,file="~/Documents/GitHub/serosim/data/example_model_pars_typhoid.rda") 
 
 
 
