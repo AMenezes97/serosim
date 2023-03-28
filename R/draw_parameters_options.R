@@ -96,7 +96,6 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
     pars[par] <- model_pars_tmp$mean[par]
     realized[par] <- model_pars_tmp$mean[par]
     par_names[par] <- model_pars_tmp$name[par]
-    
     if(par_names[par] %in% c("boost_short","boost_long","boost")){
       ## Pull out all biomarker
       biomarker<-model_pars_tmp$biomarker_id[par]
