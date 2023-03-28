@@ -35,7 +35,7 @@ test_that("Check that observation_model_continuous_bounded_noise function works"
   
   ## Load in example data and necessary arguments
   bounds <- tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
-  obs_tmp<-observation_model_continuous_bounded_noise(example_biomarker_states, example_model_pars_numeric, bounds,0.95,0.99)
+  obs_tmp<-observation_model_continuous_bounded_noise(example_biomarker_states, example_model_pars_numeric, bounds,0.95,1)
   
   ## Expect that observation_model_continuous_bounded_noise function output equals 2
   expect_equal(obs_tmp$observed[1],2)
