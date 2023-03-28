@@ -1,9 +1,9 @@
 ---
-title: "README"
+title: "serosim"
 output: github_document
 ---
 
-<img src='man/figures/logo.png' align="right" height="138" />
+<img src='man/figures/logo.png' align="right" height="100" />
 
   <!-- badges: start -->
 [![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml)

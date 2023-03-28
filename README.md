@@ -1,7 +1,7 @@
-README
+serosim
 ================
 
-<img src='man/figures/logo.png' align="right" height="138" />
+<img src='man/figures/logo.png' align="right" height="100" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml)
@@ -46,7 +46,7 @@ Load necessary packages:
 devtools::install_github("AMenezes97/serosim")
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpGbHYPO/remotesbdeb7fe2403f/AMenezes97-serosim-710283c/DESCRIPTION’ ... OK
+#> * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpJInDMV/remotesbf496837644a/AMenezes97-serosim-7507fc3/DESCRIPTION’ ... OK
 #> * preparing ‘serosim’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -100,10 +100,10 @@ demography <- generate_pop_demography(N=100, times=times, prob_removal=0)
 summary(demography)
 #>        i              birth           removal        times       
 #>  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-#>  1st Qu.: 25.75   1st Qu.: 34.50   1st Qu.:121   1st Qu.: 30.75  
-#>  Median : 50.50   Median : 65.00   Median :121   Median : 60.50  
-#>  Mean   : 50.50   Mean   : 63.10   Mean   :121   Mean   : 60.50  
-#>  3rd Qu.: 75.25   3rd Qu.: 92.25   3rd Qu.:121   3rd Qu.: 90.25  
+#>  1st Qu.: 25.75   1st Qu.: 33.25   1st Qu.:121   1st Qu.: 30.75  
+#>  Median : 50.50   Median : 53.00   Median :121   Median : 60.50  
+#>  Mean   : 50.50   Mean   : 55.59   Mean   :121   Mean   : 60.50  
+#>  3rd Qu.: 75.25   3rd Qu.: 80.25   3rd Qu.:121   3rd Qu.: 90.25  
 #>  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 ```
 
@@ -394,12 +394,12 @@ head(res$kinetics_parameters)
 #> # A tibble: 6 × 7
 #>       i     t     x     b name    value realized_value
 #>   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-#> 1     1   117     1     1 boost 2.79           2.79   
-#> 2     1   117     1     1 wane  0.00383        0.00383
-#> 3     2    97     1     1 boost 9.87           9.87   
-#> 4     2    97     1     1 wane  0.00323        0.00323
-#> 5     2   103     2     1 boost 0.965          0.965  
-#> 6     2   103     2     1 wane  0.00180        0.00180
+#> 1     1    87     2     1 boost 4.01           4.01   
+#> 2     1    87     2     1 wane  0.00132        0.00132
+#> 3     2    93     1     1 boost 4.98           4.98   
+#> 4     2    93     1     1 wane  0.00546        0.00546
+#> 5     2    93     2     1 boost 3.54           3.54   
+#> 6     2    93     2     1 wane  0.00179        0.00179
 
 ## Combine plots as seen in paper 
 # library(cowplot)
