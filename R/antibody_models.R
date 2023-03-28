@@ -118,9 +118,11 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_sta
 #' @export
 #'
 #' @examples
-#' model_pars <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_typhoid.csv")
+#' model_pars_path <- system.file("extdata", "model_pars_typhoid.csv", package = "serosim")
+#' model_pars_typhoid <- read.csv(file = model_pars_path, header = TRUE)
+#' 
 #' tmp_pars <- list()
-#' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+#' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars_typhoid)
 #' tmp_exposure_history <- array(0,dim=c(1,11,2))
 #' tmp_exposure_history[1,1,1] <- 1
 #' antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)

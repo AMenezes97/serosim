@@ -1,10 +1,13 @@
 README
 ================
 
+<img src='man/figures/logo.png' align="right" height="138" />
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml)
 [![CodeFactor](https://www.codefactor.io/repository/github/amenezes97/serosim/badge)](https://www.codefactor.io/repository/github/amenezes97/serosim)
 <!-- badges: end -->
+[![test-coverage](https://github.com/AMenezes97/serosim/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/test-coverage.yaml)
 
 # Motivation
 
@@ -41,18 +44,14 @@ Load necessary packages:
 ``` r
 ## Install and load serosim 
 devtools::install_github("AMenezes97/serosim")
-```
-
-    ## 
-    ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ## * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/Rtmp99348s/remotesb261373431d1/AMenezes97-serosim-1de7c25/DESCRIPTION’ ... OK
-    ## * preparing ‘serosim’:
-    ## * checking DESCRIPTION meta-information ... OK
-    ## * checking for LF line-endings in source and make files and shell scripts
-    ## * checking for empty or unneeded directories
-    ## * building ‘serosim_0.0.0.9000.tar.gz’
-
-``` r
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#> * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpGbHYPO/remotesbdeb7fe2403f/AMenezes97-serosim-710283c/DESCRIPTION’ ... OK
+#> * preparing ‘serosim’:
+#> * checking DESCRIPTION meta-information ... OK
+#> * checking for LF line-endings in source and make files and shell scripts
+#> * checking for empty or unneeded directories
+#> * building ‘serosim_0.0.0.9000.tar.gz’
 library(serosim)
 
 ## Load additional packages required 
@@ -95,22 +94,18 @@ individuals are born at the start of the simulation period.
 ## Specify the number of individuals in the simulation; N=100
 ## No individuals are removed from the population; prob_removal=0
 demography <- generate_pop_demography(N=100, times=times, prob_removal=0)
-```
+#> Joining with `by = join_by(i)`
 
-    ## Joining with `by = join_by(i)`
-
-``` r
 ## Examine the generated demography tibble
 summary(demography)
+#>        i              birth           removal        times       
+#>  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
+#>  1st Qu.: 25.75   1st Qu.: 34.50   1st Qu.:121   1st Qu.: 30.75  
+#>  Median : 50.50   Median : 65.00   Median :121   Median : 60.50  
+#>  Mean   : 50.50   Mean   : 63.10   Mean   :121   Mean   : 60.50  
+#>  3rd Qu.: 75.25   3rd Qu.: 92.25   3rd Qu.:121   3rd Qu.: 90.25  
+#>  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 ```
-
-    ##        i              birth           removal        times       
-    ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 29.50   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 58.50   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 57.83   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 81.00   3rd Qu.:121   3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -133,25 +128,21 @@ biomarker that is listed will not necessarily be labeled as 1.
 ## Create biomarker map
 biomarker_map_original <- tibble(exposure_id=c("ifxn","vacc"),biomarker_id=c("IgG","IgG"))
 biomarker_map_original
-```
+#> # A tibble: 2 × 2
+#>   exposure_id biomarker_id
+#>   <chr>       <chr>       
+#> 1 ifxn        IgG         
+#> 2 vacc        IgG
 
-    ## # A tibble: 2 × 2
-    ##   exposure_id biomarker_id
-    ##   <chr>       <chr>       
-    ## 1 ifxn        IgG         
-    ## 2 vacc        IgG
-
-``` r
 ## Reformat biomarker_map for runserosim
 biomarker_map <-reformat_biomarker_map(biomarker_map_original)
 biomarker_map
+#> # A tibble: 2 × 2
+#>   exposure_id biomarker_id
+#>         <dbl>        <dbl>
+#> 1           1            1
+#> 2           2            1
 ```
-
-    ## # A tibble: 2 × 2
-    ##   exposure_id biomarker_id
-    ##         <dbl>        <dbl>
-    ## 1           1            1
-    ## 2           2            1
 
 # 1.4 Force of Exposure and Exposure Model
 
@@ -185,7 +176,7 @@ exposure_model<-exposure_model_simple_FOE
 plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
 
 # 1.5 Immunity Model
 
@@ -244,29 +235,23 @@ antibody_model<-antibody_model_monophasic
 model_pars_path <- system.file("extdata", "model_pars_README.csv", package = "serosim")
 model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
 model_pars_original 
-```
+#>   exposure_id biomarker_id   name   mean     sd distribution
+#> 1        ifxn          IgG  boost 4.0000 2.0000   log-normal
+#> 2        ifxn          IgG   wane 0.0033 0.0005   log-normal
+#> 3        <NA>          IgG obs_sd     NA 0.2500       normal
+#> 4        vacc          IgG  boost 2.0000 1.0000   log-normal
+#> 5        vacc          IgG   wane 0.0016 0.0005   log-normal
 
-    ##   exposure_id biomarker_id   name   mean     sd distribution
-    ## 1        ifxn          IgG  boost 4.0000 2.0000   log-normal
-    ## 2        ifxn          IgG   wane 0.0033 0.0005   log-normal
-    ## 3        <NA>          IgG obs_sd     NA 0.2500       normal
-    ## 4        vacc          IgG  boost 2.0000 1.0000   log-normal
-    ## 5        vacc          IgG   wane 0.0016 0.0005   log-normal
-
-``` r
 ## Reformat model_pars for runserosim
 model_pars<-reformat_biomarker_map(model_pars_original)
 model_pars
-```
+#>   exposure_id biomarker_id   name   mean     sd distribution
+#> 1           1            1  boost 4.0000 2.0000   log-normal
+#> 2           1            1   wane 0.0033 0.0005   log-normal
+#> 3          NA            1 obs_sd     NA 0.2500       normal
+#> 4           2            1  boost 2.0000 1.0000   log-normal
+#> 5           2            1   wane 0.0016 0.0005   log-normal
 
-    ##   exposure_id biomarker_id   name   mean     sd distribution
-    ## 1           1            1  boost 4.0000 2.0000   log-normal
-    ## 2           1            1   wane 0.0033 0.0005   log-normal
-    ## 3          NA            1 obs_sd     NA 0.2500       normal
-    ## 4           2            1  boost 2.0000 1.0000   log-normal
-    ## 5           2            1   wane 0.0016 0.0005   log-normal
-
-``` r
 ## Specify the draw_parameters function
 draw_parameters<-draw_parameters_random_fx
 
@@ -274,7 +259,7 @@ draw_parameters<-draw_parameters_random_fx
 plot_antibody_model(antibody_model_monophasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
 
 # 1.7 Observation Model and observation_times
 
@@ -356,63 +341,66 @@ simulation outputs.
 plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
+
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
 ## Note: All individuals are under the same force of exposure since we specified a simple exposure model and constant foe_pars
 plot_exposure_force(res$exposure_force_long)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-2.png)<!-- -->
 
 ``` r
+
 ## Plot individual successful exposure probabilities for all exposure types
 ## This is the output of the exposure model multiplied by the output of the immunity model.
 ## In other words, this is the probability of an exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-3.png)<!-- -->
 
 ``` r
+
 ## Plot individual exposure histories for all exposure types
 plot_exposure_histories(res$exposure_histories_long)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-4.png)<!-- -->
 
 ``` r
+
 ## Plot true biomarker quantities for all individuals across the entire simulation period
 plot_biomarker_quantity(res$biomarker_states)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-5.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-5.png)<!-- -->
 
 ``` r
+
 ## Plot the serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-6.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-6.png)<!-- -->
 
 ``` r
+
 ## Note that the simulated kinetics parameters are also stored
 head(res$kinetics_parameters)
-```
+#> # A tibble: 6 × 7
+#>       i     t     x     b name    value realized_value
+#>   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
+#> 1     1   117     1     1 boost 2.79           2.79   
+#> 2     1   117     1     1 wane  0.00383        0.00383
+#> 3     2    97     1     1 boost 9.87           9.87   
+#> 4     2    97     1     1 wane  0.00323        0.00323
+#> 5     2   103     2     1 boost 0.965          0.965  
+#> 6     2   103     2     1 wane  0.00180        0.00180
 
-    ## # A tibble: 6 × 7
-    ##       i     t     x     b name    value realized_value
-    ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    95     2     1 boost 2.29           2.29   
-    ## 2     1    95     2     1 wane  0.00243        0.00243
-    ## 3     2    53     2     1 boost 1.86           1.86   
-    ## 4     2    53     2     1 wane  0.00157        0.00157
-    ## 5     2    58     1     1 boost 2.57           2.57   
-    ## 6     2    58     1     1 wane  0.00375        0.00375
-
-``` r
 ## Combine plots as seen in paper 
 # library(cowplot)
 # plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
