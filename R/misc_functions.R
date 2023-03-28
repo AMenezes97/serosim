@@ -379,7 +379,7 @@ precomputation_checks <- function(N, times, exposure_ids, groups, exposure_model
                     if(can_vectorize){
                         exposure_force[solve_i,tmp_times,x] <- exposure_model(solve_i, tmp_times, x, unique_ids$group[index], foe_pars, demography,...)
                     } else {
-                        exposure_force[solve_i,tmp_times,x] <- sapply(tmp_times, function(t) exposure_model(solve_i, t, x,unique_ids$group[index], foe_pars,demography,...))
+                        exposure_force[solve_i,tmp_times,x] <- vapply(tmp_times, function(t) exposure_model(solve_i, t, x,unique_ids$group[index], foe_pars,demography,...),numeric(1))
                     }
                 }
             } 

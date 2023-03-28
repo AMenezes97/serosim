@@ -126,7 +126,7 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
     if(sensitivity!=1 | specificity!=1){
       ## Calculate the range of observed biomarker quantities 
       ## Step through each individual 
-      for(indiv in 1:length(biomarker_states_tmp$value)){
+      for(indiv in seq_len(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
         if(biomarker_states_tmp$value[indiv]==0){
           if(runif(1)>specificity){
@@ -250,7 +250,7 @@ observation_model_discrete_noise<-function(biomarker_states,model_pars, cutoffs,
     
     if(sensitivity!=1 | specificity!=1){
       ## Step through each individual 
-      for(indiv in 1:length(biomarker_states_tmp$value)){
+      for(indiv in seq_len(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
         if(biomarker_states_tmp$value[indiv]==0){
           if(runif(1)>specificity){

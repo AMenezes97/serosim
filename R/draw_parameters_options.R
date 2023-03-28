@@ -24,7 +24,7 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, m
   pars <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in seq_len(nrow(model_pars_tmp))){
+  for(par_name in seq_len(nrow(model_pars_tmp))){
     pars[par_name] <- model_pars_tmp$mean[par_name]
     par_names[par_name] <- model_pars_tmp$name[par_name]
   }
@@ -92,7 +92,7 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in seq_len(nrow(model_pars_tmp))){
+  for(par_name in seq_len(nrow(model_pars_tmp))){
     pars[par_name] <- model_pars_tmp$mean[par_name]
     realized[par_name] <- model_pars_tmp$mean[par_name]
     par_names[par_name] <- model_pars_tmp$name[par_name]
@@ -131,7 +131,7 @@ draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biom
   realized <- numeric(nrow(model_pars_tmp))
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
-  for(par in seq_len(nrow(model_pars_tmp))){
+  for(par_name in seq_len(nrow(model_pars_tmp))){
       if(is.na(model_pars_tmp$distribution[par_name]) | model_pars_tmp$distribution[par_name]==""){
           pars[par_name] <- model_pars_tmp$mean[par_name]
           par_names[par_name] <- model_pars_tmp$name[par_name]
