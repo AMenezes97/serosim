@@ -2,7 +2,7 @@ README
 ================
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml)
 [![CodeFactor](https://www.codefactor.io/repository/github/amenezes97/serosim/badge)](https://www.codefactor.io/repository/github/amenezes97/serosim)
 <!-- badges: end -->
 
@@ -45,14 +45,12 @@ devtools::install_github("AMenezes97/serosim")
 
     ## 
     ## ── R CMD build ─────────────────────────────────────────────────────────────────
-    ##      checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpawPiQX/remotes163b52fb3f2d/AMenezes97-serosim-892f8cc/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpawPiQX/remotes163b52fb3f2d/AMenezes97-serosim-892f8cc/DESCRIPTION’ (341ms)
-    ##   ─  preparing ‘serosim’: (804ms)
-    ##      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-    ##   ─  checking for LF line-endings in source and make files and shell scripts (844ms)
-    ##   ─  checking for empty or unneeded directories
-    ##   ─  building ‘serosim_0.0.0.9000.tar.gz’
-    ##      
-    ## 
+    ## * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/Rtmp99348s/remotesb261373431d1/AMenezes97-serosim-1de7c25/DESCRIPTION’ ... OK
+    ## * preparing ‘serosim’:
+    ## * checking DESCRIPTION meta-information ... OK
+    ## * checking for LF line-endings in source and make files and shell scripts
+    ## * checking for empty or unneeded directories
+    ## * building ‘serosim_0.0.0.9000.tar.gz’
 
 ``` r
 library(serosim)
@@ -107,12 +105,12 @@ summary(demography)
 ```
 
     ##        i              birth           removal        times       
-    ##  Min.   :  1.00   Min.   :  4.00   Min.   :121   Min.   :  1.00  
-    ##  1st Qu.: 25.75   1st Qu.: 33.75   1st Qu.:121   1st Qu.: 30.75  
-    ##  Median : 50.50   Median : 62.00   Median :121   Median : 60.50  
-    ##  Mean   : 50.50   Mean   : 62.59   Mean   :121   Mean   : 60.50  
-    ##  3rd Qu.: 75.25   3rd Qu.: 90.00   3rd Qu.:121   3rd Qu.: 90.25  
-    ##  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
+    ##  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
+    ##  1st Qu.: 25.75   1st Qu.: 29.50   1st Qu.:121   1st Qu.: 30.75  
+    ##  Median : 50.50   Median : 58.50   Median :121   Median : 60.50  
+    ##  Mean   : 50.50   Mean   : 57.83   Mean   :121   Mean   : 60.50  
+    ##  3rd Qu.: 75.25   3rd Qu.: 81.00   3rd Qu.:121   3rd Qu.: 90.25  
+    ##  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
 
 # 1.3 Exposure to biomarker mapping
 
@@ -407,12 +405,12 @@ head(res$kinetics_parameters)
     ## # A tibble: 6 × 7
     ##       i     t     x     b name    value realized_value
     ##   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-    ## 1     1    92     2     1 boost 2.18           2.18   
-    ## 2     1    92     2     1 wane  0.00120        0.00120
-    ## 3     2    15     2     1 boost 2.19           2.19   
-    ## 4     2    15     2     1 wane  0.00241        0.00241
-    ## 5     3    28     2     1 boost 1.10           1.10   
-    ## 6     3    28     2     1 wane  0.00203        0.00203
+    ## 1     1    95     2     1 boost 2.29           2.29   
+    ## 2     1    95     2     1 wane  0.00243        0.00243
+    ## 3     2    53     2     1 boost 1.86           1.86   
+    ## 4     2    53     2     1 wane  0.00157        0.00157
+    ## 5     2    58     1     1 boost 2.57           2.57   
+    ## 6     2    58     1     1 wane  0.00375        0.00375
 
 ``` r
 ## Combine plots as seen in paper 
