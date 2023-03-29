@@ -236,7 +236,7 @@ runserosim <- function(
       left_join(demography %>% select(c(i, birth,removal)) %>% distinct()) %>%
       mutate(value=ifelse(t >= birth & t <= removal, value, NA))%>% 
       select(-c(birth,removal))
-    
+
     ## Remove observations before individual was born and after they left the study
     observed_biomarker_states <- observed_biomarker_states %>% 
       left_join(demography %>% select(c(i, birth,removal)) %>% distinct()) %>%
@@ -252,5 +252,6 @@ runserosim <- function(
                 "exposure_force_long"=exposure_force_long,
                 "biomarker_states"=biomarker_states,
                 "observed_biomarker_states"=observed_biomarker_states,
-                "kinetics_parameters"=all_kinetics_parameters))
+                "kinetics_parameters"=all_kinetics_parameters,
+                "demography"=demography))
 }
