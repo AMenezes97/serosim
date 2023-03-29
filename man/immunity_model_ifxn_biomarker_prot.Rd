@@ -39,7 +39,7 @@ immunity_model_ifxn_biomarker_prot(
 A probability of successful exposure is returned
 }
 \description{
-This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified \code{biomakrer_prot_midpoint} and \code{biomarker_prot_width} within \code{model_pars} is used to calculate biomarker-mediated protection.
+This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified \code{biomarker_prot_midpoint} and \code{biomarker_prot_width} within \code{model_pars} is used to calculate biomarker-mediated protection.
 }
 \examples{
 tmp_exposure_history <- array(0, dim=c(1, 10, 1))

@@ -127,7 +127,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 
 #' Immunity model for infection with biomarker-quantity-mediated protection
 #' 
-#' @description This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified `biomakrer_prot_midpoint` and `biomarker_prot_width` within `model_pars` is used to calculate biomarker-mediated protection.   
+#' @description This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified `biomarker_prot_midpoint` and `biomarker_prot_width` within `model_pars` is used to calculate biomarker-mediated protection.   
 #'    
 #' @inheritParams immunity_model_all_successful
 #' @param ... Additional arguments
@@ -236,7 +236,7 @@ immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
     if(curr_ifx_events<max_events[x]){
       
         ## Find biomarkers which are boosted by this exposure type
-        ## The assumption here is that the biomaker quantity will determine if an individual is protected
+        ## The assumption here is that the biomarker quantity will determine if an individual is protected
          b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
         ## Find current biomarker quantity to all relevant biomarkers
         curr_t <- biomarker_states[i,t,b]

@@ -231,6 +231,19 @@ runserosim <- function(
         observed_biomarker_states <- observation_model(biomarker_states, model_pars, ...)
     }
     
+    ## Remove latent states before individual was born and after they left the study
+    biomarker_states <- biomarker_states %>% 
+      left_join(demography %>% select(c(i, birth,removal)) %>% distinct()) %>%
+      mutate(value=ifelse(t >= birth & t <= removal, value, NA))%>% 
+      select(-c(birth,removal))
+    
+    ## Remove observations before individual was born and after they left the study
+    observed_biomarker_states <- observed_biomarker_states %>% 
+      left_join(demography %>% select(c(i, birth,removal)) %>% distinct()) %>%
+      mutate(value=ifelse(t >= birth & t <= removal, value, NA))%>% 
+      mutate(observed=ifelse(t >= birth & t <= removal, observed, NA))%>% 
+      select(-c(birth,removal))
+    
     return(list("exposure_histories"=exposure_histories,
                 "exposure_histories_long"=exposure_histories_long,
                 "exposure_probabilities"=exposure_probabilities,

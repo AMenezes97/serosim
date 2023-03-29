@@ -108,7 +108,6 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars, bounds, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
   biomarker_states<-data.table(biomarker_states)
-
   for(bs in unique(biomarker_states$b)){
     lower_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="lower_bound"]
     upper_bound<-bounds$value[bounds$biomarker_id==bs & bounds$name=="upper_bound"]
