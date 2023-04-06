@@ -29,5 +29,6 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
-URL: https://github.com/AMenezes97/serosim
+URL: https://github.com/AMenezes97/serosim,
+    https://amenezes97.github.io/serosim/
 BugReports: https://github.com/AMenezes97/serosim/issues
