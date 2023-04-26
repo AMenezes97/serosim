@@ -17,12 +17,7 @@
 #' @examples
 #' plot_biomarker_mediated_protection(0:10,5,0.9)
 plot_biomarker_mediated_protection <- function(biomarker_range, biomarker_prot_midpoint, biomarker_prot_width){
-  ## Create a function to calculate the risk of infection at a given biomarker quantity 
-  biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
-    risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
-    return(risk)
-  }
-  
+ 
   p_infection <- function(phi, biomarker_quantity, alpha1, beta1){
     p <- phi*(1-biomarker_protection(biomarker_quantity, alpha1 , beta1))
     p
@@ -31,7 +26,7 @@ plot_biomarker_mediated_protection <- function(biomarker_range, biomarker_prot_m
     #create a data frame with the probability of infection at each biomarker quantity 
     prob_infection <- tibble(biomarker=biomarker_range, prob_infection=p_infection(1, biomarker_range,biomarker_prot_midpoint,biomarker_prot_width))
     #plot probability of infection given biomarker quantity at exposure
-    p1<- ggplot2::ggplot(prob_infection) + ggplot2::geom_line(ggplot2::aes(x=biomarker,y=prob_infection)) + ggplot2::theme_bw() + ggplot2::ylab("Probability of infection (relative to biomarker quantity of 0)") + ggplot2::xlab("Biomarker quantity at exposure")
+    p1<- ggplot2::ggplot(prob_infection) + ggplot2::geom_line(ggplot2::aes(x=biomarker,y=prob_infection)) + ggplot2::theme_bw() + ggplot2::ylab("Probability of infection \n (relative to biomarker quantity of 0)") + ggplot2::xlab("Biomarker quantity at exposure")
     return(p1)
   }
   
