@@ -3,6 +3,7 @@
 export(antibody_model_biphasic)
 export(antibody_model_monophasic)
 export(antibody_model_typhoid)
+export(biomarker_protection)
 export(convert_indices_matrix_to_vector)
 export(draw_parameters_fixed_fx)
 export(draw_parameters_fixed_fx_biomarker_dep)

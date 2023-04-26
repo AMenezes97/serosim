@@ -16,6 +16,7 @@ immunity_model_vacc_ifxn_biomarker_prot(
   max_events,
   vacc_exposures,
   vacc_age = 1,
+  cross_reactivity_table = NULL,
   ...
 )
 }
@@ -41,6 +42,8 @@ immunity_model_vacc_ifxn_biomarker_prot(
 \item{vacc_exposures}{a vector of exposure IDs (x)}
 
 \item{vacc_age}{a vector of the minimum age at which an individual is eligible for vaccination for each exposure event; If an exposure event is not a vaccination event then input \code{NA}}
+
+\item{cross_reactivity_table}{an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.}
 
 \item{...}{Additional arguments}
 }

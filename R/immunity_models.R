@@ -148,7 +148,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
 #' immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
 #' biomarker_states=tmp_biomarker_states, demography=NULL, 
-#' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
+#' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
                               biomarker_states, demography, biomarker_map, 
                               model_pars, max_events, cross_reactivity_table=NULL, ...){
