@@ -13,6 +13,8 @@ immunity_model_ifxn_biomarker_prot(
   demography,
   biomarker_map,
   model_pars,
+  max_events,
+  cross_reactivity_table = NULL,
   ...
 )
 }
@@ -33,6 +35,10 @@ immunity_model_ifxn_biomarker_prot(
 
 \item{model_pars}{a tibble of parameters needed for the immunity model}
 
+\item{max_events}{a vector of the maximum number of successful exposure events possible for each exposure ID}
+
+\item{cross_reactivity_table}{an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.}
+
 \item{...}{Additional arguments}
 }
 \value{
@@ -52,5 +58,5 @@ tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
 immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
 biomarker_states=tmp_biomarker_states, demography=NULL, 
-biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
+biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 }

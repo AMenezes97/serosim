@@ -467,3 +467,21 @@ normal_to_lognormal_sd <- function(normmean, normsd) {
     sdlog <- sqrt(log(phi ^ 2 / normmean ^ 2))
     return(sdlog)
 }
+
+
+#' Function to calculate the risk of infection at a given biomarker quantity
+#'
+#' @description This function is used for the immunity models that incorporate biomarker mediated protection.
+#' @param biomarker_quantity Current biomarker quantity at the time of exposure
+#' @param biomarker_prot_midpoint The biomarker quantity at which you are 50% protected from infection
+#' @param biomarker_prot_width Determines the shape of the curve
+#'
+#' @return The risk of infection given the current biomarker quantity
+#' @export
+#'
+#' @examples
+#' biomarker_protection(50,25,.02)
+biomarker_protection <- function(biomarker_quantity, biomarker_prot_midpoint, biomarker_prot_width){
+  risk <- 1 - 1/(1 + exp(biomarker_prot_width*(biomarker_quantity - biomarker_prot_midpoint)))
+  return(risk)
+}

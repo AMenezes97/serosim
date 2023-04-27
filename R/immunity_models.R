@@ -130,6 +130,8 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' @description This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified `biomarker_prot_midpoint` and `biomarker_prot_width` within `model_pars` is used to calculate biomarker-mediated protection.   
 #'    
 #' @inheritParams immunity_model_all_successful
+#' @param max_events a vector of the maximum number of successful exposure events possible for each exposure ID
+#' @param cross_reactivity_table an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.
 #' @param ... Additional arguments
 #'
 #' @return A probability of successful exposure is returned
@@ -146,30 +148,46 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
 #' immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
 #' biomarker_states=tmp_biomarker_states, demography=NULL, 
-#' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars)
+#' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
-                              biomarker_states, demography, biomarker_map, model_pars, ...){
-    ## Find biomarkers which are boosted by this exposure type
-    ## The assumption here is that the biomarker quantity will determine if an individual is protected
+                              biomarker_states, demography, biomarker_map, 
+                              model_pars, max_events, cross_reactivity_table=NULL, ...){
+  
+  ## Count the total number of successful exposures to x thus far 
+  curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+  
+  ## If the current number of successful exposures to x is less than the maximum number of successful exposures
+  if(curr_ifx_events<max_events[x]){
+    
+    ## If a cross reactivity table is specify, calculate the current the individuals current biomarker quantity for all protective biomarker types.
+    if(!is.null(cross_reactivity_table)){
+      cr<- cross_reactivity_table %>% filter(exposure_id==x)
+      cr$curr_biom_quant <- biomarker_states[i,t,cr$biomarker_id]
+      cr<- cr %>% mutate(prot_b=cross_reactivity*curr_biom_quant)
+      curr_b<- sum(cr$prot_b)
+      
+    } else{
+      
+    ## If no cross reactivity table is specified, the model assumes that all biomarkers boosted by the exposure as defined in the biomarker_map are protective to the same extent.
     b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
     ## Find current biomarker quantity to all relevant biomarkers
-    curr_t <- biomarker_states[i,t,b] 
-    curr_t <- sum(curr_t)
+    curr_b <- biomarker_states[i,t,b] 
+    curr_b <- sum(curr_b)
+    }
     
     ## Pull out necessary variables 
     biomarker_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_midpoint"] 
     biomarker_prot_width <- model_pars$mean[model_pars$exposure_id==x  & model_pars$name=="biomarker_prot_width"]
-
-    ## Create a function to calculate the risk of infection at a given biomarker quantity
-    biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
-      risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
-      return(risk)
-    }
     
-    prob_success<- (1-biomarker_protection(curr_t, biomarker_prot_midpoint, biomarker_prot_width))
+    
+    prob_success<- (1-biomarker_protection(curr_b, biomarker_prot_midpoint, biomarker_prot_width))
     
     return(prob_success)
   }
+  else{
+    return(0)
+  }
+}
 
 
 #' Immunity model for vaccination and infection events with biomarker-quantity-mediated protection
@@ -177,6 +195,8 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' @description This immunity model should be used if exposures represent vaccination and infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the biomarker quantity at the time of exposure and the total number of successful infections prior to that point.
 #' 
 #' @inheritParams immunity_model_vacc_ifxn_simple
+#' @param cross_reactivity_table an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.
+
 #' @param ... Additional arguments
 #'
 #' @return A probability of successful exposure is returned
@@ -205,7 +225,7 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),
 #' vacc_exposures=c(1),vacc_age=c(1))
 immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
-                           biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, ...){
+                           biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, cross_reactivity_table=NULL, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  
     ## Calculate the individual's current age
@@ -235,23 +255,27 @@ immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
     ## If the current number of successful exposures to x is less than the maximum number of successful exposures
     if(curr_ifx_events<max_events[x]){
       
-        ## Find biomarkers which are boosted by this exposure type
-        ## The assumption here is that the biomarker quantity will determine if an individual is protected
+      ## If a cross reactivity table is specify, calculate the current the individuals current biomarker quantity for all protective biomarker types.
+      if(!is.null(cross_reactivity_table)){
+        cr<- cross_reactivity_table %>% filter(exposure_id==x)
+        cr$curr_biom_quant <- biomarker_states[i,t,cr$biomarker_id]
+        cr<- cr %>% mutate(prot_b=cross_reactivity*curr_biom_quant)
+        curr_b<- sum(cr$prot_b)
+        
+      } else{
+      
+        ## If no cross reactivity table is specified, the model assumes that all biomarkers boosted by the exposure as defined in the biomarker_map are protective to the same extent.
          b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
         ## Find current biomarker quantity to all relevant biomarkers
-        curr_t <- biomarker_states[i,t,b]
-        curr_t <- sum(curr_t)
+        curr_b <- biomarker_states[i,t,b]
+        curr_b <- sum(curr_b)
+      }
+      
         ## Pull out necessary variables 
        biomarker_prot_midpoint <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_midpoint"]
-        biomarker_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_width"]
-        
-        ## Create a function to calculate the risk of infection at a given biomarker
-        biomarker_protection <- function(biomarker_quantity, alpha1, beta1){
-          risk <- 1 - 1/(1 + exp(beta1*(biomarker_quantity - alpha1)))
-         return(risk)
-       }
+       biomarker_prot_width <- model_pars$mean[model_pars$exposure_id==x & model_pars$name=="biomarker_prot_width"]
      
-        prob_success<- (1-biomarker_protection(curr_t, biomarker_prot_midpoint, biomarker_prot_width))
+       prob_success<- (1-biomarker_protection(curr_b, biomarker_prot_midpoint, biomarker_prot_width))
     
        return(prob_success)
     }
