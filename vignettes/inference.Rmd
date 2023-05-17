@@ -326,6 +326,7 @@ main_wd <- getwd()
 chain_wd <- paste0(main_wd,"/chains/",run_name)
 if(!dir.exists(chain_wd)) dir.create(chain_wd,recursive = TRUE)
 
+#options(mc.cores=5)
 n_chains <- 5 ## Number of MCMC chains to run
 
 setwd(main_wd)
@@ -333,7 +334,8 @@ print(paste0("In directory: ", main_wd))
 print(paste0("Saving to: ", chain_wd))
 
 ## Run multiple chains in parallel
-cl <- makeCluster(n_chains)
+## R CMD check only allows a maximum of two cores 
+cl <- makeCluster(2)
 registerDoParallel(cl)
 ```
 

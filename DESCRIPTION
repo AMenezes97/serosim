@@ -22,7 +22,17 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     tidyverse,
-    patchwork
+    patchwork,
+    devtools,
+    bayesplot,
+    coda,
+    doParallel,
+    foreach,
+    ggpubr,
+    plyr,
+    serofoi,
+    serosolver,
+    viridis
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
