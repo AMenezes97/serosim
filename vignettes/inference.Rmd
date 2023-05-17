@@ -55,11 +55,11 @@ library(ggpubr)
 ## Custom inference packages -- you will need a C++ tool chain i.e. Rtools
 ## Install serofoi
 ## Make sure rstan is installed
-## devtools::install_github("epiverse-trace/serofoi")
+devtools::install_github("epiverse-trace/serofoi")
 library(serofoi)
 
 ## Install serosolver
-## devtools::install_github("seroanalytics/serosolver")
+devtools::install_github("seroanalytics/serosolver")
 library(serosolver)
 
 set.seed(123)
