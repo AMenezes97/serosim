@@ -1,0 +1,13 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  case_study_1_measles: case_study_1_measles.html
+  case_study_2_diphtheria_pertussis: case_study_2_diphtheria_pertussis.html
+  case_study_3_influenza: case_study_3_influenza.html
+  case_study_4_inference: case_study_4_inference.html
+last_built: 2023-05-18T01:16Z
+urls:
+  reference: https://amenezes97.github.io/serosim/reference
+  article: https://amenezes97.github.io/serosim/articles
+
