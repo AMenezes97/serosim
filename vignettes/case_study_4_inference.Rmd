@@ -55,6 +55,7 @@ library(ggpubr)
 ## Custom inference packages -- you will need a C++ tool chain i.e. Rtools
 ## Install serofoi
 ## Make sure rstan is installed
+library(rstan)
 ## devtools::install_github("epiverse-trace/serofoi")
 library(serofoi)
 
