@@ -62,7 +62,7 @@ remotes::install_github("epiverse-trace/serofoi")
 library(serofoi)
 
 ## Install serosolver
-## devtools::install_github("seroanalytics/serosolver")
+remotes::install_github("seroanalytics/serosolver")
 library(serosolver)
 
 set.seed(123)
