@@ -57,6 +57,8 @@ library(ggpubr)
 ## Make sure rstan is installed
 library(rstan)
 ## devtools::install_github("epiverse-trace/serofoi")
+library(remotes)
+remotes::install_github("epiverse-trace/serofoi")
 library(serofoi)
 
 ## Install serosolver
