@@ -30,7 +30,7 @@ Suggests:
     foreach,
     ggpubr,
     plyr,
-    viridis
+    viridis,
     serofoi,
     serosolver
 Config/testthat/edition: 3
