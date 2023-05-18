@@ -1,5 +1,5 @@
 ---
-title: "Paper case study 1: One pathogen system with vaccination (Measles)"
+title: "Case study 1: One pathogen system with vaccination (Measles)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{case_study_1_measles}

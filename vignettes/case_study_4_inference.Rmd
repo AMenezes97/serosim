@@ -1,5 +1,5 @@
 ---
-title: "Using serosim to assess the performance of seroepidemiological inference methods"
+title: "Case study 4: Using serosim to assess the performance of seroepidemiological inference methods"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{inference}

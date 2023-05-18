@@ -1,5 +1,5 @@
 ---
-title: "Paper case study 2: Multi-pathogen system with multivalent vaccinaton (Diphtheria and Pertussis)"
+title: "Case study 2: Multi-pathogen system with multivalent vaccinaton (Diphtheria and Pertussis)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{case_study_2_diphtheria_pertussis}

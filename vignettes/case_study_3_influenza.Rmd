@@ -1,5 +1,5 @@
 ---
-title: "Paper case study 3: One pathogen system with cross-reactive strains (Influenza)"
+title: "Case study 3: One pathogen system with cross-reactive strains (Influenza)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{case_study_3_influenza}
