@@ -267,7 +267,7 @@ observation_model_discrete_noise<-function(biomarker_states,model_pars, cutoffs,
     biomarker_states_new<-rbind(biomarker_states_new,biomarker_states_tmp)
   }
   observed_states<- biomarker_states_new %>% arrange(i, t, b)
-  observed_states$observed <- as.numeric(observed_states$observed)
+  observed_states$observed <- as.numeric(as.character(observed_states$observed))
   observed_states
 }
 

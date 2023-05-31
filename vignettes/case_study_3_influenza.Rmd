@@ -276,7 +276,7 @@ defined within model_pars as the “obs_sd” parameter. Within this observation
 model, we can also specify the assay sensitivity and specificity. 
 ```{r}
 ## Specify the observation model 
-observation_model<-observation_model_discrete
+observation_model<-observation_model_discrete_noise
 
 ## Specify the cutoffs for the discrete assay. This will depend on the dilutions of the haemagglutination assay.
 ## This is a matrix with each row containing all of the cutoffs for that biomarker. Here, we have set the same cutoffs for all three biomarkers 
