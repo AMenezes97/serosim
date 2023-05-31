@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 # Motivation 
-The _serosim_ package is designed to simulate serological survey data arising from 
+The _serosim_ package is designed to simulate serological data arising from 
 user-specified vaccine or infection-generated and antibody kinetics processes. 
 _serosim_ allows users to specify and adjust model inputs responsible for 
 generating the observed biomarker quantities like time-varying patterns of infection and 
@@ -34,14 +34,19 @@ required arguments and models for the _runserosim_ function in the order
 outlined in the methods section of the paper. We then run the simulation and 
 examine its outputs.
 
-There are two additional vignettes/case studies in the _vignettes_ folder. 
+There are three additional vignettes/case studies in the _vignettes_ folder. 
 Case study 1 provides an example of a longitudinal singular biomarker serological 
-survey simulation structured around measles, a one-pathogen system with 
-vaccination, but also applicable to other vaccine preventable diseases. Case 
-study 2 provides an example of a cross-sectional multi-biomarker serological 
-survey structured around diphtheria and pertussis, a two-pathogen system with 
+data simulation structured around measles, a one-pathogen system with 
+vaccination, but also applicable to other vaccine preventable diseases. 
+
+Case study 2 provides an example of a cross-sectional multi-biomarker serological 
+data structured around diphtheria and pertussis, a two-pathogen system with 
 bivalent vaccination, but also applicable to multi-pathogen systems with multivalent 
 vaccines. 
+
+Case study 3 provides an example of a cross-sectional serosurvey of a one pathogen system with cross-reactive strains, modeled after influenza. This example tracks 3 circulating strains and strain specific biomarkers produced after infection. 
+
+Case study 4 demonstrates how serological data simulated from a complex, realistic serosim model can be used to assess the accuracy of various seroepidemiological inference methods. 
 
 # Installation
 Load necessary packages:
