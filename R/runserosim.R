@@ -16,6 +16,8 @@
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed
 #' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway
+#' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages
+#' @param n_blocks The number of cores to use if running in parallel
 #' @param ... Any additional arguments needed
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
@@ -23,7 +25,6 @@
 #' @importFrom dplyr arrange 
 #' @importFrom dplyr distinct
 #' @importFrom dplyr select
-#' @importFrom dplyr mutate
 #' @importFrom reshape2 melt
 #' @export
 #' @examples 
@@ -50,6 +51,8 @@ runserosim <- function(
     ## UPDATE MESSAGE
     VERBOSE=NULL,
     attempt_precomputation=TRUE,
+    parallel=FALSE,
+    n_blocks=4,
     ...
                     ){
     ## Simulation settings
@@ -102,13 +105,6 @@ runserosim <- function(
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     N_exposure_ids <- length(exposure_ids)
     N_biomarker_ids <- length(biomarker_ids)
-    
-    ## Create empty arrays to store exposure histories
-    exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
-    exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
-    exposure_force <-array(NA, dim=c(N, length(times), N_exposure_ids))
-    biomarker_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
-    kinetics_parameters <- vector(mode="list",length=N)
 
     ########################################################################
     ## Checking if pre-compuation of exposure probabilities is possible
@@ -127,78 +123,109 @@ runserosim <- function(
     ## If successful precomputation, change the exposure model to just read directly from foe_pars
     ########################################################################
     
-    
-    ## Merge in any pre-specified exposure history information
-    ## ...
-    if(!is.null(exposure_histories_fixed)){
-        exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
+    ## Parallelize here
+    serosim_internal <- function(tmp_indivs,...){
+      ## Create empty arrays to store exposure histories
+      exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
+      exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
+      exposure_force <-array(NA, dim=c(N, length(times), N_exposure_ids))
+      biomarker_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
+      kinetics_parameters <- vector(mode="list",length=N)
+      
+      ## Merge in any pre-specified exposure history information
+      ## ...
+      if(!is.null(exposure_histories_fixed)){
+          exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
+      }
+      
+      if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
+  
+      ## For each individual
+      for(i in tmp_indivs){
+          ## Print update message
+          update(VERBOSE,i)
+          ## Pull birth time for this individual
+          birth_time <- birth_times$birth[i]
+          removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
+          
+          ## Only consider times that the individual was alive for
+          simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
+          ## Go through all times relevant to this individual
+          for(t in simulation_times_tmp){
+              ## Pull group for this individual at this time 
+              g <- all_groups[i, t]
+  
+              ## Work out antibody state for each biomarker
+              ## The reason we nest this at the same level as the exposure history generation is
+              ## that exposure histories may be conditional on antibody state
+              for(b in biomarker_ids){
+                  biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                                                            biomarker_states, kinetics_parameters, biomarker_map, ...)
+              }
+              
+              ## Work out exposure result for each exposure ID
+              for(x in exposure_ids){
+                  ## Only update if exposure history entry is NA here. If not NA, then pre-specified
+                  if(is.na(exposure_histories[i,t,x])){
+                      ## What is the probability that exposure occurred?
+                      prob_exposed <- exposure_model(i, t, x, g, foe_pars, demography, ...)
+                      
+                      ## If an exposure event occurred, what's the probability 
+                      ## of successful exposure?
+                      prob_success <- immunity_model(i, t, x, exposure_histories, 
+                                                     biomarker_states, demography, 
+                                                     biomarker_map, model_pars, ...)
+  
+                      ## Randomly assign success of exposure event based on immune state
+                      successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
+                      
+                      ## Simulate kinetics parameters for this exposure event
+                      ## Each successful exposure event will create a tibble with parameters
+                      ## for this event, drawn from information given in model_pars
+                      if(successful_exposure == 1){
+                          kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
+                                                            draw_parameters(i, t, x, b, demography, biomarker_states, model_pars, ...))
+                      }
+                      exposure_histories[i,t,x] <- successful_exposure
+                      exposure_probabilities[i,t,x] <- prob_success*prob_exposed
+                      exposure_force[i,t,x] <- prob_exposed
+                      if(successful_exposure == 1){
+                          for(b in biomarker_ids){
+                              biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                                                                        biomarker_states, kinetics_parameters, biomarker_map, ...)
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      return(list(array(biomarker_states[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_biomarker_ids)), 
+                  kinetics_parameters[tmp_indivs], 
+                  exposure_histories[tmp_indivs,,], 
+                  exposure_probabilities[tmp_indivs,,], 
+                  exposure_force[tmp_indivs,,]))
     }
-    
-    if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
-    browser()
-    ## For each individual
-    #res <- foreach(i = indivs, .packages="tidyverse") %dopar% {
-    #res <- lapply(indivs, function(i){
-    for(i in indivs){
-        ## Print update message
-        update(VERBOSE,i)
-        ## Pull birth time for this individual
-        birth_time <- birth_times$birth[i]
-        removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])
-        
-        ## Only consider times that the individual was alive for
-        simulation_times_tmp <- times[times >= birth_time & times <= removal_time]
-        ## Go through all times relevant to this individual
-        for(t in simulation_times_tmp){
-            ## Pull group for this individual at this time 
-            g <- all_groups[i, t]
-            #g <- as.nummeric(demography$group[demography$i==i & demography$times==t])
-
-            ## Work out antibody state for each biomarker
-            ## The reason we nest this at the same level as the exposure history generation is
-            ## that exposure histories may be conditional on antibody state
-            for(b in biomarker_ids){
-                biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
-                                                          biomarker_states, kinetics_parameters, biomarker_map, ...)
-            }
-            
-            ## Work out exposure result for each exposure ID
-            for(x in exposure_ids){
-                ## Only update if exposure history entry is NA here. If not NA, then pre-specified
-                if(is.na(exposure_histories[i,t,x])){
-                    ## What is the probability that exposure occurred?
-                    prob_exposed <- exposure_model(i, t, x, g, foe_pars, demography, ...)
-                    
-                    ## If an exposure event occurred, what's the probability 
-                    ## of successful exposure?
-                    prob_success <- immunity_model(i, t, x, exposure_histories, 
-                                                   biomarker_states, demography, 
-                                                   biomarker_map, model_pars, ...)
-
-                    ## Randomly assign success of exposure event based on immune state
-                    successful_exposure <- as.integer(runif(1) < prob_success*prob_exposed)
-                    
-                    ## Simulate kinetics parameters for this exposure event
-                    ## Each successful exposure event will create a tibble with parameters
-                    ## for this event, drawn from information given in model_pars
-                    if(successful_exposure == 1){
-                        kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                          draw_parameters(i, t, x, b, demography, biomarker_states, model_pars, ...))
-                    }
-                    exposure_histories[i,t,x] <- successful_exposure
-                    exposure_probabilities[i,t,x] <- prob_success*prob_exposed
-                    exposure_force[i,t,x] <- prob_exposed
-                    if(successful_exposure == 1){
-                        for(b in biomarker_ids){
-                            biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
-                                                                      biomarker_states, kinetics_parameters, biomarker_map, ...)
-                        }
-                    }
-                }
-            }
-        }
+    if(!parallel){
+      
+      res <- serosim_internal(indivs,...)
+      biomarker_states <- res[[1]]
+      kinetics_parameters <- res[[2]]
+      exposure_histories <- res[[3]]
+      exposure_probabilities <- res[[4]]
+      exposure_force <- res[[5]]
+    } else {
+      if(!is.null(VERBOSE)) message(cat("Running in parallel\n"))
+      n_indivs_per_block <- ceiling(length(indivs)/n_blocks)
+      indiv_blocks <- split(indivs, ceiling(seq_along(indivs)/n_indivs_per_block))
+      res <- foreach(block = 1:n_blocks) %dopar% {
+        serosim_internal(indiv_blocks[[block]],...)
+      }
+      biomarker_states <- do.call("abind",args=list(lapply(res, function(x) x[[1]]), along=1))
+      exposure_histories <- do.call("abind",args=list(lapply(res, function(x) x[[3]]), along=1))
+      exposure_probabilities <- do.call("abind",args=list(lapply(res, function(x) x[[4]]), along=1))
+      exposure_force <- do.call("abind",args=list(lapply(res, function(x) x[[5]]), along=1))
+      kinetics_parameters <- do.call("bind_rows",lapply(res, function(x) x[[2]]))
     }
-    #)
     
     if(!is.null(VERBOSE)) message(cat("Simulation complete! Cleaning up...\n"))
     
