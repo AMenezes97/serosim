@@ -90,7 +90,9 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' immunity_model_vacc_ifxn_simple(1,8,2,tmp_exposure_history,NULL, tmp_demography,
 #' NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
 immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories, 
-                                     biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age, ...){
+                                     biomarker_states, demography, biomarker_map, model_pars, 
+                                     max_events=rep(Inf, dim(exposure_histories)[3]), vacc_exposures=rep(Inf, dim(exposure_histories)[3]), 
+                                     vacc_age, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  	
     ## Calculate the individual's current age
@@ -151,7 +153,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
                               biomarker_states, demography, biomarker_map, 
-                              model_pars, max_events, cross_reactivity_table=NULL, ...){
+                              model_pars, max_events=rep(Inf, dim(exposure_histories)[3]), cross_reactivity_table=NULL, ...){
   
   ## Count the total number of successful exposures to x thus far 
   curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
@@ -225,7 +227,9 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),
 #' vacc_exposures=c(1),vacc_age=c(1))
 immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
-                           biomarker_states, demography, biomarker_map, model_pars, max_events, vacc_exposures, vacc_age=1, cross_reactivity_table=NULL, ...){
+                           biomarker_states, demography, biomarker_map, model_pars, 
+                           max_events=rep(Inf, dim(exposure_histories)[3]), vacc_exposures=rep(Inf, dim(exposure_histories)[3]), 
+                           vacc_age=1, cross_reactivity_table=NULL, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  
     ## Calculate the individual's current age

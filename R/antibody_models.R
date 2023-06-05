@@ -2,7 +2,7 @@
 #' 
 #' @description This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and boost waning parameter
 #'
-#' @param i Individual
+#' @param i individual
 #' @param t1 time
 #' @param b biomarker
 #' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
@@ -40,7 +40,6 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
     tmp_kinetics_parameters <- kinetics_parameters[[i]]
     tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] 
     
-    # setkey(tmp_kinetics_parameters, cols="i","t","e","b","name","value", "realized_value")
     tmp_boost <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",] 
     tmp_wane <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",] 
     
@@ -90,13 +89,11 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_sta
     tmp_kinetics_parameters <- data.table(kinetics_parameters[[i]])
     tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] 
     
-    # setkey(tmp_kinetics_parameters, cols="i","t","e","b","name","value", "realized_value")
     tmp_boost_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",] 
     tmp_boost_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_short",] 
     
     tmp_wane_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_long",] 
     tmp_wane_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_short",] 
-    
     
     for(j in seq_along(tmp_boost_long$realized_value)){
       biomarker_quantity<- biomarker_quantity + tmp_boost_long$realized_value[j]*max(0,1-tmp_wane_long$realized_value[j]*(t1-tmp_wane_long$t[j])) + tmp_boost_short$realized_value[j]*max(0,1-tmp_wane_short$realized_value[j]*(t1-tmp_wane_short$t[j]))
@@ -105,6 +102,8 @@ antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_sta
     
   }
 }
+
+
 
 
 #' Power law antibody boosting and waning

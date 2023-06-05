@@ -23,6 +23,7 @@
 #' @importFrom dplyr arrange 
 #' @importFrom dplyr distinct
 #' @importFrom dplyr select
+#' @importFrom dplyr mutate
 #' @importFrom reshape2 melt
 #' @export
 #' @examples 
@@ -134,8 +135,10 @@ runserosim <- function(
     }
     
     if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
-
+    browser()
     ## For each individual
+    #res <- foreach(i = indivs, .packages="tidyverse") %dopar% {
+    #res <- lapply(indivs, function(i){
     for(i in indivs){
         ## Print update message
         update(VERBOSE,i)
@@ -195,6 +198,7 @@ runserosim <- function(
             }
         }
     }
+    #)
     
     if(!is.null(VERBOSE)) message(cat("Simulation complete! Cleaning up...\n"))
     
