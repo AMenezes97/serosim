@@ -205,8 +205,8 @@ runserosim <- function(
                   exposure_probabilities[tmp_indivs,,], 
                   exposure_force[tmp_indivs,,]))
     }
+    ## Run either the entire simulation in one go, or split into n_blocks jobs and run in parallel
     if(!parallel){
-      
       res <- serosim_internal(indivs,...)
       biomarker_states <- res[[1]]
       kinetics_parameters <- res[[2]]
