@@ -1,6 +1,10 @@
 #' Main simulation function for _serosim_
 #' 
-#' @description Simulates a serological survey using user-specified inputs. The user can specify multiple inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed biomarker quantities. See README for full details.
+#' @description Simulates a serological survey using user-specified inputs and models.
+#' 
+#' @details The `runserosim` function is designed as a plug-and-play multi-level model representing the different stages of the data-generating process for serological data. The user can specify inputs controlling population demography, simulation time period, observation times for each individual, force of exposure, and various model functions describing the link between infections and observed biomarker quantities. See README for full details of the workflow.
+#' 
+#' There are two optional flags to attempt speed ups with serosim: `attempt_precomputation` and `parallel`. `attempt_precomputation` will check how many interchangeable individuals there are and pre-compute exposure probabilities for these individuals if that would be quicker than solving for each individual separately. `parallel` uses the `foreach` package with `dopar` to run _serosim_ for blocks of individuals on a socket cluster. The number of cores is set with the `n_cores` argument. If any additional packages are needed for the model, then the `parallel_packages` argument should be set.
 #' 
 #' @param simulation_settings A list of parameters governing the simulation time step settings. Should contain integer entries for _t_start_ and _t_end_
 #' @param demography A tibble of demographic information for each individual in the simulation. At a minimum this tibble requires 1 column (i) where all individuals in the simulation are listed by row. This is used to calculate the sample population size. Additional variables can be added by the user, e.g., birth and removal times, see \code{\link{generate_pop_demography}} If not specified, the model will assume that birth time is the initial time point and removal time is the final time point across all individuals
@@ -16,8 +20,9 @@
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed
 #' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway
-#' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages
-#' @param n_blocks The number of cores to use if running in parallel
+#' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages. 
+#' @param n_cores The number of cores to use if running in parallel
+#' @param parallel_packages a character vector of R packages required for the models. Only needed if additional non-imported packages are required.
 #' @param ... Any additional arguments needed
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
@@ -52,9 +57,11 @@ runserosim <- function(
     VERBOSE=NULL,
     attempt_precomputation=TRUE,
     parallel=FALSE,
-    n_blocks=4,
+    n_cores=4,
+    parallel_packages=NULL,
     ...
                     ){
+  
     ## Simulation settings
     t_start <- simulation_settings[["t_start"]]
     t_end <- simulation_settings[["t_end"]]
@@ -205,7 +212,7 @@ runserosim <- function(
                   exposure_probabilities[tmp_indivs,,], 
                   exposure_force[tmp_indivs,,]))
     }
-    ## Run either the entire simulation in one go, or split into n_blocks jobs and run in parallel
+    ## Run either the entire simulation in one go, or split into n_cores jobs and run in parallel
     if(!parallel){
       res <- serosim_internal(indivs,...)
       biomarker_states <- res[[1]]
@@ -214,12 +221,18 @@ runserosim <- function(
       exposure_probabilities <- res[[4]]
       exposure_force <- res[[5]]
     } else {
+      
+      cluster <- makeCluster(n_cores) 
+      registerDoParallel(cluster)
+      
       if(!is.null(VERBOSE)) message(cat("Running in parallel\n"))
-      n_indivs_per_block <- ceiling(length(indivs)/n_blocks)
+      n_indivs_per_block <- ceiling(length(indivs)/n_cores)
       indiv_blocks <- split(indivs, ceiling(seq_along(indivs)/n_indivs_per_block))
-      res <- foreach(block = 1:n_blocks) %dopar% {
+      res <- foreach(block = 1:n_cores, .packages=c("abind",parallel_packages)) %dopar% {
         serosim_internal(indiv_blocks[[block]],...)
       }
+      stopCluster(cluster)
+      
       biomarker_states <- do.call("abind",args=list(lapply(res, function(x) x[[1]]), along=1))
       exposure_histories <- do.call("abind",args=list(lapply(res, function(x) x[[3]]), along=1))
       exposure_probabilities <- do.call("abind",args=list(lapply(res, function(x) x[[4]]), along=1))
