@@ -422,7 +422,6 @@ plot_subset_individuals_history <- function(biomarker_states, exposure_histories
 #' draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
                                 demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
-    model_pars <- model_pars %>% drop_na()
     exposure_ids <- unique(biomarker_map$exposure_id)
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     ## Go through for all times and plot random trajectories

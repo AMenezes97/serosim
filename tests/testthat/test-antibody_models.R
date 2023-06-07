@@ -2,7 +2,7 @@ test_that("Check that antibody_model_monophasic function works", {
   
   ## Load in example data and necessary arguments
   tmp_pars <- list()
-  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
+  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
   
   ## Expect that the output of antibody_model_monophasic function is 4
   use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
@@ -15,7 +15,7 @@ test_that("Check that antibody_model_monophasic and antibody_model_monophasic_cp
   
   ## Load in example data and necessary arguments
   tmp_pars <- list()
-  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
+  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
   
   ## Expect that the output of antibody_model_monophasic function is 4
   use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
@@ -32,7 +32,7 @@ test_that("Check that antibody_model_biphasic and antibody_model_biphasic_cpp re
   ## Load in example data and necessary arguments
   tmp_pars <- list()
   tmp_model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
-  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, tmp_model_pars)
+  tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, tmp_model_pars)
   
   ## Expect that the output of antibody_model_monophasic function is 4
   use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
@@ -57,7 +57,7 @@ test_that("Check that antibody_model_biphasic function works", {
   tmp_biomarker_states <- array(0, dim=c(1, 11, 3))
   
   tmp_pars <- list()
-  tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,1,NULL, tmp_biomarker_states, model_pars)
+  tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, tmp_biomarker_states, model_pars)
   
   expect_equal(antibody_model_biphasic(1,1,1,tmp_exposure_history, use_biomarker_states, tmp_pars, example_biomarker_map_numeric_tmp),0.75)
 })
@@ -68,7 +68,7 @@ test_that("Check that antibody_model_typhoid function works", {
    ## Load in example data and necessary arguments
     model_pars <- read.csv(system.file("extdata", "model_pars_typhoid.csv", package="serosim"))
     tmp_pars <- list()
-    tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+    tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,NULL,NULL,model_pars)
     tmp_exposure_history <- array(0,dim=c(1,11,2))
     tmp_exposure_history[1,1,1] <- 1
     outcome<-antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)
