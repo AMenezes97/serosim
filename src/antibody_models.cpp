@@ -64,7 +64,7 @@ double antibody_model_biphasic_cpp(int i, int t1, int b,
     return biomarker_quantity;
   }
   
-  arma::vec t_infs = subset_dataframe_numeric_twice(tmp_kinetics_parameters, "b","name","t",b, "wane");
+  arma::vec t_infs = subset_dataframe_numeric_twice(tmp_kinetics_parameters, "b","name","t",b, "wane_long");
   
   if(t_infs.n_elem > 0){
     arma::vec tmp_boost_long = subset_dataframe_numeric_twice(tmp_kinetics_parameters, "b","name","realized_value",b, "boost_long");
