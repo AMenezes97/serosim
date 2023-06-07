@@ -1,6 +1,6 @@
 #' Monophasic antibody boosting-waning model
 #' 
-#' @description This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and boost waning parameter
+#' @description This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and waning parameter
 #'
 #' @param i individual
 #' @param t1 time
@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' tmp_pars <- list()
-#' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,1,NULL, NULL, example_model_pars_numeric)
+#' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
 #' antibody_model_monophasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
 antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
@@ -58,7 +58,7 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
 #'
 #' @examples
 #' tmp_pars <- list()
-#' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,1,NULL, NULL, example_model_pars_numeric)
+#' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, NULL, example_model_pars_numeric)
 #' antibody_model_biphasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
 antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
@@ -115,7 +115,7 @@ typhoid <- function(t, y0, y1, beta, r, t1){
 #'
 #' @examples
 #' tmp_pars <- list()
-#' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,1,NULL,NULL,example_model_pars_typhoid)
+#' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,NULL,NULL,example_model_pars_typhoid)
 #' tmp_exposure_history <- array(0,dim=c(1,11,2))
 #' tmp_exposure_history[1,1,1] <- 1
 #' antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)
@@ -154,7 +154,28 @@ antibody_model_typhoid <- function(i, t1, b, exposure_histories=NULL, biomarker_
   biomarker_quantity
 }
 
-
+#' Monophasic antibody boosting-waning model with cross-reactive strains
+#' 
+#' @description Monophasic antibody boosting-waning model with cross-reactivity between strains. This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and waning parameter describing antibody kinetics against the infecting strain (i.e., for exposure_id==biomarker_id). The model loops through each exposure type and reduces the amount of boosting as a function of cross-reactivity, which is determined by a proportion given in the `biomarker_map` data frame as the `value` variable.
+#'
+#' @inheritParams antibody_model_monophasic
+#' 
+#' 
+#' @return A biomarker quantity is returned 
+#' @importFrom data.table data.table
+#' @export
+#'
+#' @examples
+#' tmp_pars <- list()
+#' ## Set up simple model_pars table for this antibody model
+#' model_pars_tmp <- example_model_pars_numeric %>% mutate(biomarker_id = exposure_id)
+#' ## Simulate one infection with exposure ID 1 at t=1
+#' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
+#'  
+#' ## Set up a simple biomarker map for cross-reactivity
+#' biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) %>% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
+#' antibody_model_monophasic_cross_reactivity(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' tmp_pars, biomarker_map)
 antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
@@ -164,18 +185,85 @@ antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histo
   } else {
     return(biomarker_quantity)
   }
-  
+
+  ## Only use exposure IDs relevant to this biomarker. In this model, this should give entries where b==x
+  use_exposure_ids <- unique(biomarker_map[biomarker_map$biomarker_id == b, ]$exposure_id)
+    
   ## Get only exposures relevant to this biomarker ID and time
-  tmp_kinetics_parameters <- tmp_kinetics_parameters[tmp_kinetics_parameters$b == b & tmp_kinetics_parameters$t <= t1,]
-  
+  tmp_kinetics_parameters <- tmp_kinetics_parameters[tmp_kinetics_parameters$x %in% use_exposure_ids & tmp_kinetics_parameters$t <= t1,]
   ## Only continue if there are relevant exposures to calculate kinetics for
   if(nrow(tmp_kinetics_parameters) > 0){
     boosts <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",]$realized_value ## Boosts
     wanes <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$realized_value ## Waning rate
-    t_infs <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$t ## Time of infections
+    t_infs <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",]$t ## Time of infections
+    exposure_ids <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",]$x ## Exposure ID of infections
+    
     ## Sum up contribution of each boost, with waning
     for(j in seq_along(t_infs)){
-      biomarker_quantity<- biomarker_quantity + boosts[j]*max(0,1-wanes[j]*(t1-t_infs[j]))
+      ## In this model, cross-reactivity is just the homologous boost/wane amount multiplied by a proportion
+      cross_reactivity <- biomarker_map[biomarker_map$exposure_id == exposure_ids[j] & 
+                                          biomarker_map$biomarker_id == b,]$value
+      biomarker_quantity<- biomarker_quantity + max(0,boosts[j]*cross_reactivity-wanes[j]*(t1-t_infs[j]))
+    }
+  }
+  biomarker_quantity
+}
+
+#' Biphasic antibody boosting-waning model with cross-reactive strains
+#' 
+#' @description Biphasic antibody boosting-waning model with cross-reactivity between strains. This model assumes that for each exposure there is a set of long-term boost, long-term boost waning, short-term boost, and short-term boost waning parameters describing antibody kinetics against the infecting strain (i.e., for exposure_id==biomarker_id). The model loops through each exposure type and reduces the amount of boosting as a function of cross-reactivity, which is determined by a proportion given in the `biomarker_map` data frame as the `value` variable.
+#'
+#' @inheritParams antibody_model_monophasic
+#' 
+#' 
+#' @return A biomarker quantity is returned 
+#' @importFrom data.table data.table
+#' @export
+#'
+#' @examples
+#' tmp_pars <- list()
+#' ## Set up simple model_pars table for this antibody model
+#' model_pars_tmp <- example_model_pars_biphasic %>% reformat_biomarker_map() %>% mutate(biomarker_id = exposure_id)
+#' ## Simulate one infection with exposure ID 1 at t=1
+#' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
+#'  
+#' ## Set up a simple biomarker map for cross-reactivity
+#' biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) %>% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
+#' antibody_model_biphasic_cross_reactivity(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' tmp_pars, biomarker_map)
+antibody_model_biphasic_cross_reactivity <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+  biomarker_quantity <- 0
+  
+  ## Get kinetics parameters for this individual
+  if(!is.null(kinetics_parameters[[i]])){
+    tmp_kinetics_parameters <- kinetics_parameters[[i]]
+  } else {
+    return(biomarker_quantity)
+  }
+  
+  ## Only use exposure IDs relevant to this biomarker. In this model, this should give entries where b==x
+  use_exposure_ids <- unique(biomarker_map[biomarker_map$biomarker_id == b, ]$exposure_id)
+  
+  ## Get only exposures relevant to this biomarker ID and time
+  tmp_kinetics_parameters <- tmp_kinetics_parameters[tmp_kinetics_parameters$x %in% use_exposure_ids & tmp_kinetics_parameters$t <= t1,]
+  ## Only continue if there are relevant exposures to calculate kinetics for
+  if(nrow(tmp_kinetics_parameters) > 0){
+    boosts_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",]$realized_value ## Boosts
+    boosts_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_short",]$realized_value ## Boosts
+    
+    wanes_long <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_long",]$realized_value ## Waning rate
+    wanes_short <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane_short",]$realized_value ## Waning rate
+    
+    t_infs <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",]$t ## Time of infections
+    
+    exposure_ids <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost_long",]$x ## Exposure ID of infections
+    
+    ## Sum up contribution of each boost, with waning
+    for(j in seq_along(t_infs)){
+      ## In this model, cross-reactivity is just the homologous boost/wane amount multiplied by a proportion
+      cross_reactivity <- biomarker_map[biomarker_map$exposure_id == exposure_ids[j] & 
+                                          biomarker_map$biomarker_id == b,]$value
+      biomarker_quantity<- biomarker_quantity + max(0,boosts_long[j]*cross_reactivity-wanes_long[j]*(t1-t_infs[j])) + max(0,boosts_short[j]*cross_reactivity-wanes_short[j]*(t1-t_infs[j]))
     }
   }
   biomarker_quantity

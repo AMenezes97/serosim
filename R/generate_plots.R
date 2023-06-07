@@ -422,13 +422,13 @@ plot_subset_individuals_history <- function(biomarker_states, exposure_histories
 #' draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
                                 demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
+    model_pars <- model_pars %>% drop_na()
     exposure_ids <- unique(biomarker_map$exposure_id)
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     ## Go through for all times and plot random trajectories
     indivs <- 1:N
     exposure_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
     antibody_states_all <- list()
-        
     for(x in exposure_ids){
         biomarkers_tmp <- biomarker_map %>% filter(exposure_id == x) %>% pull(biomarker_id)
         n_biomarkers_tmp <- length(biomarkers_tmp)
@@ -438,7 +438,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
             exposure_histories_tmp[i,1,x] <- 1
             for(b in biomarker_ids){
                 if(b %in% biomarkers_tmp){
-                    kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, b, demography,antibody_states, model_pars, ...))
+                    kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, demography,antibody_states, model_pars, ...))
                     kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
                     antibody_states[i,,b] <- vapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, 
                                                                                      kinetics_pars_tmp, biomarker_map, ...), numeric(1))
