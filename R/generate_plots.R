@@ -146,11 +146,11 @@ plot_exposure_force<-function(exposure_force_long){
     theme(legend.position="bottom")
   return(p)
 }
-#' Plot individual exposure histories
+#' Plot individual immune histories
 #'
-#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
+#' @param immune_histories The reshaped data set containing immune history for individuals at all time steps for each exposure event
 #'
-#' @return A plot of individual exposures histories across time for all individuals and exposure events is returned
+#' @return A plot of individual immune histories across time for all individuals and exposure events is returned
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_tile
 #' @importFrom ggplot2 aes
@@ -167,13 +167,13 @@ plot_exposure_force<-function(exposure_force_long){
 #' @export
 #'
 #' @examples
-#' plot_exposure_histories(example_exposure_histories)
-plot_exposure_histories <- function(exposure_histories){
-  exposure_histories$value <- ifelse(!is.na(exposure_histories$value),
-                                     ifelse(exposure_histories$value==1,"Successful Exposure","No Exposure"), "NA")
+#' plot_immune_histories(example_immune_histories)
+plot_immune_histories <- function(immune_histories){
+  immune_histories$value <- ifelse(!is.na(immune_histories$value),
+                                     ifelse(immune_histories$value==1,"Successful Exposure","No Exposure"), "NA")
   
-  p <- ggplot2::ggplot(exposure_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Individual Exposure History",
+  p <- ggplot2::ggplot(immune_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
+    ggplot2::labs(title="Individual Immune History",
                   x="Time",
                   y="Individual")   + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
@@ -319,10 +319,10 @@ return(p)
 
 
 
-#' Plot biomarker states and exposure histories for a subset of individuals
+#' Plot biomarker states and immune histories for a subset of individuals
 #'
 #' @param biomarker_states The reshaped data set containing biomarker quantities for individuals at all time steps for each biomarker 
-#' @param exposure_histories The reshaped data set containing exposure history for individuals at all time steps for each exposure event
+#' @param immune_histories The reshaped data set containing immune history for individuals at all time steps for each exposure event
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
 #' @param removal Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE
@@ -343,18 +343,18 @@ return(p)
 #' @export
 #'
 #' @examples
-#' plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,
+#' plot_subset_individuals_history(example_biomarker_states,example_immune_histories,
 #' 3,example_demography)
-plot_subset_individuals_history <- function(biomarker_states, exposure_histories, subset, demography, removal=FALSE){
-  exposure_histories$x <- paste0("Exposure: ", exposure_histories$x)
+plot_subset_individuals_history <- function(biomarker_states, immune_histories, subset, demography, removal=FALSE){
+  immune_histories$x <- paste0("Exposure: ", immune_histories$x)
   biomarker_states$b <- paste0("Biomarker: ", biomarker_states$b)
-  exposure_histories_subset<-exposure_histories %>% drop_na() %>% filter(value==1)
+  immune_histories_subset<-immune_histories %>% drop_na() %>% filter(value==1)
   sample_indivs <- sample(1:max(demography$i), size=subset)
   
   if(removal==FALSE){
     removal_subset <- demography %>% filter(times==1)
     g<-  ggplot() +
-      geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
+      geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
       geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
       facet_wrap(~i) + theme_bw() +
       scale_color_hue("Key", guide=guide_legend(order=3)) +
@@ -371,7 +371,7 @@ plot_subset_individuals_history <- function(biomarker_states, exposure_histories
   if(removal==TRUE){
   removal_subset <- demography %>% filter(times==1)
   g<-  ggplot() +
-    geom_vline(data=exposure_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
+    geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
     geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
     geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
     facet_wrap(~i) + theme_bw() +
@@ -426,7 +426,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     ## Go through for all times and plot random trajectories
     indivs <- 1:N
-    exposure_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
+    immune_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
     antibody_states_all <- list()
     for(x in exposure_ids){
         biomarkers_tmp <- biomarker_map %>% filter(exposure_id == x) %>% pull(biomarker_id)
@@ -434,12 +434,12 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         antibody_states <- array(0, dim=c(N, length(times),length(biomarker_ids)))
         kinetics_pars_tmp <- list()
         for(i in indivs){
-            exposure_histories_tmp[i,1,x] <- 1
+            immune_histories_tmp[i,1,x] <- 1
             for(b in biomarker_ids){
                 if(b %in% biomarkers_tmp){
                     kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, demography,antibody_states, model_pars, ...))
                     kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
-                    antibody_states[i,,b] <- vapply(times,function(t) antibody_model(1, t, b, exposure_histories_tmp,antibody_states, 
+                    antibody_states[i,,b] <- vapply(times,function(t) antibody_model(1, t, b, immune_histories_tmp,antibody_states, 
                                                                                      kinetics_pars_tmp, biomarker_map, ...), numeric(1))
                 } else {
                     antibody_states[i,,b] <- NA

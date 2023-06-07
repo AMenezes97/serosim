@@ -5,7 +5,7 @@
 #' @param i individual
 #' @param t1 time
 #' @param b biomarker
-#' @param exposure_histories An array of exposure histories across all individuals, time steps and exposure IDs
+#' @param immune_histories An array of immune histories across all individuals, time steps and exposure IDs
 #' @param biomarker_states An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs
 #' @param kinetics_parameters A tibble of parameters needed for the antibody kinetics model for all biomarkers 
 #' @param biomarker_map A table specifying the relationship between exposure IDs and biomarker IDs
@@ -19,9 +19,9 @@
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_monophasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' antibody_model_monophasic(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
-antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_monophasic <-  function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
   ## Get kinetics parameters for this individual
@@ -62,9 +62,9 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_biphasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' antibody_model_biphasic(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
-antibody_model_biphasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_biphasic <-  function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
   ## Get kinetics parameters for this individual
@@ -120,10 +120,10 @@ typhoid <- function(t, y0, y1, beta, r, t1){
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,NULL,NULL,example_model_pars_typhoid)
-#' tmp_exposure_history <- array(0,dim=c(1,11,2))
-#' tmp_exposure_history[1,1,1] <- 1
-#' antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)
-antibody_model_typhoid <- function(i, t1, b, exposure_histories=NULL, biomarker_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
+#' tmp_immune_history <- array(0,dim=c(1,11,2))
+#' tmp_immune_history[1,1,1] <- 1
+#' antibody_model_typhoid(1,10, 1, tmp_immune_history, NULL, tmp_pars,example_biomarker_map_numeric)
+antibody_model_typhoid <- function(i, t1, b, immune_histories=NULL, biomarker_states=NULL, kinetics_parameters, biomarker_map=NULL,...){
   
   biomarker_quantity <- 0
   ## Get only exposures relevant to this biomarker ID and time
@@ -179,9 +179,9 @@ antibody_model_typhoid <- function(i, t1, b, exposure_histories=NULL, biomarker_
 #'  
 #' ## Set up a simple biomarker map for cross-reactivity
 #' biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) %>% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
-#' antibody_model_monophasic_cross_reactivity(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' antibody_model_monophasic_cross_reactivity(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, biomarker_map)
-antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
   ## Get kinetics parameters for this individual
@@ -235,9 +235,9 @@ antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histo
 #'  
 #' ## Set up a simple biomarker map for cross-reactivity
 #' biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) %>% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
-#' antibody_model_biphasic_cross_reactivity(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+#' antibody_model_biphasic_cross_reactivity(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, biomarker_map)
-antibody_model_biphasic_cross_reactivity <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+antibody_model_biphasic_cross_reactivity <-  function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
   ## Get kinetics parameters for this individual

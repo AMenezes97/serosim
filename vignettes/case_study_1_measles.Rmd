@@ -385,8 +385,8 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r, fig.dim = c(6, 4)}
-## Plot biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
+## Plot biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
 ```
 
 ```{r, fig.dim = c(4, 6)}
@@ -404,8 +404,8 @@ plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
 ```{r,fig.dim = c(4, 6)}
-## Plot individual exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual immune histories for all exposure types
+plot_exposure_histories(res$immune_histories_long)
 ```
 
 ```{r, fig.dim = c(4, 6)}

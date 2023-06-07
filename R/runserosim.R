@@ -14,10 +14,10 @@
 #' @param model_pars A tibble of parameters needed for the antibody kinetics model, immunity model, observation model and the draw_parameters function 
 #' @param exposure_model A function calculating the probability of exposure given the foe_pars array
 #' @param immunity_model A function determining the probability of an exposure leading to successful infection or vaccination for a given individual
-#' @param antibody_model A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})
+#' @param antibody_model A function determining the latent biomarker kinetics as a function of immune history and within-host kinetics parameters (\code{model_pars})
 #' @param observation_model A function generating observed biomarkers as a function of latent biomarkers and observation model parameters (\code{model_pars})
 #' @param draw_parameters A function to simulate parameters for the antibody model, immunity model and observation model from \code{model_pars}
-#' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual
+#' @param immune_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the immune history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if immune histories are known for an individual
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed
 #' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway
 #' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages. Defaults to FALSE
@@ -25,7 +25,7 @@
 #' @param parallel_packages a character vector of R packages required for the models. Only needed if additional non-imported packages are required.
 #' @param ... Any additional arguments needed for the models
 #' 
-#' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
+#' @return a list containing the following elements: force of exposure, exposure probabilities, immune histories, antibody states, observed antibody states, and kinetics parameters 
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr arrange 
 #' @importFrom dplyr distinct
@@ -52,7 +52,7 @@ runserosim <- function(
     draw_parameters, ## function to simulate biomarker (e.g, antibody)  kinetics parameters
     
     ## Pre-specified parameters/events (optional)
-    exposure_histories_fixed=NULL,
+    immune_histories_fixed=NULL,
     
     ## UPDATE MESSAGE
     VERBOSE=NULL,
@@ -133,17 +133,17 @@ runserosim <- function(
     
     ## Parallelize here
     serosim_internal <- function(tmp_indivs,...){
-      ## Create empty arrays to store exposure histories
-      exposure_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
+      ## Create empty arrays to store immune histories
+      immune_histories <- array(NA, dim=c(N, length(times), N_exposure_ids))
       exposure_probabilities <- array(NA, dim=c(N, length(times), N_exposure_ids))
       exposure_force <-array(NA, dim=c(N, length(times), N_exposure_ids))
       biomarker_states <- array(0, dim=c(N, length(times), N_biomarker_ids))
       kinetics_parameters <- vector(mode="list",length=N)
       
-      ## Merge in any pre-specified exposure history information
+      ## Merge in any pre-specified immune history information
       ## ...
-      if(!is.null(exposure_histories_fixed)){
-          exposure_histories <- ifelse(!is.na(exposure_histories_fixed), exposure_histories_fixed, exposure_histories) 
+      if(!is.null(immune_histories_fixed)){
+          immune_histories <- ifelse(!is.na(immune_histories_fixed), immune_histories_fixed, immune_histories) 
       }
       
       if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
@@ -164,23 +164,23 @@ runserosim <- function(
               g <- all_groups[i, t]
   
               ## Work out antibody state for each biomarker
-              ## The reason we nest this at the same level as the exposure history generation is
-              ## that exposure histories may be conditional on antibody state
+              ## The reason we nest this at the same level as the immune history generation is
+              ## that immune histories may be conditional on antibody state
               for(b in biomarker_ids){
-                  biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                  biomarker_states[i,t,b] <- antibody_model(i, t, b, immune_histories, 
                                                             biomarker_states, kinetics_parameters, biomarker_map, ...)
               }
               
               ## Work out exposure result for each exposure ID
               for(x in exposure_ids){
-                  ## Only update if exposure history entry is NA here. If not NA, then pre-specified
-                  if(is.na(exposure_histories[i,t,x])){
+                  ## Only update if immune history entry is NA here. If not NA, then pre-specified
+                  if(is.na(immune_histories[i,t,x])){
                       ## What is the probability that exposure occurred?
                       prob_exposed <- exposure_model(i, t, x, g, foe_pars, demography, ...)
                       
                       ## If an exposure event occurred, what's the probability 
                       ## of successful exposure?
-                      prob_success <- immunity_model(i, t, x, exposure_histories, 
+                      prob_success <- immunity_model(i, t, x, immune_histories, 
                                                      biomarker_states, demography, 
                                                      biomarker_map, model_pars, ...)
   
@@ -194,12 +194,12 @@ runserosim <- function(
                           kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
                                                             draw_parameters(i, t, x, demography, biomarker_states, model_pars, ...))
                       }
-                      exposure_histories[i,t,x] <- successful_exposure
+                      immune_histories[i,t,x] <- successful_exposure
                       exposure_probabilities[i,t,x] <- prob_success*prob_exposed
                       exposure_force[i,t,x] <- prob_exposed
                       if(successful_exposure == 1){
                           for(b in biomarker_ids){
-                              biomarker_states[i,t,b] <- antibody_model(i, t, b, exposure_histories, 
+                              biomarker_states[i,t,b] <- antibody_model(i, t, b, immune_histories, 
                                                                         biomarker_states, kinetics_parameters, biomarker_map, ...)
                           }
                       }
@@ -209,7 +209,7 @@ runserosim <- function(
       }
       return(list(array(biomarker_states[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_biomarker_ids)), 
                   kinetics_parameters[tmp_indivs], 
-                  exposure_histories[tmp_indivs,,], 
+                  immune_histories[tmp_indivs,,], 
                   exposure_probabilities[tmp_indivs,,], 
                   exposure_force[tmp_indivs,,]))
     }
@@ -218,7 +218,7 @@ runserosim <- function(
       res <- serosim_internal(indivs,...)
       biomarker_states <- res[[1]]
       kinetics_parameters <- res[[2]]
-      exposure_histories <- res[[3]]
+      immune_histories <- res[[3]]
       exposure_probabilities <- res[[4]]
       exposure_force <- res[[5]]
     } else {
@@ -241,7 +241,7 @@ runserosim <- function(
       
       ## Combine outputs from each process. This could probably be improved without requiring abind.
       biomarker_states <- do.call("abind",args=list(lapply(res, function(x) x[[1]]), along=1))
-      exposure_histories <- do.call("abind",args=list(lapply(res, function(x) x[[3]]), along=1))
+      immune_histories <- do.call("abind",args=list(lapply(res, function(x) x[[3]]), along=1))
       exposure_probabilities <- do.call("abind",args=list(lapply(res, function(x) x[[4]]), along=1))
       exposure_force <- do.call("abind",args=list(lapply(res, function(x) x[[5]]), along=1))
       kinetics_parameters <- do.call("bind_rows",lapply(res, function(x) x[[2]]))
@@ -256,13 +256,13 @@ runserosim <- function(
     colnames(biomarker_states) <- c("i","t","b","value")
     biomarker_states <- biomarker_states %>% arrange(i, t, b)
     
-    ## Reshape exposure histories
-    exposure_histories_long <- NULL
-    if(sum(exposure_histories, na.rm = TRUE) > 0){
-        exposure_histories_long <- reshape2::melt(exposure_histories)
-        colnames(exposure_histories_long) <- c("i","t","x","value")
-        # exposure_histories_long <- exposure_histories_long %>% filter(value != 0) %>% select(-value)
-        exposure_histories_long <- exposure_histories_long %>% arrange(i, t, x)
+    ## Reshape immune histories
+    immune_histories_long <- NULL
+    if(sum(immune_histories, na.rm = TRUE) > 0){
+        immune_histories_long <- reshape2::melt(immune_histories)
+        colnames(immune_histories_long) <- c("i","t","x","value")
+        # immune_histories_long <- immune_histories_long %>% filter(value != 0) %>% select(-value)
+        immune_histories_long <- immune_histories_long %>% arrange(i, t, x)
     }
     
     ## Reshape probability of a successful exposure event
@@ -295,8 +295,8 @@ runserosim <- function(
       mutate(observed=ifelse(t >= birth & t <= removal, observed, NA))%>% 
       select(-c(birth,removal))
     
-    return(list("exposure_histories"=exposure_histories,
-                "exposure_histories_long"=exposure_histories_long,
+    return(list("immune_histories"=immune_histories,
+                "immune_histories_long"=immune_histories_long,
                 "exposure_probabilities"=exposure_probabilities,
                 "exposure_probabilities_long"=exposure_probabilities_long,
                 "exposure_force"=exposure_force,

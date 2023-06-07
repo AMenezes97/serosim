@@ -2,11 +2,11 @@
 % Please edit documentation in R/generate_plots.R
 \name{plot_subset_individuals_history}
 \alias{plot_subset_individuals_history}
-\title{Plot biomarker states and exposure histories for a subset of individuals}
+\title{Plot biomarker states and immune histories for a subset of individuals}
 \usage{
 plot_subset_individuals_history(
   biomarker_states,
-  exposure_histories,
+  immune_histories,
   subset,
   demography,
   removal = FALSE
@@ -15,7 +15,7 @@ plot_subset_individuals_history(
 \arguments{
 \item{biomarker_states}{The reshaped data set containing biomarker quantities for individuals at all time steps for each biomarker}
 
-\item{exposure_histories}{The reshaped data set containing exposure history for individuals at all time steps for each exposure event}
+\item{immune_histories}{The reshaped data set containing immune history for individuals at all time steps for each exposure event}
 
 \item{subset}{The number of individuals you want to plot}
 
@@ -27,9 +27,9 @@ plot_subset_individuals_history(
 A plot of  biomarker states and exposure histories for a subset of individuals is returned
 }
 \description{
-Plot biomarker states and exposure histories for a subset of individuals
+Plot biomarker states and immune histories for a subset of individuals
 }
 \examples{
-plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,
+plot_subset_individuals_history(example_biomarker_states,example_immune_histories,
 3,example_demography)
 }

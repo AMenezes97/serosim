@@ -145,13 +145,13 @@
 #' @family example_data
 "example_model_pars_numeric"
 
-#' Example exposure histories 
+#' Example imune histories 
 #'
-#' Example exposure history `runserosim` output. This example data set output contains exposure history for individuals at all time steps for each exposure ID
+#' Example immune history `runserosim` output. This example data set output contains immune history for individuals at all time steps for each exposure ID
 #' 
 #' @docType data
-#' @name example_exposure_histories
-#' @usage data(example_exposure_histories)
+#' @name example_immune_histories
+#' @usage data(example_immune_histories)
 #' @format A data frame with 24000 rows and 4 variables:
 #' \describe{
 #'     \item{i}{string numeric values for each individual}
@@ -160,19 +160,19 @@
 #'     \item{value}{binary value indicating if an exposure occured 1 or not 0}
 #' }
 #' @family example_data
-"example_exposure_histories"
+"example_immune_histories"
 
 
-#' Example exposure histories (wide)
+#' Example immune histories (wide)
 #'
-#' Example exposure history `runserosim` output. This example data set output contains exposure history for individuals at all time steps for each exposure ID. This is identical to `example_exposure_histories`, but is converted into a 3D array giving the format expected by most antibody model functions.
+#' Example immune history `runserosim` output. This example data set output contains immune history for individuals at all time steps for each exposure ID. This is identical to `example_immune_histories`, but is converted into a 3D array giving the format expected by most antibody model functions.
 #' 
 #' @docType data
-#' @name example_exposure_histories_wide
-#' @usage data(example_exposure_histories_wide)
+#' @name example_immune_histories_wide
+#' @usage data(example_immune_histories_wide)
 #' @format A 3D array with dimensions corresponding to 1) individual; 2) time; 3) exposure ID, and values giving the exposure state
 #' @family example_data
-"example_exposure_histories_wide"
+"example_immune_histories_wide"
 
 
 #' Example exposure probability 

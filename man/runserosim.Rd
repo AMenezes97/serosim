@@ -16,7 +16,7 @@ runserosim(
   antibody_model,
   observation_model,
   draw_parameters,
-  exposure_histories_fixed = NULL,
+  immune_histories_fixed = NULL,
   VERBOSE = NULL,
   attempt_precomputation = TRUE,
   parallel = FALSE,
@@ -42,13 +42,13 @@ runserosim(
 
 \item{immunity_model}{A function determining the probability of an exposure leading to successful infection or vaccination for a given individual}
 
-\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of immune history and within-host kinetics parameters (\code{model_pars})}
 
 \item{observation_model}{A function generating observed biomarkers as a function of latent biomarkers and observation model parameters (\code{model_pars})}
 
 \item{draw_parameters}{A function to simulate parameters for the antibody model, immunity model and observation model from \code{model_pars}}
 
-\item{exposure_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual}
+\item{immune_histories_fixed}{(optional) Defaults to NULL. Otherwise a 3D array indicating the immune history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if immune histories are known for an individual}
 
 \item{VERBOSE}{(optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed}
 
@@ -63,7 +63,7 @@ runserosim(
 \item{...}{Any additional arguments needed for the models}
 }
 \value{
-a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters
+a list containing the following elements: force of exposure, exposure probabilities, immune histories, antibody states, observed antibody states, and kinetics parameters
 }
 \description{
 Simulates a serological survey using user-specified inputs and models.

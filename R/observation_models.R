@@ -103,7 +103,7 @@ observation_model_discrete<-function(biomarker_states,model_pars, cutoffs, ...){
 #'
 #' @examples
 #' bounds <- dplyr::tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
-#' observation_model_continuous_bounded_noise(example_biomarker_states, 
+#' observation_model_continuous_bounded_noise(example_biomarker_states,
 #' example_model_pars_numeric, bounds,0.95,0.99)
 observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars, bounds, sensitivity=1, specificity=1,...){
   biomarker_states_new<-NULL
@@ -127,13 +127,13 @@ observation_model_continuous_bounded_noise<-function(biomarker_states,model_pars
       ## Step through each individual 
       for(indiv in seq_along(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
-        if(biomarker_states_tmp$value[indiv]==0){
+        if(biomarker_states_tmp$value[indiv]==0 & !is.na(biomarker_states_tmp$value[indiv])){
           if(runif(1)>specificity){
             biomarker_states_tmp$observed[indiv]<-runif(1,lower_bound,upper_bound)
           }
         }
         ## If the individual is truly seropositve take into account the assay sensitivity 
-        if(biomarker_states_tmp$value[indiv]!=0){
+        if(biomarker_states_tmp$value[indiv]!=0 & !is.na(biomarker_states_tmp$value[indiv])){
           if(runif(1)>sensitivity){
             biomarker_states_tmp$observed[indiv]<-lower_bound #individual is now incorrectly labeled as a false negative
           }
@@ -185,13 +185,13 @@ observation_model_continuous_noise<-function(biomarker_states,model_pars, sensit
       ## Step through each individual 
       for(indiv in seq_along(biomarker_states_tmp$value)){
       ## If the individual is truly seronegative take into account the assay specificity 
-      if(biomarker_states_tmp$value[indiv]==0){
+      if(biomarker_states_tmp$value[indiv]==0 & !is.na(biomarker_states_tmp$value[indiv])){
         if(runif(1)>specificity){
             biomarker_states_tmp$observed[indiv]<-runif(1,lower_bound,upper_bound)
         }
       }
       ## If the individual is truly seropositve take into account the assay sensitivity 
-      if(biomarker_states_tmp$value[indiv]!=0){
+      if(biomarker_states_tmp$value[indiv]!=0 & !is.na(biomarker_states_tmp$value[indiv])){
         if(runif(1)>sensitivity){
           biomarker_states_tmp$observed[indiv]<-0 #individual is now incorrectly labeled as a false negative
         }
@@ -251,13 +251,13 @@ observation_model_discrete_noise<-function(biomarker_states,model_pars, cutoffs,
       ## Step through each individual 
       for(indiv in seq_along(biomarker_states_tmp$value)){
         ## If the individual is truly seronegative take into account the assay specificity 
-        if(biomarker_states_tmp$value[indiv]==0){
+        if(biomarker_states_tmp$value[indiv]==0 & !is.na(biomarker_states_tmp$value[indiv])){
           if(runif(1)>specificity){
               biomarker_states_tmp$observed[indiv]<-sample(cutoffs_b,1)
           }
         }
         ## If the individual is truly seropositve take into account the assay sensitivity 
-        if(biomarker_states_tmp$value[indiv]!=0){
+        if(biomarker_states_tmp$value[indiv]!=0 & !is.na(biomarker_states_tmp$value[indiv])){
           if(runif(1)>sensitivity){
             biomarker_states_tmp$observed[indiv]<-cutoffs_b[1] #individual is now incorrectly labeled as having the lowest possible biomarker quantity (false negative)
           }

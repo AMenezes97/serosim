@@ -32,13 +32,13 @@ test_that("Check that plot_exposure_force function works", {
 })
 
 
-test_that("Check that plot_exposure_histories function works", {
+test_that("Check that plot_immune_histories function works", {
   
   ## Load in example data 
-  data("example_exposure_histories")
+  data("example_immune_histories")
   
   ## Expect that plotting function works properly with no errors
-  expect_message(plot_exposure_histories(example_exposure_histories), regexp=NA)
+  expect_message(plot_immune_histories(example_immune_histories), regexp=NA)
 })
 
 
@@ -79,11 +79,11 @@ test_that("Check that plot_subset_individuals_history function works", {
   
   ## Load in example data 
   data("example_biomarker_states")
-  data("example_exposure_histories")
+  data("example_immune_histories")
   data("example_demography")
   
   ## Expect that plotting function works properly with no errors
-  expect_message(plot_subset_individuals_history(example_biomarker_states,example_exposure_histories,3,example_demography), regexp=NA)
+  expect_message(plot_subset_individuals_history(example_biomarker_states,example_immune_histories,3,example_demography), regexp=NA)
 })
 
 

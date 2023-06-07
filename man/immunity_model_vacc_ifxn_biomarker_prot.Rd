@@ -8,13 +8,13 @@ immunity_model_vacc_ifxn_biomarker_prot(
   i,
   t,
   x,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   demography,
   biomarker_map,
   model_pars,
-  max_events = rep(Inf, dim(exposure_histories)[3]),
-  vacc_exposures = rep(Inf, dim(exposure_histories)[3]),
+  max_events = rep(Inf, dim(immune_histories)[3]),
+  vacc_exposures = rep(Inf, dim(immune_histories)[3]),
   vacc_age = 1,
   cross_reactivity_table = NULL,
   ...
@@ -27,7 +27,7 @@ immunity_model_vacc_ifxn_biomarker_prot(
 
 \item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
+\item{immune_histories}{a 3D array of immune histories for all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
@@ -54,9 +54,9 @@ A probability of successful exposure is returned
 This immunity model should be used if exposures represent vaccination and infection events. The probability of a successful vaccination exposure event depends on the number of vaccines received prior to time t while the probability of successful infection is dependent on the biomarker quantity at the time of exposure and the total number of successful infections prior to that point.
 }
 \examples{
-tmp_exposure_history <- array(0, dim=c(1, 10, 2))
+tmp_immune_history <- array(0, dim=c(1, 10, 2))
 ## Toy example: individual has 3 prior exposures to exposure ID 1, and none to exposure ID 2
-tmp_exposure_history[1,1:3,1] <- 1
+tmp_immune_history[1,1:3,1] <- 1
 ## Set all biomarker states to 3 for sake of example
 tmp_biomarker_states <- array(0, dim=c(1,10,1))
 tmp_biomarker_states[1,,1] <- 3
@@ -64,14 +64,14 @@ tmp_demography <- dplyr::tibble(i=1, birth=1)
 tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 ## Successful exposure probability for exposure ID 1 (representing vaccination) 
 ## is 1 or 0 depending on exposure history
-immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+immunity_model_vacc_ifxn_biomarker_prot(1,8,1,immune_histories=tmp_immune_history, 
 biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
 biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,
 max_events=c(3),vacc_exposures=c(1),vacc_age=c(1))
 
 ## Successful exposure probability for exposure ID 2 (representing infection) 
 ## is conditional on titer
-immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, 
+immunity_model_vacc_ifxn_biomarker_prot(1,8,2,immune_histories=tmp_immune_history, 
 biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
 biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),
 vacc_exposures=c(1),vacc_age=c(1))

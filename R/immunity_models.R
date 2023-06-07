@@ -5,7 +5,7 @@
 #' @param i integer for the individual ID
 #' @param t integer for the time period
 #' @param x integer for the exposure ID
-#' @param exposure_histories a 3D array of exposure histories for all individuals, time steps and exposure IDs
+#' @param immune_histories a 3D array of immune histories for all individuals, time steps and exposure IDs
 #' @param biomarker_states an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs
 #' @param demography a tibble of demographic information for each individual in the simulation
 #' @param biomarker_map a table specifying the relationship between exposure IDs and biomarker IDs
@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' immunity_model_all_successful(1,1,1,NULL,NULL,NULL,NULL,NULL)
-immunity_model_all_successful <- function(i, t, x, exposure_histories, 
+immunity_model_all_successful <- function(i, t, x, immune_histories, 
                            biomarker_states, demography, biomarker_map, model_pars, ...){
   return(1)
 }
@@ -35,12 +35,12 @@ immunity_model_all_successful <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-#' tmp_exposure_history <- array(0, dim=c(1, 10, 1))
-#' tmp_exposure_history[1,1,1] <- 1
+#' tmp_immune_history <- array(0, dim=c(1, 10, 1))
+#' tmp_immune_history[1,1,1] <- 1
 #' tmp_demography <- dplyr::tibble(i=1, birth=1)
-#' immunity_model_vacc_only(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, 
+#' immunity_model_vacc_only(1,8,1,tmp_immune_history,NULL, tmp_demography,NULL, 
 #' NULL,max_vacc_events=2,vacc_age=5)
-immunity_model_vacc_only <- function(i, t, x, exposure_histories, 
+immunity_model_vacc_only <- function(i, t, x, immune_histories, 
                               biomarker_states, demography, biomarker_map, 
                               model_pars, max_vacc_events, vacc_age,...){
   ## Calculate the individual's current age
@@ -50,7 +50,7 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
   ## If the individual is above the minimum age of vaccination 
   if(curr_age>=vacc_age[x]){
   ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+    curr_vacc_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
     if(curr_vacc_events<max_vacc_events[x]){
       return(1)
@@ -77,21 +77,21 @@ immunity_model_vacc_only <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-#' tmp_exposure_history <- array(0, dim=c(1, 10, 2))
+#' tmp_immune_history <- array(0, dim=c(1, 10, 2))
 #' ## Toy example: individual has 3 early exposures with exposure ID 1
-#' tmp_exposure_history[1,1:3,1] <- 1
+#' tmp_immune_history[1,1:3,1] <- 1
 #' tmp_demography <- dplyr::tibble(i=1, birth=1)
 #' ## Probability of successful exposure ID 1 at time 8 is 0, as all 3 allowable 
 #' ## exposure events have occurred
-#' immunity_model_vacc_ifxn_simple(1,8,1,tmp_exposure_history,NULL, tmp_demography,
+#' immunity_model_vacc_ifxn_simple(1,8,1,tmp_immune_history,NULL, tmp_demography,
 #' NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
 #' ## Probability of successful exposure ID 2 at time 8 is 1, as <5 of the 
 #' ## allowable exposure events have occurred
-#' immunity_model_vacc_ifxn_simple(1,8,2,tmp_exposure_history,NULL, tmp_demography,
+#' immunity_model_vacc_ifxn_simple(1,8,2,tmp_immune_history,NULL, tmp_demography,
 #' NULL, NULL,max_events=c(3,5),vacc_exposures=c(1,2),vacc_age=c(1,1))
-immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories, 
+immunity_model_vacc_ifxn_simple <- function(i, t, x, immune_histories, 
                                      biomarker_states, demography, biomarker_map, model_pars, 
-                                     max_events=rep(Inf, dim(exposure_histories)[3]), vacc_exposures=rep(Inf, dim(exposure_histories)[3]), 
+                                     max_events=rep(Inf, dim(immune_histories)[3]), vacc_exposures=rep(Inf, dim(immune_histories)[3]), 
                                      vacc_age, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  	
@@ -102,7 +102,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
     ## If the individual is above the minimum age of vaccination 
     if(curr_age>=vacc_age[x]){
          ## Count the total number of successful exposures to e thus far 
-          curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+          curr_vacc_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
         ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
         if(curr_vacc_events<max_events[x]){
            return(1)
@@ -116,7 +116,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
   }
   else{ ## If the exposure event is an infection event
     ## Count the total number of successful exposures to x thus far 
-    curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+    curr_ifx_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
     if(curr_ifx_events<max_events[x]){
       return(1)
     }else{
@@ -140,23 +140,23 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-#' tmp_exposure_history <- array(0, dim=c(1, 10, 1))
+#' tmp_immune_history <- array(0, dim=c(1, 10, 1))
 #' ## Toy example: individual has 1 prior exposure
-#' tmp_exposure_history[1,1,1] <- 1
+#' tmp_immune_history[1,1,1] <- 1
 #' ## Set all biomarker states to 3 for sake of example
 #' tmp_biomarker_states <- array(0, dim=c(1,10,1))
 #' tmp_biomarker_states[1,,1] <- 3
 #' tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 #' ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
-#' immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+#' immunity_model_ifxn_biomarker_prot(1,8,1,immune_histories=tmp_immune_history, 
 #' biomarker_states=tmp_biomarker_states, demography=NULL, 
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
-immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories, 
+immunity_model_ifxn_biomarker_prot <- function(i, t, x, immune_histories, 
                               biomarker_states, demography, biomarker_map, 
-                              model_pars, max_events=rep(Inf, dim(exposure_histories)[3]), cross_reactivity_table=NULL, ...){
+                              model_pars, max_events=rep(Inf, dim(immune_histories)[3]), cross_reactivity_table=NULL, ...){
   
   ## Count the total number of successful exposures to x thus far 
-  curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+  curr_ifx_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
   
   ## If the current number of successful exposures to x is less than the maximum number of successful exposures
   if(curr_ifx_events<max_events[x]){
@@ -205,9 +205,9 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' @export
 #'
 #' @examples
-#' tmp_exposure_history <- array(0, dim=c(1, 10, 2))
+#' tmp_immune_history <- array(0, dim=c(1, 10, 2))
 #' ## Toy example: individual has 3 prior exposures to exposure ID 1, and none to exposure ID 2
-#' tmp_exposure_history[1,1:3,1] <- 1
+#' tmp_immune_history[1,1:3,1] <- 1
 #' ## Set all biomarker states to 3 for sake of example
 #' tmp_biomarker_states <- array(0, dim=c(1,10,1))
 #' tmp_biomarker_states[1,,1] <- 3
@@ -215,20 +215,20 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
 #' tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 #' ## Successful exposure probability for exposure ID 1 (representing vaccination) 
 #' ## is 1 or 0 depending on exposure history
-#' immunity_model_vacc_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+#' immunity_model_vacc_ifxn_biomarker_prot(1,8,1,immune_histories=tmp_immune_history, 
 #' biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,
 #' max_events=c(3),vacc_exposures=c(1),vacc_age=c(1))
 #' 
 #' ## Successful exposure probability for exposure ID 2 (representing infection) 
 #' ## is conditional on titer
-#' immunity_model_vacc_ifxn_biomarker_prot(1,8,2,exposure_histories=tmp_exposure_history, 
+#' immunity_model_vacc_ifxn_biomarker_prot(1,8,2,immune_histories=tmp_immune_history, 
 #' biomarker_states=tmp_biomarker_states, demography=tmp_demography, 
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars,max_events=c(3,10),
 #' vacc_exposures=c(1),vacc_age=c(1))
-immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
+immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, immune_histories,
                            biomarker_states, demography, biomarker_map, model_pars, 
-                           max_events=rep(Inf, dim(exposure_histories)[3]), vacc_exposures=rep(Inf, dim(exposure_histories)[3]), 
+                           max_events=rep(Inf, dim(immune_histories)[3]), vacc_exposures=rep(Inf, dim(immune_histories)[3]), 
                            vacc_age=1, cross_reactivity_table=NULL, ...){
   ## If an exposure event is a vaccination event, then guaranteed exposure unless the individual has already been vaccinated
   if(x %in% c(vacc_exposures)){  
@@ -239,7 +239,7 @@ immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
     ## If the individual is above the minimum age of vaccination 
     if(curr_age>=vacc_age[x]){
     ## Count the total number of successful exposures to e thus far 
-    curr_vacc_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+    curr_vacc_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
     ## If number of successful exposures is less than the max number of vaccination events then vaccine exposure is successful 
     if(curr_vacc_events<max_events[x]){
       return(1)
@@ -254,7 +254,7 @@ immunity_model_vacc_ifxn_biomarker_prot <- function(i, t, x, exposure_histories,
   else {
     ## If the exposure event is an infection event
     ## Count the total number of successful exposures to x thus far 
-    curr_ifx_events<-sum(exposure_histories[i,1:t-1,x], na.rm=TRUE)
+    curr_ifx_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
     
     ## If the current number of successful exposures to x is less than the maximum number of successful exposures
     if(curr_ifx_events<max_events[x]){

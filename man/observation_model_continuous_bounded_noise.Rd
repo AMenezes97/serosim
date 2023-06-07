@@ -34,7 +34,7 @@ This observation model observes the latent biomarker quantities given a continuo
 }
 \examples{
 bounds <- dplyr::tibble(biomarker_id=1,name=c("lower_bound","upper_bound"),value=c(2,8))
-observation_model_continuous_bounded_noise(example_biomarker_states, 
+observation_model_continuous_bounded_noise(example_biomarker_states,
 example_model_pars_numeric, bounds,0.95,0.99)
 }
 \seealso{

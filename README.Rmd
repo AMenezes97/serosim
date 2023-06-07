@@ -269,8 +269,8 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r} 
-## Plot biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
+## Plot biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
 
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
@@ -282,8 +282,8 @@ plot_exposure_force(res$exposure_force_long)
 ## In other words, this is the probability of an exposure event being successful and inducing an immunological response
 plot_exposure_prob(res$exposure_probabilities_long)
 
-## Plot individual exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual immune histories for all exposure types
+plot_immune_histories(res$immune_histories_long)
 
 ## Plot true biomarker quantities for all individuals across the entire simulation period
 plot_biomarker_quantity(res$biomarker_states)
@@ -296,7 +296,7 @@ head(res$kinetics_parameters)
 
 ## Combine plots as seen in paper 
 # library(cowplot)
-# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$immune_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 # plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 
 

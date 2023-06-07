@@ -16,7 +16,7 @@ plot_antibody_model(
 )
 }
 \arguments{
-\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of immune history and within-host kinetics parameters (\code{model_pars})}
 
 \item{N}{Number of trajectories to simulate}
 

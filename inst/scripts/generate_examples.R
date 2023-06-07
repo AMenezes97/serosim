@@ -69,8 +69,8 @@ res<- runserosim(
 
 
 ## Save select runserosim outputs 
-example_exposure_histories<-res$exposure_histories_long
-example_exposure_histories_wide<-res$exposure_histories
+example_immune_histories<-res$immune_histories_long
+example_immune_histories_wide<-res$immune_histories
 example_exposure_probabilities<-res$exposure_probabilities_long
 example_exposure_force <- res$exposure_force_long
 example_biomarker_states<-res$biomarker_states
@@ -88,8 +88,8 @@ save(example_biomarker_map_numeric,file="~/Documents/GitHub/serosim/data/example
 save(example_foe_pars,file="~/Documents/GitHub/serosim/data/example_foe_pars.rda") 
 save(example_model_pars,file="~/Documents/GitHub/serosim/data/example_model_pars.rda") 
 save(example_model_pars_numeric,file="~/Documents/GitHub/serosim/data/example_model_pars_numeric.rda") 
-save(example_exposure_histories,file="~/Documents/GitHub/serosim/data/example_exposure_histories.rda") 
-save(example_exposure_histories_wide,file="~/Documents/GitHub/serosim/data/example_exposure_histories_wide.rda") 
+save(example_immune_histories,file="~/Documents/GitHub/serosim/data/example_immune_histories.rda") 
+save(example_immune_histories_wide,file="~/Documents/GitHub/serosim/data/example_immune_histories_wide.rda") 
 save(example_exposure_probabilities,file="~/Documents/GitHub/serosim/data/example_exposure_probabilities.rda") 
 save(example_exposure_force,file="~/Documents/GitHub/serosim/data/example_exposure_force.rda") 
 save(example_biomarker_states,file="~/Documents/GitHub/serosim/data/example_biomarker_states.rda") 
