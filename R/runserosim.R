@@ -20,10 +20,10 @@
 #' @param exposure_histories_fixed (optional) Defaults to NULL. Otherwise a 3D array indicating the exposure history (1 = exposed, 0 = not exposed) for each individual (dimension 1) at each time (dimension 2) for each exposure ID (dimension 3). Here, users can input pre-specified information if exposure histories are known for an individual
 #' @param VERBOSE (optional) Defaults to NULL. An integer specifying the frequency at which simulation progress updates are printed
 #' @param attempt_precomputation If TRUE, attempts to perform as much pre-computation as possible for the exposure model to speed up the main simulation code. If FALSE, skips this step, which is advised when the simulation is expected to be very fast anyway
-#' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages. 
-#' @param n_cores The number of cores to use if running in parallel
+#' @param parallel If TRUE, attempts to run _serosim_ using parallel processes with the foreach and parallel packages. Defaults to FALSE
+#' @param n_cores The number of cores to use if running in parallel. Defaults to 4
 #' @param parallel_packages a character vector of R packages required for the models. Only needed if additional non-imported packages are required.
-#' @param ... Any additional arguments needed
+#' @param ... Any additional arguments needed for the models
 #' 
 #' @return a list containing the following elements: force of exposure, exposure probabilities, exposure histories, antibody states, observed antibody states, and kinetics parameters 
 #' @importFrom dplyr bind_rows
@@ -31,6 +31,7 @@
 #' @importFrom dplyr distinct
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
+#' @importFrom abind abind
 #' @export
 #' @examples 
 #' ## See package README.
@@ -221,18 +222,24 @@ runserosim <- function(
       exposure_probabilities <- res[[4]]
       exposure_force <- res[[5]]
     } else {
-      
+      ## Set up socket cluster to split the population across n_cores processes
       cluster <- makeCluster(n_cores) 
       registerDoParallel(cluster)
       
-      if(!is.null(VERBOSE)) message(cat("Running in parallel\n"))
+      if(!is.null(VERBOSE)) message(cat("Running jobs in parallel across ", n_cores, " cores\n"))
+      
       n_indivs_per_block <- ceiling(length(indivs)/n_cores)
       indiv_blocks <- split(indivs, ceiling(seq_along(indivs)/n_indivs_per_block))
+      
+      ## Submit job. Note this is likely where any object or package exports may become an issue.
       res <- foreach(block = 1:n_cores, .packages=c("abind",parallel_packages)) %dopar% {
         serosim_internal(indiv_blocks[[block]],...)
       }
+      
+      ## Close socket cluster
       stopCluster(cluster)
       
+      ## Combine outputs from each process. This could probably be improved without requiring abind.
       biomarker_states <- do.call("abind",args=list(lapply(res, function(x) x[[1]]), along=1))
       exposure_histories <- do.call("abind",args=list(lapply(res, function(x) x[[3]]), along=1))
       exposure_probabilities <- do.call("abind",args=list(lapply(res, function(x) x[[4]]), along=1))

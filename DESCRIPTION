@@ -3,7 +3,7 @@ Title: Serosurvey simulation
 Version: 0.0.0.9000
 Authors@R: c(
     person("Arthur", "Menezes", , "am83@princeton.edu", role = c("aut", "cre")),
-    person("James", "Hay", , "jhay@hsph.harvard.edu", role = "aut")
+    person("James", "Hay", , "james.hay@ndm.ox.ac.uk", role = "aut")
   )
 Description: serosim is an open source R package designed to aid inference
     from serological surveys, by simulating data arising from
@@ -28,13 +28,15 @@ Imports:
     reshape2,
     stats,
     tidyr,
-    abind
+    abind,
+    foreach,
+    parallel,
+    doParallel
+
 Suggests: 
     bayesplot,
     coda,
     devtools,
-    doParallel,
-    foreach,
     ggpubr,
     knitr,
     patchwork,

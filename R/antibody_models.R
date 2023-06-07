@@ -20,34 +20,25 @@
 #' antibody_model_monophasic(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 #' tmp_pars, example_biomarker_map_numeric)
 antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
-  ## Find which successful exposures correspond to this biomarker 
-  exposure_id_tmp<-biomarker_map$exposure_id[biomarker_map$biomarker_id==b]
+  ## Get kinetics parameters for this individual
+  tmp_kinetics_parameters <- kinetics_parameters[[i]]
   
-  ## Find all exposures up until current time for this individual and exposure type
-  exp_history <- exposure_histories[i,1:t1,exposure_id_tmp]
+  ## Get only exposures relevant to this biomarker ID and time
+  tmp_kinetics_parameters <- tmp_kinetics_parameters[tmp_kinetics_parameters$b == b & tmp_kinetics_parameters$t <= t1,]
   
-  ## Set starting biomarker quantity to 0
-  biomarker_quantity<-0
-  
-  ## Calculate current biomarker quantity if there has been an exposure 
-  if(sum(exp_history,na.rm = TRUE)==0){
-    return(0)
-  }
-  if(sum(exp_history,na.rm = TRUE)>0){
-    ## Extract all kinetics_parameters for biomarker 
-    b_tmp<-b
-    
-    tmp_kinetics_parameters <- kinetics_parameters[[i]]
-    tmp_kinetics_parameters<-tmp_kinetics_parameters[tmp_kinetics_parameters$b==b_tmp,] 
-    
-    tmp_boost <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",] 
-    tmp_wane <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",] 
-    
-    for(j in seq_along(tmp_boost$realized_value)){
-      biomarker_quantity<- biomarker_quantity + tmp_boost$realized_value[j]*max(0,1-tmp_wane$realized_value[j]*(t1-tmp_wane$t[j]))
+  ## Only continue if there are relevant exposures to calculate kinetics for
+  biomarker_quantity <- 0
+  if(nrow(tmp_kinetics_parameters) > 0){
+    boosts <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",]$realized_value ## Boosts
+    wanes <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$realized_value ## Waning rate
+    t_infs <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$t ## Time of infections
+    ## Sum up contribution of each boost, with waning
+    for(j in seq_along(t_infs)){
+      biomarker_quantity<- biomarker_quantity + boosts[j]*max(0,1-wanes[j]*(t1-t_infs[j]))
     }
     biomarker_quantity
   }
+  return(biomarker_quantity)
 }
 
 #' Biphasic antibody boosting-waning model
