@@ -5,7 +5,6 @@
 #' @param i individual
 #' @param t time
 #' @param x exposure
-#' @param b biomarker
 #' @param demography demography information 
 #' @param biomarker_states an array of true biomarker quantities for all individuals across all time steps and biomarkers  
 #' @param model_pars tibble of biomarker (antibody) kinetics parameters with variables: 1) exposure_id: numeric exposure ID; 2) biomarker_id: numeric biomarker ID; 3) name: the character name of the parameter; 4) mean: numeric mean of this parameter distribution; 5) sd: the numeric standard deviation of the parameter distribution; 6) distribution: character description of the parameter distribution type (e.g., log-normal, normal)
@@ -16,9 +15,9 @@
 #' @export
 #' @family draw_parameters
 #' @examples
-#' draw_parameters_fixed_fx(1,1,1,1,example_demography, example_biomarker_states, 
+#' draw_parameters_fixed_fx(1,1,1,example_demography, example_biomarker_states, 
 #' example_model_pars_numeric)
-draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
+draw_parameters_fixed_fx <- function(i, t, x,demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
   model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
   pars <- numeric(nrow(model_pars_tmp))
@@ -44,9 +43,9 @@ draw_parameters_fixed_fx <- function(i, t, x, b, demography, biomarker_states, m
 #' @export
 #'
 #' @examples
-#' draw_parameters_random_fx(1,1,1,1,example_demography, example_biomarker_states, 
+#' draw_parameters_random_fx(1,1,1,example_demography, example_biomarker_states, 
 #' example_model_pars_numeric)
-draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
+draw_parameters_random_fx<- function(i, t, x, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),]
     pars <- numeric(nrow(model_pars_tmp))
@@ -82,9 +81,9 @@ draw_parameters_random_fx<- function(i, t, x, b, demography, biomarker_states, m
 #'
 #' @examples
 #' model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
-#' draw_parameters_fixed_fx_biomarker_dep(2,100,1,1,example_demography, 
+#' draw_parameters_fixed_fx_biomarker_dep(2,100,1,example_demography, 
 #' example_biomarker_states_wide, model_pars)
-draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
+draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- as.data.frame(model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),])
     
@@ -122,9 +121,9 @@ draw_parameters_fixed_fx_biomarker_dep <- function(i, t, x, b, demography, bioma
 #'
 #' @examples
 #' model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
-#' draw_parameters_random_fx_biomarker_dep(2,100,1,1,example_demography, 
+#' draw_parameters_random_fx_biomarker_dep(2,100,1,example_demography, 
 #' example_biomarker_states_wide, model_pars)
-draw_parameters_random_fx_biomarker_dep <- function(i, t, x, b, demography, biomarker_states, model_pars, ...){
+draw_parameters_random_fx_biomarker_dep <- function(i, t, x, demography, biomarker_states, model_pars, ...){
   ## Filter for only exposure stimulated 
     model_pars_tmp <- as.data.frame(model_pars[model_pars$exposure_id == x & !is.na(model_pars$exposure_id),])
     pars <- numeric(nrow(model_pars_tmp))

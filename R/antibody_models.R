@@ -153,3 +153,30 @@ antibody_model_typhoid <- function(i, t1, b, exposure_histories=NULL, biomarker_
   }
   biomarker_quantity
 }
+
+
+antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+  biomarker_quantity <- 0
+  
+  ## Get kinetics parameters for this individual
+  if(!is.null(kinetics_parameters[[i]])){
+    tmp_kinetics_parameters <- kinetics_parameters[[i]]
+  } else {
+    return(biomarker_quantity)
+  }
+  
+  ## Get only exposures relevant to this biomarker ID and time
+  tmp_kinetics_parameters <- tmp_kinetics_parameters[tmp_kinetics_parameters$b == b & tmp_kinetics_parameters$t <= t1,]
+  
+  ## Only continue if there are relevant exposures to calculate kinetics for
+  if(nrow(tmp_kinetics_parameters) > 0){
+    boosts <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "boost",]$realized_value ## Boosts
+    wanes <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$realized_value ## Waning rate
+    t_infs <- tmp_kinetics_parameters[tmp_kinetics_parameters$name == "wane",]$t ## Time of infections
+    ## Sum up contribution of each boost, with waning
+    for(j in seq_along(t_infs)){
+      biomarker_quantity<- biomarker_quantity + boosts[j]*max(0,1-wanes[j]*(t1-t_infs[j]))
+    }
+  }
+  biomarker_quantity
+}

@@ -192,7 +192,7 @@ runserosim <- function(
                       ## for this event, drawn from information given in model_pars
                       if(successful_exposure == 1){
                           kinetics_parameters[[i]] <- bind_rows(kinetics_parameters[[i]],
-                                                            draw_parameters(i, t, x, b, demography, biomarker_states, model_pars, ...))
+                                                            draw_parameters(i, t, x, demography, biomarker_states, model_pars, ...))
                       }
                       exposure_histories[i,t,x] <- successful_exposure
                       exposure_probabilities[i,t,x] <- prob_success*prob_exposed
