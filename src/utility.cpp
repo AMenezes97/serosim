@@ -1,7 +1,7 @@
-
 #include "utility.h"
 
-// [[Rcpp::export]]
+// Subsets a data frame based on the condition_vector matching the value of condition, and returns the corresponding values from return_vector
+// Version where condition is an integer
 arma::vec subset_dataframe_integer(DataFrame mydata, String condition_vector, String return_vector, int condition) {
   IntegerVector vector1 = mydata[condition_vector];
   NumericVector vector2 = mydata[return_vector];
@@ -14,8 +14,9 @@ arma::vec subset_dataframe_integer(DataFrame mydata, String condition_vector, St
   }
   return as<arma::vec>(wrap(result));
 }
-
-// [[Rcpp::export]]
+// Subsets a data frame based on the condition_vector1 and condition_vector2 match the values of condition1 and condition2 respectively, 
+// and returns the corresponding values from return_vector
+// Version where condition1 is a double and condition2 is a string
 arma::vec subset_dataframe_numeric_twice(DataFrame x, 
                                              String condition_vector1, 
                                              String condition_vector2,
@@ -34,8 +35,8 @@ arma::vec subset_dataframe_numeric_twice(DataFrame x,
   }
   return as<arma::vec>(wrap(result));
 }
-
-// [[Rcpp::export]]
+// Subsets a data frame based on the condition_vector matching the value of condition, and returns the corresponding values from return_vector
+// Version where condition is a numeric
 arma::vec subset_dataframe_numeric(DataFrame mydata, String condition_vector, String return_vector, double condition) {
   NumericVector vector1 = mydata[condition_vector];
   NumericVector vector2 = mydata[return_vector];
@@ -50,7 +51,8 @@ arma::vec subset_dataframe_numeric(DataFrame mydata, String condition_vector, St
   return as<arma::vec>(wrap(result));
 }
 
-// [[Rcpp::export]]
+// Subsets a data frame based on the condition_vector matching the value of condition, and returns the corresponding values from return_vector
+// Version where condition is a string
 arma::vec subset_dataframe_char(DataFrame mydata, String condition_vector, String return_vector, String condition) {
   CharacterVector vector1 = mydata[condition_vector];
   NumericVector vector2 = mydata[return_vector];
@@ -64,7 +66,8 @@ arma::vec subset_dataframe_char(DataFrame mydata, String condition_vector, Strin
   }
   return as<arma::vec>(wrap(result));
 }
-// [[Rcpp::export]]
+
+// Gets the slices of the cube x using the vector indices (i.e., return non-contiguous slices)
 arma::cube get_cube_slices(arma::cube x, arma::vec indices){
   arma::cube y(x.n_rows,x.n_cols, indices.n_elem);
   for(int i=0; i<indices.n_elem; ++i){
@@ -72,7 +75,7 @@ arma::cube get_cube_slices(arma::cube x, arma::vec indices){
   }
   return y;
 }
-// [[Rcpp::export]]
+// Gets the columns of the matrix x using the vector indices (i.e., return non-contiguous columns)
 arma::mat get_mat_cols(arma::mat x, arma::vec indices){
   arma::mat y(x.n_rows,indices.n_elem);
   for(int i=0; i<indices.n_elem; ++i){
@@ -81,8 +84,7 @@ arma::mat get_mat_cols(arma::mat x, arma::vec indices){
   return y;
 }
 
-
-// [[Rcpp::export]]
+// Sums all elements of X while removing non-finite values
 double sum_arma_na_rm(arma::mat& X) {
   double sum = 0;
   for (int i = 0; i < X.size(); ++i) {

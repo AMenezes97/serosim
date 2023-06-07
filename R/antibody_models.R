@@ -12,6 +12,8 @@
 #' @param ... Additional arguments
 #'
 #' @return A biomarker quantity is returned 
+#' @seealso antibody_model_monophasic_cpp
+#' @family antibody_models
 #' @export
 #'
 #' @examples
@@ -54,6 +56,7 @@ antibody_model_monophasic <-  function(i, t1, b, exposure_histories, biomarker_s
 #' 
 #' @return A biomarker quantity is returned 
 #' @importFrom data.table data.table
+#' @family antibody_models
 #' @export
 #'
 #' @examples
@@ -112,6 +115,7 @@ typhoid <- function(t, y0, y1, beta, r, t1){
 #'
 #' @return A biomarker_quantity is returned 
 #' @export
+#' @family antibody_models
 #'
 #' @examples
 #' tmp_pars <- list()
@@ -164,6 +168,7 @@ antibody_model_typhoid <- function(i, t1, b, exposure_histories=NULL, biomarker_
 #' @return A biomarker quantity is returned 
 #' @importFrom data.table data.table
 #' @export
+#' @family antibody_models
 #'
 #' @examples
 #' tmp_pars <- list()
@@ -219,6 +224,7 @@ antibody_model_monophasic_cross_reactivity <-  function(i, t1, b, exposure_histo
 #' @return A biomarker quantity is returned 
 #' @importFrom data.table data.table
 #' @export
+#' @family antibody_models
 #'
 #' @examples
 #' tmp_pars <- list()

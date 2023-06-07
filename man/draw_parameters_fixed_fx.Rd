@@ -8,7 +8,6 @@ draw_parameters_fixed_fx(
   i,
   t,
   x,
-  b,
   demography,
   biomarker_states,
   model_pars,
@@ -21,8 +20,6 @@ draw_parameters_fixed_fx(
 \item{t}{time}
 
 \item{x}{exposure}
-
-\item{b}{biomarker}
 
 \item{demography}{demography information}
 
@@ -39,7 +36,7 @@ A tibble with the simulated parameters for this exposure event
 Draws parameters directly from the distributions specified by \code{model_pars} for the antibody model with fixed effects. This function ensures that all individuals have the same parameters.
 }
 \examples{
-draw_parameters_fixed_fx(1,1,1,1,example_demography, example_biomarker_states, 
+draw_parameters_fixed_fx(1,1,1,example_demography, example_biomarker_states, 
 example_model_pars_numeric)
 }
 \concept{draw_parameters}
