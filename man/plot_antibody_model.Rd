@@ -30,7 +30,7 @@ plot_antibody_model(
 
 \item{draw_parameters_fn}{Pointer to function used for drawing random kinetics parameters, see \code{\link{draw_parameters_fixed_fx}}}
 
-\item{...}{Any additional arguments needed}
+\item{...}{Any additional arguments needed for the models}
 }
 \value{
 A ggplot2 object

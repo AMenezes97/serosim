@@ -16,7 +16,7 @@ antibody_model_monophasic(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{individual}
 
 \item{t1}{time}
 

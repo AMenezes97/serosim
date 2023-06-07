@@ -32,7 +32,6 @@ Imports:
     foreach,
     parallel,
     doParallel
-
 Suggests: 
     bayesplot,
     coda,
@@ -47,6 +46,10 @@ Suggests:
     testthat (>= 3.0.0),
     tidyverse,
     viridis
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo,
+    RcppParallel
 Remotes:
     epiverse-trace/serofoi,
     seroanalytics/serosolver

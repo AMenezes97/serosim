@@ -13,7 +13,7 @@ immunity_model_ifxn_biomarker_prot(
   demography,
   biomarker_map,
   model_pars,
-  max_events,
+  max_events = rep(Inf, dim(exposure_histories)[3]),
   cross_reactivity_table = NULL,
   ...
 )

@@ -6,7 +6,7 @@
 \usage{
 antibody_model_typhoid(
   i,
-  t,
+  t1,
   b,
   exposure_histories = NULL,
   biomarker_states = NULL,
@@ -16,9 +16,9 @@ antibody_model_typhoid(
 )
 }
 \arguments{
-\item{i}{Individual}
+\item{i}{individual}
 
-\item{t}{time}
+\item{t1}{time}
 
 \item{b}{biomarker}
 

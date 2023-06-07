@@ -13,8 +13,8 @@ immunity_model_vacc_ifxn_biomarker_prot(
   demography,
   biomarker_map,
   model_pars,
-  max_events,
-  vacc_exposures,
+  max_events = rep(Inf, dim(exposure_histories)[3]),
+  vacc_exposures = rep(Inf, dim(exposure_histories)[3]),
   vacc_age = 1,
   cross_reactivity_table = NULL,
   ...
