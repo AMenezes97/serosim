@@ -32,6 +32,11 @@
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
 #' @importFrom abind abind
+#' @importFrom parallel makeCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach '%dopar%'
+#' @importFrom foreach foreach
+#' @importFrom parallel stopCluster
 #' @export
 #' @examples 
 #' ## See package README.

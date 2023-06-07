@@ -12,36 +12,36 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // antibody_model_monophasic_cpp
-double antibody_model_monophasic_cpp(int i, int t1, int b, arma::cube exposure_histories, arma::cube biomarker_states, List kinetics_parameters, DataFrame biomarker_map);
-RcppExport SEXP _serosim_antibody_model_monophasic_cpp(SEXP iSEXP, SEXP t1SEXP, SEXP bSEXP, SEXP exposure_historiesSEXP, SEXP biomarker_statesSEXP, SEXP kinetics_parametersSEXP, SEXP biomarker_mapSEXP) {
+double antibody_model_monophasic_cpp(int i, int t1, int b, arma::cube immune_histories, arma::cube biomarker_states, List kinetics_parameters, DataFrame biomarker_map);
+RcppExport SEXP _serosim_antibody_model_monophasic_cpp(SEXP iSEXP, SEXP t1SEXP, SEXP bSEXP, SEXP immune_historiesSEXP, SEXP biomarker_statesSEXP, SEXP kinetics_parametersSEXP, SEXP biomarker_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
     Rcpp::traits::input_parameter< int >::type t1(t1SEXP);
     Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type exposure_histories(exposure_historiesSEXP);
+    Rcpp::traits::input_parameter< arma::cube >::type immune_histories(immune_historiesSEXP);
     Rcpp::traits::input_parameter< arma::cube >::type biomarker_states(biomarker_statesSEXP);
     Rcpp::traits::input_parameter< List >::type kinetics_parameters(kinetics_parametersSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type biomarker_map(biomarker_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(antibody_model_monophasic_cpp(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map));
+    rcpp_result_gen = Rcpp::wrap(antibody_model_monophasic_cpp(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map));
     return rcpp_result_gen;
 END_RCPP
 }
 // antibody_model_biphasic_cpp
-double antibody_model_biphasic_cpp(int i, int t1, int b, arma::cube exposure_histories, arma::cube biomarker_states, List kinetics_parameters, DataFrame biomarker_map);
-RcppExport SEXP _serosim_antibody_model_biphasic_cpp(SEXP iSEXP, SEXP t1SEXP, SEXP bSEXP, SEXP exposure_historiesSEXP, SEXP biomarker_statesSEXP, SEXP kinetics_parametersSEXP, SEXP biomarker_mapSEXP) {
+double antibody_model_biphasic_cpp(int i, int t1, int b, arma::cube immune_histories, arma::cube biomarker_states, List kinetics_parameters, DataFrame biomarker_map);
+RcppExport SEXP _serosim_antibody_model_biphasic_cpp(SEXP iSEXP, SEXP t1SEXP, SEXP bSEXP, SEXP immune_historiesSEXP, SEXP biomarker_statesSEXP, SEXP kinetics_parametersSEXP, SEXP biomarker_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
     Rcpp::traits::input_parameter< int >::type t1(t1SEXP);
     Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type exposure_histories(exposure_historiesSEXP);
+    Rcpp::traits::input_parameter< arma::cube >::type immune_histories(immune_historiesSEXP);
     Rcpp::traits::input_parameter< arma::cube >::type biomarker_states(biomarker_statesSEXP);
     Rcpp::traits::input_parameter< List >::type kinetics_parameters(kinetics_parametersSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type biomarker_map(biomarker_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(antibody_model_biphasic_cpp(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map));
+    rcpp_result_gen = Rcpp::wrap(antibody_model_biphasic_cpp(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map));
     return rcpp_result_gen;
 END_RCPP
 }

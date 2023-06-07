@@ -8,7 +8,7 @@ antibody_model_biphasic_cpp(
   i,
   t1,
   b,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   kinetics_parameters,
   biomarker_map
@@ -20,6 +20,8 @@ antibody_model_biphasic_cpp(
 \item{t1}{time}
 
 \item{b}{biomarker}
+
+\item{immune_histories}{An array of immune histories across all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
@@ -36,7 +38,7 @@ Identical to \code{\link{antibody_model_biphasic}}, but implemented in Cpp
 \examples{
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-antibody_model_biphasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+antibody_model_biphasic_cpp(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 tmp_pars, example_biomarker_map_numeric)
 }
 \seealso{

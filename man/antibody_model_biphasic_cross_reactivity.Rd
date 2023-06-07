@@ -41,14 +41,17 @@ Biphasic antibody boosting-waning model with cross-reactivity between strains. T
 \examples{
 tmp_pars <- list()
 ## Set up simple model_pars table for this antibody model
-model_pars_tmp <- example_model_pars_biphasic \%>\% reformat_biomarker_map() \%>\% mutate(biomarker_id = exposure_id)
+library(dplyr)
+model_pars_tmp <- example_model_pars_biphasic \%>\% reformat_biomarker_map() \%>\% 
+mutate(biomarker_id = exposure_id)
 ## Simulate one infection with exposure ID 1 at t=1
 tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
  
 ## Set up a simple biomarker map for cross-reactivity
-biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) \%>\% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
-antibody_model_biphasic_cross_reactivity(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
-tmp_pars, biomarker_map)
+biomarker_map = tidyr::expand_grid(exposure_id=1:2, biomarker_id=1:2) \%>\% 
+mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
+antibody_model_biphasic_cross_reactivity(1,1,1,example_immune_histories_wide, 
+example_biomarker_states_wide, tmp_pars, biomarker_map)
 }
 \seealso{
 Other antibody_models: 

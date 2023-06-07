@@ -13,22 +13,22 @@
 //' @examples
 //' tmp_pars <- list()
 //' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-//' antibody_model_monophasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+//' antibody_model_monophasic_cpp(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 //' tmp_pars, example_biomarker_map_numeric)
 //[[Rcpp::export]]
 double antibody_model_monophasic_cpp(int i, int t1, int b,
-                                     arma::cube exposure_histories,
+                                     arma::cube immune_histories,
                                      arma::cube biomarker_states,
                                      List kinetics_parameters,
                                      DataFrame biomarker_map) {
   // Find which successful exposures correspond to this biomarker
   //arma::vec exposure_id_tmp = subset_dataframe_integer(biomarker_map, "biomarker_id","exposure_id",b);
-  // Get this individual's exposure history
-  //arma::mat tmp_exp_history = exposure_histories.row(i-1);
+  // Get this individual's immune history
+  //arma::mat tmp_imm_history = immune_histories.row(i-1);
   // Get only times relevant to this observation
   // Get only exposures relevant to this biomarker
-  //arma::mat exp_history = get_mat_cols(tmp_exp_history.rows(0,t1-1), exposure_id_tmp-1);
-  //double n_infections = sum_arma_narm(exp_history);
+  //arma::mat imm_history = get_mat_cols(tmp_imm_history.rows(0,t1-1), exposure_id_tmp-1);
+  //double n_infections = sum_arma_narm(imm_history);
   
   // Set starting biomarker quantity to 0
   double biomarker_quantity = 0.0;
@@ -66,22 +66,22 @@ double antibody_model_monophasic_cpp(int i, int t1, int b,
 //' @examples
 //' tmp_pars <- list()
 //' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-//' antibody_model_biphasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+//' antibody_model_biphasic_cpp(1,1,1,example_immune_histories_wide, example_biomarker_states_wide, 
 //' tmp_pars, example_biomarker_map_numeric)
 //[[Rcpp::export]]
 double antibody_model_biphasic_cpp(int i, int t1, int b,
-                                     arma::cube exposure_histories,
+                                     arma::cube immune_histories,
                                      arma::cube biomarker_states,
                                      List kinetics_parameters,
                                      DataFrame biomarker_map) {
   // Find which successful exposures correspond to this biomarker
   //arma::vec exposure_id_tmp = subset_dataframe_integer(biomarker_map, "biomarker_id","exposure_id",b);
-  // Get this individual's exposure history
-  //arma::mat tmp_exp_history = exposure_histories.row(i-1);
+  // Get this individual's immune history
+  //arma::mat tmp_imm_history = immune_histories.row(i-1);
   // Get only times relevant to this observation
   // Get only exposures relevant to this biomarker
-  //arma::mat exp_history = get_mat_cols(tmp_exp_history.rows(0,t1-1), exposure_id_tmp-1);
-  //double n_infections = sum_arma_narm(exp_history);
+  //arma::mat imm_history = get_mat_cols(tmp_imm_history.rows(0,t1-1), exposure_id_tmp-1);
+  //double n_infections = sum_arma_narm(imm_history);
   
   // Set starting biomarker quantity to 0
   double biomarker_quantity = 0.0;
