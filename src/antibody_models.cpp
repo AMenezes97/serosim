@@ -7,7 +7,6 @@
 //' @inheritParams antibody_model_monophasic
 //'
 //' @return Biomarker quantity at the specified time point
-//' @seealso antibody_model_monophasic
 //' @export
 //' @family antibody_models
 //'
@@ -62,12 +61,11 @@ double antibody_model_monophasic_cpp(int i, int t1, int b,
 //' @inheritParams antibody_model_monophasic
 //'
 //' @return Biomarker quantity at the specified time point
-//' @seealso antibody_model_biphasic
 //' @family antibody_models
 //' @export
 //' @examples
 //' tmp_pars <- list()
-//' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, NULL, example_model_pars_numeric)
+//' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
 //' antibody_model_biphasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
 //' tmp_pars, example_biomarker_map_numeric)
 //[[Rcpp::export]]
