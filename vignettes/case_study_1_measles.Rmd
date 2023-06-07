@@ -405,7 +405,7 @@ plot_exposure_prob(res$exposure_probabilities_long)
 
 ```{r,fig.dim = c(4, 6)}
 ## Plot individual immune histories for all exposure types
-plot_exposure_histories(res$immune_histories_long)
+plot_immune_histories(res$immune_histories_long)
 ```
 
 ```{r, fig.dim = c(4, 6)}
