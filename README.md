@@ -11,10 +11,10 @@ serosim
 
 # Motivation
 
-The *serosim* package is designed to simulate serological survey data
-arising from user-specified vaccine or infection-generated and antibody
-kinetics processes. *serosim* allows users to specify and adjust model
-inputs responsible for generating the observed biomarker quantities like
+The *serosim* package is designed to simulate serological data arising
+from user-specified vaccine or infection-generated and antibody kinetics
+processes. *serosim* allows users to specify and adjust model inputs
+responsible for generating the observed biomarker quantities like
 time-varying patterns of infection and vaccination, population
 demography, immunity and antibody kinetics, and serological survey
 sampling design in order to best represent the population and disease
@@ -27,15 +27,25 @@ neither. We will set up each of the required arguments and models for
 the *runserosim* function in the order outlined in the methods section
 of the paper. We then run the simulation and examine its outputs.
 
-There are two additional vignettes/case studies in the *vignettes*
+There are three additional vignettes/case studies in the *vignettes*
 folder. Case study 1 provides an example of a longitudinal singular
-biomarker serological survey simulation structured around measles, a
+biomarker serological data simulation structured around measles, a
 one-pathogen system with vaccination, but also applicable to other
-vaccine preventable diseases. Case study 2 provides an example of a
-cross-sectional multi-biomarker serological survey structured around
-diphtheria and pertussis, a two-pathogen system with bivalent
-vaccination, but also applicable to multi-pathogen systems with
-multivalent vaccines.
+vaccine preventable diseases.
+
+Case study 2 provides an example of a cross-sectional multi-biomarker
+serological data structured around diphtheria and pertussis, a
+two-pathogen system with bivalent vaccination, but also applicable to
+multi-pathogen systems with multivalent vaccines.
+
+Case study 3 provides an example of a cross-sectional serosurvey of a
+one pathogen system with cross-reactive strains, modeled after
+influenza. This example tracks 3 circulating strains and strain specific
+biomarkers produced after infection.
+
+Case study 4 demonstrates how serological data simulated from a complex,
+realistic serosim model can be used to assess the accuracy of various
+seroepidemiological inference methods.
 
 # Installation
 
@@ -46,12 +56,15 @@ Load necessary packages:
 devtools::install_github("AMenezes97/serosim")
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/private/var/folders/q8/2nt_5tqj7yj_rmmxlknjr2sm0000gr/T/RtmpJInDMV/remotesbf496837644a/AMenezes97-serosim-7507fc3/DESCRIPTION’ ... OK
-#> * preparing ‘serosim’:
-#> * checking DESCRIPTION meta-information ... OK
-#> * checking for LF line-endings in source and make files and shell scripts
-#> * checking for empty or unneeded directories
-#> * building ‘serosim_0.0.0.9000.tar.gz’
+#>      checking for file ‘/private/var/folders/33/9_2zcl8d6nl5jjdl97fpmr080000gn/T/Rtmphoi4Rq/remotesd55d592e7c3f/AMenezes97-serosim-d1cc276/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/33/9_2zcl8d6nl5jjdl97fpmr080000gn/T/Rtmphoi4Rq/remotesd55d592e7c3f/AMenezes97-serosim-d1cc276/DESCRIPTION’
+#>   ─  preparing ‘serosim’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  cleaning src
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘serosim_0.0.0.9000.tar.gz’
+#>      
+#> 
 library(serosim)
 
 ## Load additional packages required 
@@ -99,12 +112,12 @@ demography <- generate_pop_demography(N=100, times=times, prob_removal=0)
 ## Examine the generated demography tibble
 summary(demography)
 #>        i              birth           removal        times       
-#>  Min.   :  1.00   Min.   :  1.00   Min.   :121   Min.   :  1.00  
-#>  1st Qu.: 25.75   1st Qu.: 33.25   1st Qu.:121   1st Qu.: 30.75  
-#>  Median : 50.50   Median : 53.00   Median :121   Median : 60.50  
-#>  Mean   : 50.50   Mean   : 55.59   Mean   :121   Mean   : 60.50  
-#>  3rd Qu.: 75.25   3rd Qu.: 80.25   3rd Qu.:121   3rd Qu.: 90.25  
-#>  Max.   :100.00   Max.   :119.00   Max.   :121   Max.   :120.00
+#>  Min.   :  1.00   Min.   :  7.00   Min.   :121   Min.   :  1.00  
+#>  1st Qu.: 25.75   1st Qu.: 37.00   1st Qu.:121   1st Qu.: 30.75  
+#>  Median : 50.50   Median : 64.00   Median :121   Median : 60.50  
+#>  Mean   : 50.50   Mean   : 61.99   Mean   :121   Mean   : 60.50  
+#>  3rd Qu.: 75.25   3rd Qu.: 85.00   3rd Qu.:121   3rd Qu.: 90.25  
+#>  Max.   :100.00   Max.   :118.00   Max.   :121   Max.   :120.00
 ```
 
 # 1.3 Exposure to biomarker mapping
@@ -176,7 +189,7 @@ exposure_model<-exposure_model_simple_FOE
 plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
-![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 # 1.5 Immunity Model
 
@@ -259,7 +272,7 @@ draw_parameters<-draw_parameters_random_fx
 plot_antibody_model(antibody_model_monophasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
 ```
 
-![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 # 1.7 Observation Model and observation_times
 
@@ -337,11 +350,12 @@ Now that the simulation is complete, let’s plot and examine the
 simulation outputs.
 
 ``` r
-## Plot biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_long, subset=10, demography)
+## Plot biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
+#> Warning: Removed 51 rows containing missing values (`geom_line()`).
 ```
 
-![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 
@@ -351,7 +365,7 @@ plot_subset_individuals_history(res$biomarker_states, res$exposure_histories_lon
 plot_exposure_force(res$exposure_force_long)
 ```
 
-![](man/figures/README-unnamed-chunk-11-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
 
 ``` r
 
@@ -361,15 +375,15 @@ plot_exposure_force(res$exposure_force_long)
 plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
-![](man/figures/README-unnamed-chunk-11-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-3.png)<!-- -->
 
 ``` r
 
-## Plot individual exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual immune histories for all exposure types
+plot_immune_histories(res$immune_histories_long)
 ```
 
-![](man/figures/README-unnamed-chunk-11-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-4.png)<!-- -->
 
 ``` r
 
@@ -377,7 +391,7 @@ plot_exposure_histories(res$exposure_histories_long)
 plot_biomarker_quantity(res$biomarker_states)
 ```
 
-![](man/figures/README-unnamed-chunk-11-5.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-5.png)<!-- -->
 
 ``` r
 
@@ -385,7 +399,7 @@ plot_biomarker_quantity(res$biomarker_states)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
 ```
 
-![](man/figures/README-unnamed-chunk-11-6.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-11-6.png)<!-- -->
 
 ``` r
 
@@ -394,15 +408,15 @@ head(res$kinetics_parameters)
 #> # A tibble: 6 × 7
 #>       i     t     x     b name    value realized_value
 #>   <int> <dbl> <dbl> <dbl> <chr>   <dbl>          <dbl>
-#> 1     1    87     2     1 boost 4.01           4.01   
-#> 2     1    87     2     1 wane  0.00132        0.00132
-#> 3     2    93     1     1 boost 4.98           4.98   
-#> 4     2    93     1     1 wane  0.00546        0.00546
-#> 5     2    93     2     1 boost 3.54           3.54   
-#> 6     2    93     2     1 wane  0.00179        0.00179
+#> 1     1    44     2     1 boost 1.71           1.71   
+#> 2     1    44     2     1 wane  0.00129        0.00129
+#> 3     2   102     2     1 boost 4.75           4.75   
+#> 4     2   102     2     1 wane  0.00186        0.00186
+#> 5     3    84     1     1 boost 6.71           6.71   
+#> 6     3    84     1     1 wane  0.00276        0.00276
 
 ## Combine plots as seen in paper 
 # library(cowplot)
-# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$exposure_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
+# plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_exposure_histories(res$immune_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 # plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 ```
