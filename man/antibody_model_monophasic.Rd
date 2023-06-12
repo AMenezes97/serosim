@@ -36,7 +36,7 @@ antibody_model_monophasic(
 A biomarker quantity is returned
 }
 \description{
-This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and waning parameter
+This monophasic antibody boosting-waning model assumes that for each exposure there is a boost and waning parameter
 }
 \examples{
 tmp_pars <- list()

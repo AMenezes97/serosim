@@ -42,8 +42,7 @@ Monophasic antibody boosting-waning model with cross-reactivity between strains.
 tmp_pars <- list()
 ## Set up simple model_pars table for this antibody model
 library(dplyr)
-model_pars_tmp <- example_model_pars_numeric \%>\% mutate(biomarker_id = 
-exposure_id)
+model_pars_tmp <- example_model_pars_numeric \%>\% mutate(biomarker_id = exposure_id)
 ## Simulate one infection with exposure ID 1 at t=1
 tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
  

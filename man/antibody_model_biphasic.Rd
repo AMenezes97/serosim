@@ -43,7 +43,7 @@ model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, NULL,model_pars)
 antibody_model_biphasic(1,1,1,example_immune_histories_wide, example_biomarker_states_wide,
-tmp_pars, example_biomarker_map_numeric)
+tmp_pars, model_pars)
 }
 \seealso{
 Other antibody_models: 

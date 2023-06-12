@@ -1,6 +1,6 @@
 #' Monophasic antibody boosting-waning model
 #' 
-#' @description This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and waning parameter
+#' @description This monophasic antibody boosting-waning model assumes that for each exposure there is a boost and waning parameter
 #'
 #' @param i individual
 #' @param t1 time
@@ -64,7 +64,7 @@ antibody_model_monophasic <-  function(i, t1, b, immune_histories, biomarker_sta
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx_biomarker_dep(1,1,1,NULL, NULL,model_pars)
 #' antibody_model_biphasic(1,1,1,example_immune_histories_wide, example_biomarker_states_wide,
-#' tmp_pars, example_biomarker_map_numeric)
+#' tmp_pars, model_pars)
 antibody_model_biphasic <-  function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
   biomarker_quantity <- 0
   
@@ -175,8 +175,7 @@ antibody_model_typhoid <- function(i, t1, b, immune_histories=NULL, biomarker_st
 #' tmp_pars <- list()
 #' ## Set up simple model_pars table for this antibody model
 #' library(dplyr)
-#' model_pars_tmp <- example_model_pars_numeric %>% mutate(biomarker_id = 
-#' exposure_id)
+#' model_pars_tmp <- example_model_pars_numeric %>% mutate(biomarker_id = exposure_id)
 #' ## Simulate one infection with exposure ID 1 at t=1
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
 #'  
@@ -296,9 +295,9 @@ antibody_model_biphasic_cross_reactivity <-  function(i, t1, b, immune_histories
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_monophasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide,tmp_pars, example_biomarker_map_numeric)
-antibody_model_monophasic_cpp <- function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
-  antibody_model_monophasic_cpp_internal(i,t1,b,exposure_histories,biomarker_states,kinetics_parameters,biomarker_map)
+#' antibody_model_monophasic_cpp(1,1,1,example_immune_histories_wide, example_biomarker_states_wide,tmp_pars, example_biomarker_map_numeric)
+antibody_model_monophasic_cpp <- function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+  antibody_model_monophasic_cpp_internal(i,t1,b,immune_histories,biomarker_states,kinetics_parameters,biomarker_map)
 }
 
 
@@ -314,8 +313,8 @@ antibody_model_monophasic_cpp <- function(i, t1, b, exposure_histories, biomarke
 #' @examples
 #' tmp_pars <- list()
 #' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-#' antibody_model_biphasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide,tmp_pars, example_biomarker_map_numeric)
-antibody_model_biphasic_cpp <- function(i, t1, b, exposure_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
-  antibody_model_biphasic_cpp_internal(i,t1,b,exposure_histories,biomarker_states,kinetics_parameters,biomarker_map)
+#' antibody_model_biphasic_cpp(1,1,1,example_immune_histories_wide, example_biomarker_states_wide,tmp_pars, example_biomarker_map_numeric)
+antibody_model_biphasic_cpp <- function(i, t1, b, immune_histories, biomarker_states, kinetics_parameters, biomarker_map, ...){
+  antibody_model_biphasic_cpp_internal(i,t1,b,immune_histories,biomarker_states,kinetics_parameters,biomarker_map)
 }
 
