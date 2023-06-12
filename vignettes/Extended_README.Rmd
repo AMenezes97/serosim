@@ -1,21 +1,14 @@
 ---
 title: "Extended version of the README simulation"
-output: github_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extended_README}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-<img src='man/figures/logo.png' align="right" height="100" />
-
-  <!-- badges: start -->
-[![R-CMD-check](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/check-standard.yaml)
-  [![CodeFactor](https://www.codefactor.io/repository/github/amenezes97/serosim/badge)](https://www.codefactor.io/repository/github/amenezes97/serosim)
-  <!-- badges: end -->
-[![test-coverage](https://github.com/AMenezes97/serosim/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/AMenezes97/serosim/actions/workflows/test-coverage.yaml)
-
 ```{r, echo=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 # Motivation 
@@ -133,7 +126,7 @@ specify a location specific force of exposure. Dimension 3 of the foe_array must
 for exposure_id 1 will be inputted within the foe_pars[,,1]. We specified the same force of exposure 
 for all time steps within foe_pars for simplicity but users will likely have 
 varying numbers to match real world settings. 
-```{r}
+```{r, fig.dim = c(4, 3)}
 ## Create an empty array to store the force of exposure for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_distinct(biomarker_map$exposure_id)))
 ## Specify the force of exposure for exposure ID 1 which represents natural infection
@@ -184,7 +177,7 @@ Parameters are drawn randomly from a distribution with mean and standard
 deviation specified within model_pars. _runserosim_ requires that exposure_id and biomarker_id 
 within model_pars are numeric and match the exposure to biomarker map so we will use the reformat_biomarker_map function again to create a new 
 version of model_pars. Users can go directly to numeric model_pars if they wish.
-```{r}
+```{r, fig.dim = c(5, 4)}
 ## Specify the antibody model 
 antibody_model<-antibody_model_monophasic
 
@@ -268,9 +261,10 @@ res<- runserosim(
 
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
-```{r} 
+```{r, fig.dim = c(6, 4)} 
 ## Plot biomarker kinetics and immune histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
+
 
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
@@ -298,6 +292,4 @@ head(res$kinetics_parameters)
 # library(cowplot)
 # plot_grid(plot_exposure_prob(res$exposure_probabilities_long), plot_immune_histories(res$immune_histories_long), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
 # plot_grid(plot_biomarker_quantity(res$biomarker_states), plot_obs_biomarkers_one_sample(res$observed_biomarker_states), nrow=1, ncol=2, align = "hv", scale=c(.98,.98))
-
-
 ```

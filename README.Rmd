@@ -34,7 +34,7 @@ required arguments and models for the _runserosim_ function in the order
 outlined in the methods section of the paper. We then run the simulation and 
 examine its outputs.
 
-In the _vignettes_ folder, you can find a more detailed walk through of this simple README simulation titled _README_extended.Rmd_. 
+In the _vignettes_ folder, you can find a more detailed walk through of this simple README simulation titled _Extended_README.Rmd_. 
 
 There are three additional complex vignettes/case studies in the _vignettes_ folder. 
 
@@ -174,30 +174,11 @@ res<- runserosim(
 ```
 
 # 1.10 Generate Plots
-Now that the simulation is complete, let's plot and examine the simulation outputs.
+Now that the simulation is complete, let's plot and examine some of the simulation outputs.
 ```{r} 
 ## Plot biomarker kinetics and immune histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
 
-## Plot individual force of exposure for all exposure types
-## This is the output of the exposure model.
-## Note: All individuals are under the same force of exposure since we specified a simple exposure model and constant foe_pars
-plot_exposure_force(res$exposure_force_long)
-
-## Plot individual successful exposure probabilities for all exposure types
-## This is the output of the exposure model multiplied by the output of the immunity model.
-## In other words, this is the probability of an exposure event being successful and inducing an immunological response
-plot_exposure_prob(res$exposure_probabilities_long)
-
-## Plot individual immune histories for all exposure types
-plot_immune_histories(res$immune_histories_long)
-
-## Plot true biomarker quantities for all individuals across the entire simulation period
-plot_biomarker_quantity(res$biomarker_states)
-
 ## Plot the serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states)
-
-## Note that the simulated kinetics parameters are also stored
-head(res$kinetics_parameters)
 ```
