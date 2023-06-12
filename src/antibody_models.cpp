@@ -1,21 +1,6 @@
 #include "utility.h"
 
-//' Monophasic antibody boosting-waning model Rcpp implementation
-//' 
-//' @description Identical to \code{\link{antibody_model_monophasic}}, but implemented in Cpp
-//'
-//' @inheritParams antibody_model_monophasic
-//'
-//' @return Biomarker quantity at the specified time point
-//' @export
-//' @family antibody_models
-//'
-//' @examples
-//' tmp_pars <- list()
-//' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-//' antibody_model_monophasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
-//' tmp_pars, example_biomarker_map_numeric)
-//[[Rcpp::export]]
+// Internal function for Cpp implementation of monophasic antibody kinetics model
 double antibody_model_monophasic_cpp(int i, int t1, int b,
                                      arma::cube exposure_histories,
                                      arma::cube biomarker_states,
@@ -54,21 +39,8 @@ double antibody_model_monophasic_cpp(int i, int t1, int b,
   
   return biomarker_quantity;
 }
-//' Biphasic antibody boosting-waning model Rcpp implementation
-//' 
-//' @description Identical to \code{\link{antibody_model_biphasic}}, but implemented in Cpp
-//'
-//' @inheritParams antibody_model_monophasic
-//'
-//' @return Biomarker quantity at the specified time point
-//' @family antibody_models
-//' @export
-//' @examples
-//' tmp_pars <- list()
-//' tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
-//' antibody_model_biphasic_cpp(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
-//' tmp_pars, example_biomarker_map_numeric)
-//[[Rcpp::export]]
+
+// Internal function for Cpp implementation of biphasic antibody kinetics model
 double antibody_model_biphasic_cpp(int i, int t1, int b,
                                      arma::cube exposure_histories,
                                      arma::cube biomarker_states,
