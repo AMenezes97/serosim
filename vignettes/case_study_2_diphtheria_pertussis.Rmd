@@ -450,13 +450,13 @@ res<- runserosim(
 # 1.10 Generate Plots
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r, fig.dim = c(6, 4)} 
-## Plot diphtheria biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$exposure_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
+## Plot diphtheria biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$immune_histories_long %>% filter(x==1 | x==3), subset=10, demography, removal=TRUE)
 ```
 
 ```{r, fig.dim = c(6, 4)} 
-## Plot pertussis biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$exposure_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
+## Plot pertussis biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$immune_histories_long %>% filter(x==2 | x==3), subset=10, demography, removal=TRUE)
 ```
 
 ```{r, fig.dim = c(5, 6)} 
@@ -473,8 +473,8 @@ plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
 ```{r, fig.dim = c(5, 6)} 
-## Plot individual exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+## Plot individual immune histories for all exposure types
+plot_immune_histories(res$immune_histories_long)
 ```
 
 ```{r, fig.dim = c(4, 4.5)} 

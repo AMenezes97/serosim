@@ -8,7 +8,7 @@ immunity_model_vacc_only(
   i,
   t,
   x,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   demography,
   biomarker_map,
@@ -25,7 +25,7 @@ immunity_model_vacc_only(
 
 \item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
+\item{immune_histories}{a 3D array of immune histories for all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
@@ -48,9 +48,9 @@ The probability of successful exposure
 This immunity model should only be used if all exposures are vaccination events. The probability of successful exposure (vaccination event) depends on the number of vaccines an individual has received prior to time t. If the individual is under the maximum vaccinations allotted then the probability of successful exposure event is 1.
 }
 \examples{
-tmp_exposure_history <- array(0, dim=c(1, 10, 1))
-tmp_exposure_history[1,1,1] <- 1
+tmp_immune_history <- array(0, dim=c(1, 10, 1))
+tmp_immune_history[1,1,1] <- 1
 tmp_demography <- dplyr::tibble(i=1, birth=1)
-immunity_model_vacc_only(1,8,1,tmp_exposure_history,NULL, tmp_demography,NULL, 
+immunity_model_vacc_only(1,8,1,tmp_immune_history,NULL, tmp_demography,NULL, 
 NULL,max_vacc_events=2,vacc_age=5)
 }

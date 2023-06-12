@@ -8,7 +8,7 @@ antibody_model_typhoid(
   i,
   t1,
   b,
-  exposure_histories = NULL,
+  immune_histories = NULL,
   biomarker_states = NULL,
   kinetics_parameters,
   biomarker_map = NULL,
@@ -22,7 +22,7 @@ antibody_model_typhoid(
 
 \item{b}{biomarker}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{immune_histories}{An array of immune histories across all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
@@ -41,9 +41,9 @@ Power law antibody boosting and waning model
 \examples{
 tmp_pars <- list()
 tmp_pars[[1]] <- draw_parameters_random_fx(1,1,1,NULL,NULL,example_model_pars_typhoid)
-tmp_exposure_history <- array(0,dim=c(1,11,2))
-tmp_exposure_history[1,1,1] <- 1
-antibody_model_typhoid(1,10, 1, tmp_exposure_history, NULL, tmp_pars,example_biomarker_map_numeric)
+tmp_immune_history <- array(0,dim=c(1,11,2))
+tmp_immune_history[1,1,1] <- 1
+antibody_model_typhoid(1,10, 1, tmp_immune_history, NULL, tmp_pars,example_biomarker_map_numeric)
 }
 \seealso{
 Other antibody_models: 

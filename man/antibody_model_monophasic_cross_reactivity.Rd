@@ -8,7 +8,7 @@ antibody_model_monophasic_cross_reactivity(
   i,
   t1,
   b,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   kinetics_parameters,
   biomarker_map,
@@ -22,7 +22,7 @@ antibody_model_monophasic_cross_reactivity(
 
 \item{b}{biomarker}
 
-\item{exposure_histories}{An array of exposure histories across all individuals, time steps and exposure IDs}
+\item{immune_histories}{An array of immune histories across all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{An array of biomarker states (biomarker quantities) across all individuals, time steps and biomarker IDs}
 
@@ -36,18 +36,22 @@ antibody_model_monophasic_cross_reactivity(
 A biomarker quantity is returned
 }
 \description{
-Monophasic antibody boosting-waning model with cross-reactivity between strains. This monophasic antibody boosting-waning model model assumes that for each exposure there is a boost and waning parameter describing antibody kinetics against the infecting strain (i.e., for exposure_id==biomarker_id). The model loops through each exposure type and reduces the amount of boosting as a function of cross-reactivity, which is determined by a proportion given in the \code{biomarker_map} data frame as the \code{value} variable.
+Monophasic antibody boosting-waning model with cross-reactivity between strains. This monophasic antibody boosting-waning model assumes that for each exposure there is a boost and waning parameter describing antibody kinetics against the infecting strain (i.e., for exposure_id==biomarker_id). The model loops through each exposure type and reduces the amount of boosting as a function of cross-reactivity, which is determined by a proportion given in the \code{biomarker_map} data frame as the \code{value} variable.
 }
 \examples{
 tmp_pars <- list()
 ## Set up simple model_pars table for this antibody model
-model_pars_tmp <- example_model_pars_numeric \%>\% mutate(biomarker_id = exposure_id)
+library(dplyr)
+model_pars_tmp <- example_model_pars_numeric \%>\% mutate(biomarker_id = 
+exposure_id)
 ## Simulate one infection with exposure ID 1 at t=1
 tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, model_pars_tmp)
  
 ## Set up a simple biomarker map for cross-reactivity
-biomarker_map = expand_grid(exposure_id=1:2, biomarker_id=1:2) \%>\% mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
-antibody_model_monophasic_cross_reactivity(1,1,1,example_exposure_histories_wide, example_biomarker_states_wide, 
+biomarker_map = tidyr::expand_grid(exposure_id=1:2, biomarker_id=1:2) \%>\% 
+mutate(value = if_else(exposure_id==biomarker_id, 1, 0.5))
+antibody_model_monophasic_cross_reactivity(1,1,1,
+example_immune_histories_wide, example_biomarker_states_wide, 
 tmp_pars, biomarker_map)
 }
 \seealso{

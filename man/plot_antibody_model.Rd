@@ -16,7 +16,7 @@ plot_antibody_model(
 )
 }
 \arguments{
-\item{antibody_model}{A function determining the latent biomarker kinetics as a function of exposure history and within-host kinetics parameters (\code{model_pars})}
+\item{antibody_model}{A function determining the latent biomarker kinetics as a function of immune history and within-host kinetics parameters (\code{model_pars})}
 
 \item{N}{Number of trajectories to simulate}
 
@@ -41,7 +41,7 @@ Plots example trajectories of the provided antibody kinetics model
 \examples{
 library(dplyr)
 model_pars <- reformat_biomarker_map(example_model_pars_biphasic)\%>\% tidyr::drop_na()
-draw_parameters_random_fx(1,1,1,1,NULL,NULL,model_pars)
+draw_parameters_random_fx(1,1,1,NULL,NULL,model_pars)
 biomarker_map <- dplyr::tibble(exposure_id=c(1,1,2),biomarker_id=c(1,2,1))
 plot_antibody_model(antibody_model_biphasic, 50, model_pars=model_pars,
 draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)

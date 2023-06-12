@@ -8,12 +8,12 @@ immunity_model_ifxn_biomarker_prot(
   i,
   t,
   x,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   demography,
   biomarker_map,
   model_pars,
-  max_events = rep(Inf, dim(exposure_histories)[3]),
+  max_events = rep(Inf, dim(immune_histories)[3]),
   cross_reactivity_table = NULL,
   ...
 )
@@ -25,7 +25,7 @@ immunity_model_ifxn_biomarker_prot(
 
 \item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
+\item{immune_histories}{a 3D array of immune histories for all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 
@@ -48,15 +48,15 @@ A probability of successful exposure is returned
 This immunity model should only be used for infection events. The probability of a successful exposure event is dependent on the individual’s biomarker quantity at the time of exposure. User specified \code{biomarker_prot_midpoint} and \code{biomarker_prot_width} within \code{model_pars} is used to calculate biomarker-mediated protection.
 }
 \examples{
-tmp_exposure_history <- array(0, dim=c(1, 10, 1))
+tmp_immune_history <- array(0, dim=c(1, 10, 1))
 ## Toy example: individual has 1 prior exposure
-tmp_exposure_history[1,1,1] <- 1
+tmp_immune_history[1,1,1] <- 1
 ## Set all biomarker states to 3 for sake of example
 tmp_biomarker_states <- array(0, dim=c(1,10,1))
 tmp_biomarker_states[1,,1] <- 3
 tmp_pars <- reformat_biomarker_map(example_model_pars_biphasic)
 ## Probability of successful exposure (i.e., infection) depends on the biomarker quantity
-immunity_model_ifxn_biomarker_prot(1,8,1,exposure_histories=tmp_exposure_history, 
+immunity_model_ifxn_biomarker_prot(1,8,1,immune_histories=tmp_immune_history, 
 biomarker_states=tmp_biomarker_states, demography=NULL, 
 biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 }

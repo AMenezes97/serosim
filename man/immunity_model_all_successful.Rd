@@ -8,7 +8,7 @@ immunity_model_all_successful(
   i,
   t,
   x,
-  exposure_histories,
+  immune_histories,
   biomarker_states,
   demography,
   biomarker_map,
@@ -23,7 +23,7 @@ immunity_model_all_successful(
 
 \item{x}{integer for the exposure ID}
 
-\item{exposure_histories}{a 3D array of exposure histories for all individuals, time steps and exposure IDs}
+\item{immune_histories}{a 3D array of immune histories for all individuals, time steps and exposure IDs}
 
 \item{biomarker_states}{an 3D array of biomarker states (biomarker quantities) for all individuals, time steps and biomarker IDs}
 

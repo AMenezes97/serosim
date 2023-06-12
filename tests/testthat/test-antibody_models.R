@@ -5,7 +5,7 @@ test_that("Check that antibody_model_monophasic function works", {
   tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
   
   ## Expect that the output of antibody_model_monophasic function is 4
-  use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
+  use_exposure_history <- xtabs(value ~ i + t + x, data=example_immune_histories)
   use_biomarker_states <- xtabs(value ~ i + t + b, data=example_biomarker_states)
   use_exposure_history[1,1,1] <- 1
   expect_equal(antibody_model_monophasic(1,1,1,use_exposure_history, use_biomarker_states, tmp_pars, example_biomarker_map_numeric),4)
@@ -18,7 +18,7 @@ test_that("Check that antibody_model_monophasic and antibody_model_monophasic_cp
   tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, example_model_pars_numeric)
   
   ## Expect that the output of antibody_model_monophasic function is 4
-  use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
+  use_exposure_history <- xtabs(value ~ i + t + x, data=example_immune_histories)
   use_biomarker_states <- xtabs(value ~ i + t + b, data=example_biomarker_states)
   use_exposure_history[1,1,1] <- 1
   expect_equal(
@@ -35,7 +35,7 @@ test_that("Check that antibody_model_biphasic and antibody_model_biphasic_cpp re
   tmp_pars[[1]] <- draw_parameters_fixed_fx(1,1,1,NULL, NULL, tmp_model_pars)
   
   ## Expect that the output of antibody_model_monophasic function is 4
-  use_exposure_history <- xtabs(value ~ i + t + x, data=example_exposure_histories)
+  use_exposure_history <- xtabs(value ~ i + t + x, data=example_immune_histories)
   use_biomarker_states <- xtabs(value ~ i + t + b, data=example_biomarker_states)
   use_exposure_history[1,1,1] <- 1
   expect_equal(
