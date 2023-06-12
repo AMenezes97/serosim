@@ -1,6 +1,7 @@
 #include "utility.h"
 
 // Internal Cpp function for monophasic antibody model
+//[[Rcpp::export]]
 double antibody_model_monophasic_cpp_internal(int i, int t1, int b,
                                      arma::cube immune_histories,
                                      arma::cube biomarker_states,
@@ -41,6 +42,7 @@ double antibody_model_monophasic_cpp_internal(int i, int t1, int b,
 }
 
 // Internal Cpp function for biphasic antibody model
+//[[Rcpp::export]]
 double antibody_model_biphasic_cpp_internal(int i, int t1, int b,
                                      arma::cube immune_histories,
                                      arma::cube biomarker_states,
