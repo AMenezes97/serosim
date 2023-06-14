@@ -4,10 +4,18 @@
 \alias{plot_obs_biomarkers_one_sample}
 \title{Plot Observed Biomarker Quantities For One Observation Time}
 \usage{
-plot_obs_biomarkers_one_sample(observed_biomarker_states)
+plot_obs_biomarkers_one_sample(
+  observed_biomarker_states,
+  add_boxplot = FALSE,
+  add_density = FALSE
+)
 }
 \arguments{
 \item{observed_biomarker_states}{The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker}
+
+\item{add_boxplot}{if TRUE, adds a boxplot to the jittered biomarker quantities with median and 75\% percentiles}
+
+\item{add_density}{if TRUE, adds a smoothed density (violin) plot to the jittered biomarker quantities with 75\% quantiles}
 }
 \value{
 A plot of observed biomarker quantities for all individuals and biomarkers is returned

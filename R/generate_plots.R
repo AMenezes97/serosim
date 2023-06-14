@@ -357,6 +357,7 @@ return(p)
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 margin
+#' @importFrom ggplot2 scale_color_manual
 #' @export
 #'
 #' @examples
@@ -399,13 +400,13 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
       geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=biomarker_id))
   }
   g <- g + geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), 
-                      aes(xintercept=t, colour=exposure_id),linetype="dashed",size=0.75)
+                      aes(xintercept=t, colour=exposure_id),linetype="dashed",linewidth=0.75)
   g <- g +
       facet_wrap(~i) + 
       theme_bw() +
       #scale_color_hue("Biomarker and Exposure Key", guide=guide_legend(order=3)) +
       #ggplot2::scale_color_viridis_d(name="Biomarker and Exposure Key") + 
-    scale_color_manual(name="Biomarker and Exposure Key",values=all_colors)+
+    ggplot2::scale_color_manual(name="Biomarker and Exposure Key",values=all_colors)+
       ggplot2::labs(title="Individual Biomarker Kinetics",
                     x="Time",
                     y="Biomarker Quantity") + 
@@ -501,7 +502,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         theme_bw() +
         xlab("Time since infection") +
         ylab("Biomarker quantity") +
-        scale_color_manual(name="Biomarker",values=biomarker_colors) +
+        ggplot2::scale_color_manual(name="Biomarker",values=biomarker_colors) +
         facet_grid(b~exposure_id,scales="free_y")
     return(p)
     
