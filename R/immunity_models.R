@@ -169,9 +169,9 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, immune_histories,
       curr_b<- sum(cr$prot_b)
       
     } else{
-      
     ## If no cross reactivity table is specified, the model assumes that all biomarkers boosted by the exposure as defined in the biomarker_map are protective to the same extent.
-    b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
+    #b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
+      b <- x
     ## Find current biomarker quantity to all relevant biomarkers
     curr_b <- biomarker_states[i,t,b] 
     curr_b <- sum(curr_b)

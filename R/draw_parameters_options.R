@@ -52,16 +52,18 @@ draw_parameters_random_fx<- function(i, t, x, demography, biomarker_states, mode
   par_names <- character(nrow(model_pars_tmp))
   ## For each parameter; randomly sample from the distribution given the mean and sd 
   for(par_name in seq_len(nrow(model_pars_tmp))){
-    if(model_pars_tmp$distribution[par_name] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
-      pars[par_name] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]), normal_to_lognormal_sd(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]))
-      par_names[par_name] <- model_pars_tmp$name[par_name]
-    }
-    if(model_pars_tmp$distribution[par_name]==""){
+    
+    if(is.na(model_pars_tmp$distribution[par_name]) | model_pars_tmp$distribution[par_name]==""){
       pars[par_name] <- model_pars_tmp$mean[par_name]
       par_names[par_name] <- model_pars_tmp$name[par_name]
-    }
-    if(model_pars_tmp$distribution[par_name]=="normal"){
+    } else if(model_pars_tmp$distribution[par_name] == "log-normal"){ #Convert the normal distributions to log-normal distributions 
+      pars[par_name] <- rlnorm(1, normal_to_lognormal_mean(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]), normal_to_lognormal_sd(model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name]))
+      par_names[par_name] <- model_pars_tmp$name[par_name]
+    } else if(model_pars_tmp$distribution[par_name]=="normal"){
       pars[par_name] <- rnorm(1, model_pars_tmp$mean[par_name], model_pars_tmp$sd[par_name])
+      par_names[par_name] <- model_pars_tmp$name[par_name]
+    } else {
+      pars[par_name] <- model_pars_tmp$mean[par_name]
       par_names[par_name] <- model_pars_tmp$name[par_name]
     }
   }

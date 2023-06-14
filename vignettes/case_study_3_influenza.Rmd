@@ -95,14 +95,14 @@ for(i in 2:length(possible_strains)){
 antigenic_map <- data.frame(x_coord=x_coord, y_coord=y_coord)
 antigenic_map <- as.matrix(dist(antigenic_map, diag=TRUE, upper=TRUE))
 antigenic_map <- exp(-0.25*antigenic_map)
-antigenic_map <- antigenic_map %>% as_tibble() %>% mutate(exposure_ID=1:n()) %>% pivot_longer(-exposure_ID) %>% rename(biomarker_ID=name) %>% mutate(biomarker_ID = as.numeric(biomarker_ID))
+antigenic_map <- antigenic_map %>% as_tibble() %>% mutate(exposure_id=1:n()) %>% pivot_longer(-exposure_id) %>% rename(biomarker_id=name) %>% mutate(biomarker_id = as.numeric(biomarker_id))
 ```
 
 
 
 # 1.4 Force of Exposure and Exposure Model
 Now, we need to specify the foe_pars argument which contains the force of 
-exposure for all exposure_IDs across all time steps. We also specify the 
+exposure for all exposure_ids across all time steps. We also specify the 
 exposure model which will be called within _runserosim_ later. The exposure model 
 will determine the probability that an individual is exposed to a specific 
 exposure event. 
@@ -123,6 +123,8 @@ Each strain is only circulating for 40 time steps with no co-circulation.
 beta <- 0.2
 sigma <- 1
 seasonality <- beta*(1 + sigma*cos(2*pi*(times-1)/12))
+
+## If we assume an infectious period of 5 days, the simulation gives an annually oscillating R0 between 0 and 2 
 plot(seasonality*5,type='l')
 
 ## Create an empty array to store the force of exposure for all exposure types
@@ -183,7 +185,7 @@ immunity_model<-immunity_model_ifxn_biomarker_prot
 
 ```{r, fig.dim = c(3, 3)}
 ## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1, influenza strain A antibody  (DP_antibody) which will be loaded in section 1.6. Biomarker mediated protection parameters are the same for all 3 influenza strains so the following plot will look the same for all exposure/biomarker types.
-plot_biomarker_mediated_protection(0:120, biomarker_prot_midpoint=40, biomarker_prot_width=.09) 
+plot_biomarker_mediated_protection(seq(0,8,by=0.1), biomarker_prot_midpoint=2.844, biomarker_prot_width=1.299) 
 ```
 
 
@@ -212,16 +214,23 @@ reformat_biomarker_map function again to create a new version of model_pars.
 Users can go directly to numeric model_pars if they wish.
 ```{r}
 ## Specify the antibody model 
-antibody_model<-antibody_model_monophasic
+antibody_model<-antibody_model_monophasic_cross_reactivity
+
+## Antibody model parameters
+model_pars_antibody <- tibble(exposure_id = paste0("Strain_",seq_len(n_strains)), biomarker_id=paste0("Biomarker_",seq_len(n_strains))) %>%
+    left_join(expand_grid(exposure_id = paste0("Strain_",seq_len(n_strains)), 
+                          name=c("boost","wane","biomarker_prot_midpoint","biomarker_prot_width"))) %>%
+   left_join(tibble(name=c("boost","wane","biomarker_prot_midpoint","biomarker_prot_width"),
+                    mean=c(4,0.01,2.8,1.3),sd=c(1,0.01,NA,NA),
+                    distribution=c("log-normal","log-normal",NA,NA)))
+model_pars_observation <- tibble(exposure_id=NA, biomarker_id=paste0("Biomarker_",seq_len(n_strains))) %>%
+    left_join(expand_grid(biomarker_id=paste0("Biomarker_",seq_len(n_strains)), name=c("obs_sd"))) %>%
+   left_join(tibble(name="obs_sd",mean=NA,sd=1,distribution="normal"))
+
+model_pars_original <- bind_rows(model_pars_antibody, model_pars_observation)
 
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the observation error parameter needed for the observation model (Section 1.7) is defined here too.
-model_pars_path <- system.file("extdata", "model_pars_cs1.csv", package = "serosim")
-model_pars_original <- read.csv(file = model_pars_path, header = TRUE)
-model_pars_original
-
-# model_pars_original <- read.csv("~/Documents/GitHub/serosim/inst/extdata/model_pars_cs3.csv")
-# model_pars_original
 
 ## Reformat model_pars for runserosim
 model_pars<-reformat_biomarker_map(model_pars_original)
@@ -233,7 +242,7 @@ draw_parameters<-draw_parameters_random_fx
 
 ```{r, fig.dim = c(8, 4)}
 ## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
-plot_antibody_model(antibody_model_monophasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=biomarker_map)
+plot_antibody_model(antibody_model_monophasic_cross_reactivity, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=antigenic_map)
 ```
 
 
@@ -257,7 +266,7 @@ observation_model<-observation_model_discrete_noise
 
 ## Specify the cutoffs for the discrete assay. This will depend on the dilutions of the haemagglutination assay.
 ## This is a matrix with each row containing all of the cutoffs for that biomarker. Here, we have set the same cutoffs for all three biomarkers 
-breaks <- seq(0,120,by=10)
+breaks <- seq(0,8,by=1)
 cutoffs <- matrix(breaks,nrow=3,ncol=length(breaks), byrow=TRUE)
 
 ## Specify assay sensitivity and specificity needed for the observation model
@@ -265,9 +274,9 @@ sensitivity<-0.85
 specificity<-0.9
 
 ## Specify observation_times (serological survey sampling design) to observe all three biomarkers across all individuals at the end of the simulation (t=120)
-obs1 <- tibble(i=1:N,t=120, b=1)
-obs2 <- tibble(i=1:N,t=120, b=2)
-obs3 <- tibble(i=1:N,t=120, b=3)
+obs1 <- tibble(i=1:N,t=max(times), b=1)
+obs2 <- tibble(i=1:N,t=max(times), b=2)
+obs3 <- tibble(i=1:N,t=max(times), b=3)
 observation_times<-rbind(obs1,obs2,obs3)
 ```
 
@@ -286,26 +295,26 @@ setting pre-computation to FALSE within _runserosim_.
 ```{r message=FALSE, warning=FALSE, eval=TRUE}
 ## Run the core simulation and save outputs in "res"
 res<- runserosim(
-  simulation_settings,
-  demography,
-  observation_times,
-  foe_pars,
-  biomarker_map,
-  model_pars,
-  exposure_model,
-  immunity_model,
-  antibody_model,
-  observation_model,
-  draw_parameters,
+  simulation_settings=simulation_settings,
+  demography=demography,
+  observation_times=observation_times,
+  foe_pars=foe_pars,
+  biomarker_map=antigenic_map,
+  model_pars=model_pars,
+  exposure_model=exposure_model_simple_FOE,
+  immunity_model=immunity_model_ifxn_biomarker_prot,
+  antibody_model=antibody_model_monophasic_cross_reactivity,
+  observation_model=observation_model_discrete_noise,
+  draw_parameters=draw_parameters_random_fx,
 
   ## Other arguments needed
-  max_events=max_events,
   cutoffs=cutoffs,
-  cross_reactivity_table=cr_table,
   sensitivity=sensitivity,
-  specificity=specificity
+  specificity=specificity,
+  VERBOSE=10,
+  parallel=TRUE,
+  n_cores=8
 )
-
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
@@ -314,17 +323,17 @@ res<- runserosim(
 Now that the simulation is complete, let's plot and examine the simulation outputs.
 ```{r, fig.dim = c(6, 4)} 
 ## Plot influenza strain A specific biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$exposure_histories_long, subset=10, demography, removal=TRUE)
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$immune_histories_long, subset=10, demography, removal=TRUE)
 ```
 
 ```{r, fig.dim = c(6, 4)} 
 ## Plot influenza strain B specific biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$exposure_histories_long, subset=10, demography, removal=TRUE)
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==2), res$immune_histories_long, subset=10, demography, removal=TRUE)
 ```
 
 ```{r, fig.dim = c(6, 4)} 
 ## Plot influenza strain C specific biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==3), res$exposure_histories_long, subset=10, demography, removal=TRUE)
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography, removal=TRUE)
 ```
 
 ```{r, fig.dim = c(5, 6)} 
@@ -342,7 +351,7 @@ plot_exposure_prob(res$exposure_probabilities_long)
 
 ```{r, fig.dim = c(5, 6)} 
 ## Plot individual exposure histories for all exposure types
-plot_exposure_histories(res$exposure_histories_long)
+plot_immune_histories(res$immune_histories_long)
 ```
 
 ```{r, fig.dim = c(4, 4.5)} 

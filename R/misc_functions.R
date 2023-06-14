@@ -135,6 +135,7 @@ simulate_removal_times <- function(N, times, birth_times, removal_min=0, removal
 #' @param i The individual that the simulation is currently on 
 #'
 #' @return A printed statement indicating an individual number is returned 
+#' @export
 #'
 #' @examples
 #' ## update(10, 100)

@@ -156,7 +156,7 @@ runserosim <- function(
       ## For each individual
       for(i in tmp_indivs){
           ## Print update message
-          update(VERBOSE,i)
+          serosim::update(VERBOSE,i)
           ## Pull birth time for this individual
           birth_time <- birth_times$birth[i]
           removal_time <- ifelse(is.na(removal_times$removal[i]), simulation_settings[["t_end"]], removal_times$removal[i])

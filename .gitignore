@@ -9,3 +9,5 @@ inst/.DS_Store
 
 */chains/*
 docs
+.DS_Store
+inst/.DS_Store
