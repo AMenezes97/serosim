@@ -4,10 +4,15 @@
 \alias{plot_obs_biomarkers_paired_sample}
 \title{Plot biomarker quantities for multiple observation times and paired samples}
 \usage{
-plot_obs_biomarkers_paired_sample(observed_biomarker_states)
+plot_obs_biomarkers_paired_sample(
+  observed_biomarker_states,
+  discretize_times = TRUE
+)
 }
 \arguments{
 \item{observed_biomarker_states}{The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker}
+
+\item{discretize_times}{if TRUE, plot sampling times as discrete factors. Otherwise, plots sampling time on the x-axis as its raw value.}
 }
 \value{
 A plot of observed biomarker quantities for all individuals and biomarkers is returned

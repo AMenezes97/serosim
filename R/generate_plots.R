@@ -257,7 +257,8 @@ plot_biomarker_quantity<- function(biomarker_states){
 #' @examples
 #' plot_obs_biomarkers_one_sample(example_observed_biomarker_states)
 plot_obs_biomarkers_one_sample<-function(observed_biomarker_states, add_boxplot=FALSE, add_density=FALSE){
-  
+  ## Plot last observation for each individual
+  observed_biomarker_states <- observed_biomarker_states %>% group_by(i) %>% filter(t == max(t)) %>% ungroup() 
   p<-ggplot2::ggplot(observed_biomarker_states  %>% filter(!is.na(observed)))
   if(add_boxplot){
     p <- p + geom_boxplot(aes(x=b,y=observed,group=b),fill="grey90")
@@ -290,6 +291,7 @@ return(p)
 #' @description This function should be used when there were multiple time step in which biomarker quantities were observed
 #'
 #' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
+#' @param discretize_times if TRUE, plot sampling times as discrete factors. Otherwise, plots sampling time on the x-axis as its raw value.
 #'
 #' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
 #' @importFrom ggplot2 ggplot
@@ -312,25 +314,41 @@ return(p)
 #' example_biomarker_states$observed <- example_biomarker_states$value
 #' example_biomarker_states_subset <- example_biomarker_states %>% dplyr::filter(t %in% c(1,120))
 #' plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
-plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states){
+plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states, discretize_times=TRUE){
+  ## Find last 2 times for each individual
+  observed_biomarker_states <- observed_biomarker_states %>% left_join(
+    observed_biomarker_states %>% select(i, t) %>% distinct() %>% group_by(i) %>% arrange(-t) %>% mutate(n_samp=1:n())) %>%
+    filter(n_samp %in% 1:2) %>% mutate(n_samp = if_else(n_samp == 2, 1, 2))
+  
+ 
+
+  observed_biomarker_states$biomarker_id <- factor(paste0("Biomarker: ", observed_biomarker_states$b), levels=paste0("Biomarker: ", unique(observed_biomarker_states$b)))
+  
+  if(discretize_times){
+    observed_biomarker_states$t <- observed_biomarker_states$n_samp
+    x_breaks <- seq(from=1, to=2,length.out=2)
+  } else {
+    time_range <- range(observed_biomarker_states$t,na.rm=TRUE)
+    x_breaks <- seq(from=time_range[1], to=time_range[2],length.out=5)
+  }
+
 p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = i)) + 
-  ggplot2::geom_line() + 
-  ggplot2:: geom_point(size = 2, aes(color=factor(t))) + 
-  ggplot2:: facet_wrap(~ b) +
-  ggplot2::scale_x_discrete("") +
+  ggplot2::geom_line(linewidth=0.25) + 
+  ggplot2:: geom_point(size = 2, aes(color=factor(n_samp))) + 
+  ggplot2:: facet_wrap(~ biomarker_id) +
+  ggplot2::scale_x_continuous("Sampling time", breaks=x_breaks,labels=x_breaks) +
   ggplot2::theme_bw() +
-  ggplot2::theme(legend.position = "top", 
+  ggplot2::theme(legend.position = "bottom", 
         panel.grid = element_blank(),
         axis.line.y = element_line(linewidth = .5)) +
-  ggplot2::labs(title="Observed paired piomarker quantities",
-                x="Biomarker",
-                y="Observed quantity") + 
+  ggplot2::labs(title="Paired biomarker quantities",
+                y="Observation") + 
   ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
   ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
   ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
-  ggplot2::scale_colour_discrete(name="Sampling time")
+  ggplot2::scale_colour_discrete(name="Sample")
 return(p)
 }
 
