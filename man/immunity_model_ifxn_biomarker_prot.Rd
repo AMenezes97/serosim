@@ -15,6 +15,7 @@ immunity_model_ifxn_biomarker_prot(
   model_pars,
   max_events = rep(Inf, dim(immune_histories)[3]),
   cross_reactivity_table = NULL,
+  sum_biomarkers = FALSE,
   ...
 )
 }
@@ -38,6 +39,8 @@ immunity_model_ifxn_biomarker_prot(
 \item{max_events}{a vector of the maximum number of successful exposure events possible for each exposure ID}
 
 \item{cross_reactivity_table}{an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.}
+
+\item{sum_biomarkers}{if no \code{cross_reactivity_table} is provided, this flag determines if protection is calculated as the sum of all cross-reactive biomarkers from the \code{biomarker_map}, otherwise only uses biomarker for \code{biomarker_id==exposure_id}}
 
 \item{...}{Additional arguments}
 }

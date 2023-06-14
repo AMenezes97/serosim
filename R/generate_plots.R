@@ -172,7 +172,13 @@ plot_immune_histories <- function(immune_histories){
   immune_histories$value <- ifelse(!is.na(immune_histories$value),
                                      ifelse(immune_histories$value==1,"Successful Exposure","No Exposure"), "NA")
   
-  p <- ggplot2::ggplot(immune_histories) + ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + ggplot2::facet_wrap(~x,nrow=2) + ggplot2::theme_bw() + ggplot2::scale_fill_viridis_d() + ggplot2::scale_x_continuous(expand=c(0,0)) + ggplot2::scale_y_continuous(expand=c(0,0)) +
+  p <- ggplot2::ggplot(immune_histories) + 
+    ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
+    ggplot2::facet_wrap(~x,nrow=2) + 
+    ggplot2::theme_bw() + 
+    ggplot2::scale_fill_viridis_d() + 
+    ggplot2::scale_x_continuous(expand=c(0,0)) + 
+    ggplot2::scale_y_continuous(expand=c(0,0)) +
     ggplot2::labs(title="Individual Immune History",
                   x="Time",
                   y="Individual")   + 
@@ -234,6 +240,8 @@ plot_biomarker_quantity<- function(biomarker_states){
 #' @description This function should be used when there was only one time step in which biomarker quantities were observed
 #'
 #' @param observed_biomarker_states The reshaped data set containing observed biomarker quantities for individuals at all time steps for each biomarker
+#' @param add_boxplot if TRUE, adds a boxplot to the jittered biomarker quantities with median and 75% percentiles
+#' @param add_density if TRUE, adds a smoothed density (violin) plot to the jittered biomarker quantities with 75% quantiles
 #'
 #' @return A plot of observed biomarker quantities for all individuals and biomarkers is returned
 #' @importFrom ggplot2 ggplot
@@ -248,8 +256,17 @@ plot_biomarker_quantity<- function(biomarker_states){
 #'
 #' @examples
 #' plot_obs_biomarkers_one_sample(example_observed_biomarker_states)
-plot_obs_biomarkers_one_sample<-function(observed_biomarker_states){
-  p<-ggplot2::ggplot(observed_biomarker_states  %>% filter(!is.na(observed))) +
+plot_obs_biomarkers_one_sample<-function(observed_biomarker_states, add_boxplot=FALSE, add_density=FALSE){
+  
+  p<-ggplot2::ggplot(observed_biomarker_states  %>% filter(!is.na(observed)))
+  if(add_boxplot){
+    p <- p + geom_boxplot(aes(x=b,y=observed,group=b),fill="grey90")
+  }
+  if(add_density){
+    p <- p + geom_violin(aes(x=b,y=observed,group=b),fill="grey90",draw_quantiles=c(0.25,0.5,0.75))
+  }
+  
+  p <- p +
   ggplot2::geom_jitter(ggplot2::aes(x=b, y=observed),
                        height=0,width=0.25) +
   ggplot2::theme_bw() +
@@ -345,19 +362,50 @@ return(p)
 #' @examples
 #' plot_subset_individuals_history(example_biomarker_states,example_immune_histories,
 #' 3,example_demography)
-plot_subset_individuals_history <- function(biomarker_states, immune_histories, subset, demography, removal=FALSE){
-  immune_histories$x <- paste0("Exposure: ", immune_histories$x)
-  biomarker_states$b <- paste0("Biomarker: ", biomarker_states$b)
+plot_subset_individuals_history <- function(biomarker_states, immune_histories, subset, demography, removal=FALSE, 
+                                            heatmap=FALSE){
+  immune_histories$exposure_id <- factor(paste0("Exposure: ",immune_histories$x), levels=paste0("Exposure: ", unique(immune_histories$x)))#paste0("Exposure: ", immune_histories$x)
+  biomarker_states$biomarker_id <- factor(paste0("Biomarker: ", biomarker_states$b), levels=paste0("Biomarker: ", unique(biomarker_states$b)))
+  
+  n_exposure_ids <- length(unique(immune_histories$exposure_id))
+  n_biomarker_ids <- length(unique(biomarker_states$biomarker_id))
+  
+  biomarker_colors <- viridis::magma(n_biomarker_ids)
+  names(biomarker_colors) <- unique(biomarker_states$biomarker_id)
+  exposure_colors <- viridis::viridis(n_exposure_ids)
+  names(exposure_colors) <- unique(immune_histories$exposure_id)
+  
+  all_colors <- c(biomarker_colors, exposure_colors)
+  
   immune_histories_subset<-immune_histories %>% drop_na() %>% filter(value==1)
   sample_indivs <- sample(1:max(demography$i), size=subset)
   
-  if(removal==FALSE){
-    removal_subset <- demography %>% filter(times==1)
-    g<-  ggplot() +
-      geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
-      geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
-      facet_wrap(~i) + theme_bw() +
-      scale_color_hue("Key", guide=guide_legend(order=3)) +
+  removal_subset <- demography %>% filter(times==1)
+  
+  g <- ggplot()
+  
+  if(removal==TRUE){
+    g <- g + geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), 
+                        aes(xintercept=removal, color="Removal time"),linetype="solid")
+    all_colors <- c(all_colors, "Removal time" ="red")
+  }
+
+  if(heatmap){
+    g <- g + geom_tile(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=biomarker_id,fill=value)) +
+      scale_fill_viridis_c(name="Biomarker and Exposure Key", option="magma")
+    
+  } else {
+    g <- g +
+      geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=biomarker_id))
+  }
+  g <- g + geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), 
+                      aes(xintercept=t, colour=exposure_id),linetype="dashed",size=0.75)
+  g <- g +
+      facet_wrap(~i) + 
+      theme_bw() +
+      #scale_color_hue("Biomarker and Exposure Key", guide=guide_legend(order=3)) +
+      #ggplot2::scale_color_viridis_d(name="Biomarker and Exposure Key") + 
+    scale_color_manual(name="Biomarker and Exposure Key",values=all_colors)+
       ggplot2::labs(title="Individual Biomarker Kinetics",
                     x="Time",
                     y="Biomarker Quantity") + 
@@ -367,25 +415,8 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
       ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
       ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
       theme(legend.position="bottom", legend.box="vertical", legend.margin=margin())
-  }
-  if(removal==TRUE){
-  removal_subset <- demography %>% filter(times==1)
-  g<-  ggplot() +
-    geom_vline(data=immune_histories_subset %>% filter(i %in% sample_indivs), aes(xintercept=t, colour=x),linetype="dotted") +
-    geom_vline(data=removal_subset %>% filter(i %in% sample_indivs), aes(xintercept=removal, color="Removal Time"),linetype="solid") +
-    geom_line(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=value,colour=b)) +
-    facet_wrap(~i) + theme_bw() +
-    scale_color_hue("Key", guide=guide_legend(order=3)) +
-    ggplot2::labs(title="Individual Biomarker Kinetics",
-                  x="Time",
-                  y="Biomarker Quantity") + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
-    theme(legend.position="bottom", legend.box="vertical", legend.margin=margin())
-  }
+  
+    
   return(g)
 }
 
@@ -422,8 +453,9 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
 #' draw_parameters_fn = draw_parameters_fixed_fx, biomarker_map=biomarker_map)
 plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model_pars,biomarker_map, 
                                 demography=NULL, draw_parameters_fn=draw_parameters_fixed_fx, ...){
-    exposure_ids <- unique(biomarker_map$exposure_id)
-    biomarker_ids <- unique(biomarker_map$biomarker_id)
+  exposure_ids <- unique(biomarker_map$exposure_id)
+  biomarker_ids <- unique(biomarker_map$biomarker_id)
+  
     ## Go through for all times and plot random trajectories
     indivs <- 1:N
     immune_histories_tmp <- array(0, dim=c(N, length(times), length(exposure_ids)))
@@ -452,19 +484,25 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
         antibody_states_all[[x]] <- antibody_states
     }
     antibody_states_all <- do.call("bind_rows", antibody_states_all)
-    antibody_states_all$x <- paste0("Exposure id: ", antibody_states_all$x)
-    antibody_states_all$b <- paste0("Biomarker id: ", antibody_states_all$b)
+    antibody_states_all$exposure_id <-factor(paste0("Exposure: ",antibody_states_all$x), levels=paste0("Exposure: ", unique(antibody_states_all$x)))
+    antibody_states_all$biomarker_id <- factor(paste0("Biomarker: ", antibody_states_all$b), levels=paste0("Biomarker: ", unique(antibody_states_all$b)))
     
     antibody_states_summ <- antibody_states_all %>% group_by(t,b,x) %>% summarize(mean_titer=mean(titer))
+    antibody_states_summ$biomarker_id <- factor(paste0("Biomarker: ", antibody_states_summ$b), levels=paste0("Biomarker: ", unique(antibody_states_summ$b)))
+    antibody_states_summ$exposure_id <-factor(paste0("Exposure: ",antibody_states_summ$x), levels=paste0("Exposure: ", unique(antibody_states_summ$x)))    
+    ## Create biomarker colors
+    n_biomarker_ids <- length(unique(antibody_states_all$biomarker_id))
+    biomarker_colors <- viridis::magma(n_biomarker_ids)
+    names(biomarker_colors) <- unique(antibody_states_all$biomarker_id)
 
     p <- ggplot(antibody_states_all) +
-        geom_line(aes(x=t,y=titer,col=b,group=i),alpha=0.25) +
-        geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=b),linewidth=1) +
+        geom_line(aes(x=t,y=titer,col=biomarker_id,group=i),alpha=0.25) +
+        geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=biomarker_id),linewidth=1) +
         theme_bw() +
         xlab("Time since infection") +
         ylab("Biomarker quantity") +
-        scale_color_viridis_d(name="Biomarker") +
-        facet_grid(b~x,scales="free_y")
+        scale_color_manual(name="Biomarker",values=biomarker_colors) +
+        facet_grid(b~exposure_id,scales="free_y")
     return(p)
     
 }

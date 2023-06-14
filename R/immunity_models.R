@@ -134,6 +134,7 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, immune_histories,
 #' @inheritParams immunity_model_all_successful
 #' @param max_events a vector of the maximum number of successful exposure events possible for each exposure ID
 #' @param cross_reactivity_table an optional table which indicates cross-reactivity between exposure and biomarker quantities. Here users can specify whether other biomarker quantities are also protective against successful exposure.  Defaults to NULL.
+#' @param sum_biomarkers if no `cross_reactivity_table` is provided, this flag determines if protection is calculated as the sum of all cross-reactive biomarkers from the `biomarker_map`, otherwise only uses biomarker for `biomarker_id==exposure_id`
 #' @param ... Additional arguments
 #'
 #' @return A probability of successful exposure is returned
@@ -153,7 +154,9 @@ immunity_model_vacc_ifxn_simple <- function(i, t, x, immune_histories,
 #' biomarker_map=example_biomarker_map_numeric, model_pars=tmp_pars, max_events=c(3,5))
 immunity_model_ifxn_biomarker_prot <- function(i, t, x, immune_histories, 
                               biomarker_states, demography, biomarker_map, 
-                              model_pars, max_events=rep(Inf, dim(immune_histories)[3]), cross_reactivity_table=NULL, ...){
+                              model_pars, max_events=rep(Inf, dim(immune_histories)[3]), cross_reactivity_table=NULL,
+                              sum_biomarkers = FALSE,
+                              ...){
   
   ## Count the total number of successful exposures to x thus far 
   curr_ifx_events<-sum(immune_histories[i,1:t-1,x], na.rm=TRUE)
@@ -163,15 +166,16 @@ immunity_model_ifxn_biomarker_prot <- function(i, t, x, immune_histories,
     
     ## If a cross reactivity table is specify, calculate the current the individuals current biomarker quantity for all protective biomarker types.
     if(!is.null(cross_reactivity_table)){
-      cr<- cross_reactivity_table %>% filter(exposure_id==x)
-      cr$curr_biom_quant <- biomarker_states[i,t,cr$biomarker_id]
-      cr<- cr %>% mutate(prot_b=cross_reactivity*curr_biom_quant)
-      curr_b<- sum(cr$prot_b)
-      
+      cr <- cross_reactivity_table[exposure_id == x,]
+      curr_b <- biomarker_states[i,t,cr$biomarker_id]*cr$cross_reactivity
+      curr_b <- sum(curr_b)
     } else{
     ## If no cross reactivity table is specified, the model assumes that all biomarkers boosted by the exposure as defined in the biomarker_map are protective to the same extent.
-    #b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
+    if(sum_biomarkers){
+      b<-biomarker_map$biomarker_id[biomarker_map$exposure_id==x]
+    } else {
       b <- x
+    }
     ## Find current biomarker quantity to all relevant biomarkers
     curr_b <- biomarker_states[i,t,b] 
     curr_b <- sum(curr_b)

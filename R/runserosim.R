@@ -261,7 +261,7 @@ runserosim <- function(
     biomarker_states <- reshape2::melt(biomarker_states)
     colnames(biomarker_states) <- c("i","t","b","value")
     biomarker_states <- biomarker_states %>% arrange(i, t, b)
-    
+
     ## Reshape immune histories
     immune_histories_long <- NULL
     if(sum(immune_histories, na.rm = TRUE) > 0){

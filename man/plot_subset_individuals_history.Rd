@@ -9,7 +9,8 @@ plot_subset_individuals_history(
   immune_histories,
   subset,
   demography,
-  removal = FALSE
+  removal = FALSE,
+  heatmap = FALSE
 )
 }
 \arguments{
