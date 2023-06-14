@@ -10,6 +10,7 @@ bibliography: cs3_influenza_citations.bib
 
 ```{r, echo=FALSE}
 options(rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(message=FALSE,warnings=FALSE)
 ```
 # 1.0 Outline
 This vignette demonstrates how _serosim_ can simulate complex antibody profiles arising from repeated exposure to antigenically related strains of the same pathogen, with a case study based on A/H3N2 influenza. 
@@ -149,7 +150,7 @@ exposure_model<-exposure_model_simple_FOE
 
 ```{r, fig.dim = c(6, 4)}
 ## Examine the probability of exposure to each strain over time for the specified exposure model and foe_pars array
-plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 10, foe_pars=foe_pars) + facet_wrap(~`Exposure ID`)
+plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 10, foe_pars=foe_pars) + facet_wrap(~exposure_id)
 ``` 
 
 # 1.5 Immunity Model

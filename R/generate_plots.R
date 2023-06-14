@@ -614,17 +614,24 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
             }
         }
         foe <- reshape2::melt(foe)
-        colnames(foe) <- c("Group","Time","Exposure ID","value")
-        foe$`Exposure ID` <- paste0("Exposure ID: ", foe$`Exposure ID`)
+        colnames(foe) <- c("Group","Time","exposure_id","value")
+        foe$exposure_id <- paste0("Exposure: ", foe$exposure_id)
         foe$Individual <- paste0("Individual: ",i)
         foe_all[[i]] <- foe
     }
+    
     foe_all <- do.call("bind_rows", foe_all)
     foe_all$Group <- as.factor(foe_all$Group)
-    foe_all$`Exposure ID` <- as.factor(foe_all$`Exposure ID`)
+    foe_all$exposure_id <- factor(paste0("Exposure: ",foe_all$exposure_id), 
+                                  levels=paste0("Exposure: ", unique(foe_all$exposure_id)))
+    
+    n_exposure_ids <- length(unique(foe_all$exposure_id))
+    exposure_colors <- viridis::viridis(n_exposure_ids)
+    names(exposure_colors) <- unique(foe_all$exposure_id)
+    
     p <- ggplot(data=foe_all) + 
-        geom_line(aes(x=Time,col=Group,y=value,group=interaction(Group,`Exposure ID`))) + 
-        viridis::scale_color_viridis_d() +
+        geom_line(aes(x=Time,col=Group,y=value,group=interaction(Group,exposure_id))) + 
+        scale_color_viridis_d() +
         ylab("Probability of exposure per unit time") +
         xlab("Time") +
         theme_bw() +
@@ -633,6 +640,6 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
                      axis.text.y = element_text(vjust=0.6, size= 8),
                      axis.title.y = element_text(vjust=0.6, size= 10),
                      axis.title.x = element_text(vjust=0.6, size= 10)) +
-        facet_grid(Individual~`Exposure ID`)
+        facet_grid(Individual~exposure_id)
     return(p)
 }
