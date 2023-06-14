@@ -251,6 +251,8 @@ plot_biomarker_quantity<- function(biomarker_states){
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 scale_x_discrete
 #' @importFrom ggplot2 theme
+#' @importFrom ggplot2 geom_boxplot
+#' @importFrom ggplot2 geom_violin
 #' @importFrom dplyr filter
 #' @export
 #'
