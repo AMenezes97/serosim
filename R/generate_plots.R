@@ -58,7 +58,7 @@ plot_biomarker_dependent_boosting <- function(start, end, by, biomarker_ceiling_
     boost_modifier_dat <- tidyr::tibble(boost_mod=boost_modifier,starting_biomarkers=seq(start,end, by=by))
     
     g<-ggplot2::ggplot(data=boost_modifier_dat) + ggplot2::geom_line(ggplot2::aes(x=starting_biomarkers, y=boost_mod)) + ggplot2::theme_bw() +
-      ggplot2::xlab("Starting Biomarker") +
+      ggplot2::xlab("Starting biomarker") +
       ggplot2::ylab("Proportion of full boost experienced") + ggplot2::scale_y_continuous(limits=c(0,1)) + ggplot2::xlim(start,end)
     return(g)
 }
@@ -91,7 +91,7 @@ plot_exposure_prob<-function(exposure_probabilities_long){
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Individual Exposure Probability",
+    ggplot2::labs(title="Individual exposure probability",
          x="Time",
          y="Individual",
          fill="Probability")   + 
@@ -133,7 +133,7 @@ plot_exposure_force<-function(exposure_force_long){
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Individual Force of Exposure",
+    ggplot2::labs(title="Individual force of exposure",
                   x="Time",
                   y="Individual",
                   fill="Probability")   + 
@@ -170,7 +170,7 @@ plot_exposure_force<-function(exposure_force_long){
 #' plot_immune_histories(example_immune_histories)
 plot_immune_histories <- function(immune_histories){
   immune_histories$value <- ifelse(!is.na(immune_histories$value),
-                                     ifelse(immune_histories$value==1,"Successful Exposure","No Exposure"), "NA")
+                                     ifelse(immune_histories$value==1,"Successful exposure","No Exposure"), "NA")
   
   p <- ggplot2::ggplot(immune_histories) + 
     ggplot2::geom_tile(ggplot2::aes(x=t,y=i,fill=value)) + 
@@ -179,7 +179,7 @@ plot_immune_histories <- function(immune_histories){
     ggplot2::scale_fill_viridis_d() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="Individual Immune History",
+    ggplot2::labs(title="Individual immune history",
                   x="Time",
                   y="Individual")   + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
@@ -221,10 +221,10 @@ plot_biomarker_quantity<- function(biomarker_states){
     ggplot2::scale_fill_viridis_c() + 
     ggplot2::scale_x_continuous(expand=c(0,0)) + 
     ggplot2::scale_y_continuous(expand=c(0,0)) +
-    ggplot2::labs(title="True Biomarker Quantity",
+    ggplot2::labs(title="True biomarker Quantity",
                   x="Time",
                   y="Individual",
-                  fill="Biomarker Quantity")   + 
+                  fill="Biomarker quantity")   + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
     ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
     ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
@@ -275,9 +275,9 @@ plot_obs_biomarkers_one_sample<-function(observed_biomarker_states, add_boxplot=
   ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
     ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
-    ggplot2::labs(title="Observed Biomarker Quantity",
+    ggplot2::labs(title="Observed biomarker quantities",
                   x="Biomarker",
-                  y="Observed Quantity") + 
+                  y="Observation") + 
     ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
     suppressWarnings(ggplot2::scale_x_discrete(name ="Biomarker", 
                      limits=c(unique(observed_biomarker_states$b)), expand = c(0.1, 0.1))) +
@@ -322,15 +322,15 @@ p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = 
   ggplot2::theme(legend.position = "top", 
         panel.grid = element_blank(),
         axis.line.y = element_line(linewidth = .5)) +
-  ggplot2::labs(title="Observed Paired Biomarker Quantities",
+  ggplot2::labs(title="Observed paired piomarker quantities",
                 x="Biomarker",
-                y="Observed Quantity") + 
+                y="Observed quantity") + 
   ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
   ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
   ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
   ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
-  ggplot2::scale_colour_discrete(name="Sampling Time")
+  ggplot2::scale_colour_discrete(name="Sampling time")
 return(p)
 }
 
@@ -343,6 +343,7 @@ return(p)
 #' @param subset The number of individuals you want to plot
 #' @param demography Tibble of removal time for each individual
 #' @param removal Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE
+#' @param heatmap if TRUE, returns a heatmap of all biomarker states over time. Overwise plots each biomarker as a line.
 #'
 #' @return A plot of  biomarker states and exposure histories for a subset of individuals is returned
 #' @importFrom dplyr filter
@@ -393,7 +394,7 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
 
   if(heatmap){
     g <- g + geom_tile(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=biomarker_id,fill=value)) +
-      scale_fill_viridis_c(name="Biomarker and Exposure Key", option="magma")
+      scale_fill_viridis_c(name="Biomarker and exposure key", option="magma")
     
   } else {
     g <- g +
@@ -406,10 +407,10 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
       theme_bw() +
       #scale_color_hue("Biomarker and Exposure Key", guide=guide_legend(order=3)) +
       #ggplot2::scale_color_viridis_d(name="Biomarker and Exposure Key") + 
-    ggplot2::scale_color_manual(name="Biomarker and Exposure Key",values=all_colors)+
-      ggplot2::labs(title="Individual Biomarker Kinetics",
+    ggplot2::scale_color_manual(name="Biomarker and exposure key",values=all_colors)+
+      ggplot2::labs(title="Individual biomarker kinetics",
                     x="Time",
-                    y="Biomarker Quantity") + 
+                    y="Biomarker quantity") + 
       ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
       ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
       ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +

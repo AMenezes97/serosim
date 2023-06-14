@@ -23,6 +23,8 @@ plot_subset_individuals_history(
 \item{demography}{Tibble of removal time for each individual}
 
 \item{removal}{Set to TRUE if individuals are removed during the simulation and removal time is present in demogrpahy; defaults to FALSE}
+
+\item{heatmap}{if TRUE, returns a heatmap of all biomarker states over time. Overwise plots each biomarker as a line.}
 }
 \value{
 A plot of  biomarker states and exposure histories for a subset of individuals is returned
