@@ -185,7 +185,7 @@ To simulate a longitudinal survey with paired samples, we simulate two observati
 observation_model<-observation_model_discrete_noise
 
 ## Specify the cutoffs for the discrete assay. This will depend on the dilutions of the haemagglutination assay.
-## This is a matrix with each row containing all of the cutoffs for that biomarker. Here, we have set the same cutoffs for all three biomarkers 
+## This is a matrix with each row containing all of the cutoffs for that biomarker. Here, we have set the same cutoffs for all biomarkers 
 breaks <- seq(0,8,by=1)
 cutoffs <- matrix(breaks,nrow=n_strains,ncol=length(breaks), byrow=TRUE)
 
@@ -193,7 +193,7 @@ cutoffs <- matrix(breaks,nrow=n_strains,ncol=length(breaks), byrow=TRUE)
 sensitivity<-0.95
 specificity<-0.99
 
-## Specify observation_times (serological survey sampling design) to observe all three biomarkers across all individuals at the end of the simulation (t=120)
+## Specify observation_times (serological survey sampling design) to observe all biomarkers across all individuals at the end of the simulation (t=120)
 obs1 <- expand_grid(tibble(i=1:N, t = floor(rnorm(N, 528, 3))), b=1:n_strains)
 obs2 <- expand_grid(tibble(i=1:N, t = pmin(floor(rnorm(N, 540, 3)), 540)), b=1:n_strains)
 observation_times <- bind_rows(obs1, obs2)
