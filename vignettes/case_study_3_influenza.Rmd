@@ -1,5 +1,5 @@
 ---
-title: "Case study 3: A multi-strain pathogen system with cross-reactive antibody dynamics"
+title: "Case study 3: a multi-strain pathogen system with cross-reactive antibody dynamics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{case_study_3_influenza}
@@ -12,31 +12,19 @@ bibliography: cs3_influenza_citations.bib
 options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(message=FALSE,warnings=FALSE)
 ```
-# 1.0 Outline
+# Outline
 This vignette demonstrates how _serosim_ can simulate complex antibody profiles arising from repeated exposure to antigenically related strains of the same pathogen, with a case study based on A/H3N2 influenza. 
 In this system, each exposure stimulates a combination of _de novo_ and memory antibody responses, resulting in the presence of antibodies effective against all strains. The effectiveness of these antibodies against a particular strain depends on the set and timing of strains the individual has been exposed to, and the antigenic similarity of those strains [@Smith2004, @Kucharski2018, @Krammer2019]. 
-This simulation will capture this process by tracking infection dynamics and antibody profiles to multiple strains for 100 individuals across a 45 year period, demonstrating how complex antibody profiles, or antibody landscapes, build over the life course [@Fonville2014, @Lessler2012]. A key concept for this simulation is antigenic space -- a framework for quantifying the antigenic relatedness of strains from the perspective of the immune response [@Smith2004].
+The simulation will capture this process by tracking infection dynamics and antibody profiles to multiple strains for 100 individuals across a 45 year period, demonstrating how complex antibody profiles, or antibody landscapes, build over the life course [@Fonville2014, @Lessler2012]. A key concept for this simulation is antigenic space -- a framework for quantifying the antigenic relatedness of strains from the perspective of the immune response [@Smith2004].
 We will simulate a longitudinal serological survey with discretized paired measurements (based on the haemagglutination inhibition assay) of each individual's biomarker levels against each strain based on existing serosurvey data [@Yang2020]. 
 
-Outline:
-
-1. We will first set up each of the required arguments and models for _runserosim_ in 
-the order outlined in the methods section of the paper. In this example, the terms biomarker quantity, 
-titer level and antibody level are interchangeable. 
-2. We will use well characterized epidemiological and immunological characteristics 
-of influenza when selecting our models wherever possible and make reasonable 
-assumptions for other required models wherever information is lacking. For this example, 
-we will use arbitrarily selected antibody kinetics parameters. Users can perform a 
-literature review to select the best parameters for their strains of interest.
-3. Within each section below, we will briefly explain the rationale behind our selected 
-model inputs. We caution users to conduct their own research into the models and 
-associated parameters which best align with their disease system and biomarker test kits. 
+Within each section below, we will briefly explain the rationale behind the model structure and parameters. We caution users to conduct their own research into the models and associated parameters which best align with their disease system and biomarker test kits. 
 
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
-## Install and load serosim 
-## devtools::install_github("AMenezes97/serosim")
-library(serosim)
+## Load serosim 
+#library(serosim)
+devtools::load_all()
 
 ## Load additional packages required 
 library(tidyverse)
@@ -44,8 +32,7 @@ library(patchwork)
 library(viridis)
 ```
 
-
-# 1.1 A/H3N2 influenza epidemiology and simulation settings
+# A/H3N2 influenza epidemiology and simulation settings
 A/H3N2 influenza has distinctive epidemiology, whereby one group of antigenically similar viruses (termed a cluster) circulates for 3-5 years before being replaced by a new, antigenically distinct cluster [@Smith2004]. The phylogeny of A/H3N2 viruses is often referred to as ladder-like due to the fact that influenza demonstrates limited genetic diversity at a single point in time, but substantial diversity over the long-term. We will capture this in our simulation by assuming that 10 antigenically distinct strains each circulate for 4.5 years before being replaced by the next strain, roughly representing the introduction of A/H3N2 into humans in 1968. The simulation will use monthly time steps to balance computational time with sufficient time-resolution to represent transient antibody kinetics.
 
 For this simulation, the only demography variable we will track is age -- individuals cannot be exposed to influenza strains which circulated before they were born.
@@ -66,7 +53,7 @@ n_strains <- 10
 ```
 
 
-# 1.2 Exposure to biomarker mapping
+# Exposure to biomarker mapping
 One of the key features of influenza serology is that different strains of the same subtype are antigenically related due to the presence of both conserved and distinct epitopes on surface proteins of the strains. Strain replacements are the result of mutations at key epitopes which allow for immune escape. Thus, an individual's immune profile is the culmination of antibodies targeting combinations of epitopes consistent with the set of strains they have been exposed to.
 
 There are two ways we could model these dynamics with _serosim_. First, we could map each strain to a set of epitopes, such that sets of epitopes partially overlap between strains. The exposure ID variable would correspond to each strain, and the biomarker IDs would correspond to antibodies binding to each specific epitope. Real data at this resolution are rare, particularly for serosurveillance, requiring a complex assays (such as phage immunoprecipitation sequencing, PhIP-Seq) which detects antibody binding to short peptide sequences. The data demands and computational complexity prohibit this as a realistic simulation model. 
@@ -106,38 +93,21 @@ antigenic_map <- antigenic_map %>% as_tibble() %>%
 ```
 
 
+# Exposure model
+We now turn to the exposure model determining the probability that an individual is exposed to each strain at each time point. It is straightforward to represent the serial replacement of strains in _serosim_ by setting the exposure ID dimension of the force of exposure array to be zero at times before and after the strain circulates. Furthermore, we can add seasonality to the model using a sinusoidal term for the force of exposure array [@Grassly2006]. We will set the force of exposure to be roughly equivalent to a peak basic reproductive number of 2, assuming a 5-day infectious period, though note that the exposure model simply describes the force of exposure acting on individuals in the simulation, and is not a dynamical transmission model.
 
-# 1.4 Force of Exposure and Exposure Model
-Now, we need to specify the foe_pars argument which contains the force of 
-exposure for all exposure_ids across all time steps. We also specify the 
-exposure model which will be called within _runserosim_ later. The exposure model 
-will determine the probability that an individual is exposed to a specific 
-exposure event. 
-
-Since we did not specify different groups within demography, all individuals will 
-automatically be assigned group 1. Therefore, we only need 1 row for dimension
-1 in foe_pars. Groups can be used as an indicator of location if the user wishes to 
-specify a location specific force of exposure (See case study 2). 
-Dimension 3 of the foe_array must be in the same order as the exposure_id within 
-the biomarker map. For example, the force of exposure for exposure_id 1 will be 
-inputted within the foe_pars[,,1]. 
-
-Here, we specified the same force of exposure for circulating strains within foe_pars for 
-simplicity but users will likely have varying numbers to match real world settings. 
-Each strain is only circulating for 40 time steps with no co-circulation.
 ```{r, fig.dim = c(5, 3)}
-## Seasonal forcing
+## Seasonal forcing with a peak force of infection of 0.2 and minimum of 0
+## If we assume an infectious period of 5 days, the simulation gives an annually oscillating R0 between 0 and 2 
 beta <- 0.2
 sigma <- 1
 seasonality <- beta*(1 + sigma*cos(2*pi*(times-1)/12))
-
-## If we assume an infectious period of 5 days, the simulation gives an annually oscillating R0 between 0 and 2 
-plot(seasonality*5,type='l')
 
 ## Create an empty array to store the force of exposure for all exposure types
 foe_pars <- array(0, dim=c(1,max(times),n_strains))
 t_start <- 1
 
+## Set the circulation duration for each strain
 for(strain in seq_len(n_strains)){
   t_end <- t_start + 4.5*12 - 1
   foe_pars[,t_start:t_end,strain] <- seasonality[t_start:t_end]
@@ -153,79 +123,41 @@ exposure_model<-exposure_model_simple_FOE
 plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 10, foe_pars=foe_pars) + facet_wrap(~exposure_id)
 ``` 
 
-# 1.5 Immunity Model
-Here, we specify the immunity model which will determine the probability that an 
-exposure event is successful in inducing an immunological response. Since we have 
-multiple cross-reactive influenza strains we will use 
-immunity_model_ifxn_biomarker_prot. With this immunity model, the probability of a 
-successful infection depends on the biomarker quantity, 
-in this case influenza antibody titer, at the time of exposure. 
+# Immunity model
+The immunity model determines the probability that an exposure event induces an immunological response and becomes recorded in the immune history. For influenza A/H3N2, a common correlate of protection is haemagglutination inhibition assay (HI) titre against the exposure strain. Human challenge studies can be used calculate a logistic model for the relationship between HI titre and probability of infection, which forms the basis for the model we will use here [@Coudeville2010]. 
 
-Additional successful exposure events aka "reinfection" events are representative 
-of boosting events. The user can limit the frequency 
-of reinfections by adjusting the biomarker-mediated protection 
-(also known as titer-mediated protection) parameters or by 
-specifying a maximum number of allowed successful exposure events. The 
-titer-mediated protection parameters used within this model are defined within 
-model_pars which will be loaded in section 1.6. 
 
-Here we placed no limit on the maximum number of infections; however our selected immunity model will take into 
-account an individual's current biomarker level when determining the probability 
-of a successful infection. 
-
-Again, the following biomarker-mediated protection parameters 
-were selected arbitrarily. 
 ```{r, fig.dim = c(5, 3)}
 ## Specify immunity model within the runserosim function below 
 immunity_model<-immunity_model_ifxn_biomarker_prot
-## The immunity model we selected will take into account an individual's current biomarker quantity when determining the probability of successful infection. 
+
+## Define antibody-mediated protection parameters
+model_pars_immunity <- tibble(name=c("biomarker_prot_midpoint","biomarker_prot_width"),
+               mean=c(2.8,1.3),sd=c(NA,NA),distribution=c(NA,NA))
+model_pars_immunity <- expand_grid(biomarker_id=1:n_strains, model_pars_immunity) %>% 
+  mutate(exposure_id=paste0("Strain_",biomarker_id), biomarker_id=paste0("Biomarker_",biomarker_id))
+
+## Parameters chosen from Coudeville et al. 2010
+plot_biomarker_mediated_protection(seq(0,8,by=0.1), biomarker_prot_midpoint=2.8, biomarker_prot_width=1.3) 
 ```
 
-```{r, fig.dim = c(5, 3)}
-## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1, influenza strain A antibody  (DP_antibody) which will be loaded in section 1.6. Biomarker mediated protection parameters are the same for all 3 influenza strains so the following plot will look the same for all exposure/biomarker types.
-plot_biomarker_mediated_protection(seq(0,8,by=0.1), biomarker_prot_midpoint=2.844, biomarker_prot_width=1.299) 
-```
 
+# Antibody model and parameters
+Models of antibody kinetics following A/H3N2 influenza infection vary in their complexity, and identifying key immunological mechanisms of waning, imprinting and back-boosting remains an area of ongoing research [@Hay2020, @Ranjeva2019]. For this simulation, we assume a simple monophasic boosting and waning model, where individuals receive a boost of approximately 4 HI titre units following infection against the biomarker ID of the exposure strain which wanes slowly over time. Cross-reactive boosting to other biomarker IDs is determined by antigenic distance as described above.
 
-# 1.6  Antibody Model and Model Parameters
-Now, we specify the antibody model to be used within _runserosim_ to track 
-antibody kinetics, or more broadly biomarker kinetics for each biomarker produced 
-from successful exposure events. We will be using a monophasic boosting-waning model 
-in this example. This model assumes that for each exposure there is a boost and 
-boost waning parameter. 
+To represent heterogeneity in post-infection antibody kinetics, we will assume that all boosting and waning parameters are log-normally distributed with mean and standard deviation specified on the natural scale.
 
-The antibody kinetics parameters are pre-loaded within a csv file. Users can edit 
-the csv file to specify their own parameters. All parameters needed for the 
-user specified antibody model must be specified within the model_pars. 
-
-Lastly, we define the draw_parameters function which determines how each 
-individual’s antibody kinetics parameters are simulated from the within-host 
-processes parameters tibble (model_pars). We will use a function which draws 
-parameters directly from model_pars for the antibody model with random 
-effects to represent individual heterogeneity in immunological responses. 
-Parameters are drawn randomly from a distribution with mean and standard 
-deviation specified within model_pars. 
-
-_runserosim_ requires that exposure_id and biomarker_id within model_pars are 
-numeric and match the exposure to biomarker map so we will use the 
-reformat_biomarker_map function again to create a new version of model_pars. 
-Users can go directly to numeric model_pars if they wish.
 ```{r}
 ## Specify the antibody model 
 antibody_model<-antibody_model_monophasic_cross_reactivity
 
 ## Antibody model parameters
-model_pars_antibody <- tibble(exposure_id = paste0("Strain_",seq_len(n_strains)), biomarker_id=paste0("Biomarker_",seq_len(n_strains))) %>%
-    left_join(expand_grid(exposure_id = paste0("Strain_",seq_len(n_strains)), 
-                          name=c("boost","wane","biomarker_prot_midpoint","biomarker_prot_width"))) %>%
-   left_join(tibble(name=c("boost","wane","biomarker_prot_midpoint","biomarker_prot_width"),
-                    mean=c(4,0.01,2.8,1.3),sd=c(1,0.01,NA,NA),
-                    distribution=c("log-normal","log-normal",NA,NA)))
-model_pars_observation <- tibble(exposure_id=NA, biomarker_id=paste0("Biomarker_",seq_len(n_strains))) %>%
-    left_join(expand_grid(biomarker_id=paste0("Biomarker_",seq_len(n_strains)), name=c("obs_sd"))) %>%
-   left_join(tibble(name="obs_sd",mean=NA,sd=1,distribution="normal"))
-
-model_pars_original <- bind_rows(model_pars_antibody, model_pars_observation)
+model_pars_kinetics <- tibble(name=c("boost","wane"),mean=c(4,0.01),sd=c(1,0.01),distribution=c("log-normal","log-normal"))
+model_pars_kinetics <- expand_grid(exposure_id =seq_len(n_strains),model_pars_kinetics)  %>%
+  mutate(biomarker_id=paste0("Biomarker_", exposure_id), exposure_id = paste0("Strain_",exposure_id))
+model_pars_observation <- expand_grid(biomarker_id=paste0("Biomarker_",seq_len(n_strains)),name="obs_sd",
+                                      mean=NA,sd=1,distribution="normal") %>% mutate(exposure_id=NA)
+model_pars_original <- bind_rows(model_pars_kinetics,model_pars_immunity, model_pars_observation) %>% arrange(exposure_id, biomarker_id)
 
 ## Bring in the antibody parameters needed for the antibody model
 ## Note that the observation error parameter needed for the observation model (Section 1.7) is defined here too.
@@ -240,24 +172,14 @@ draw_parameters<-draw_parameters_random_fx
 
 ```{r, fig.dim = c(10, 7)}
 ## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
-plot_antibody_model(antibody_model_monophasic_cross_reactivity, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=antigenic_map) + theme(strip.text=element_text(size=7),axis.text=element_text(size=6))
+plot_antibody_model(antibody_model_monophasic_cross_reactivity, N=10, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx, biomarker_map=antigenic_map)
 ```
 
+# Observation model and sampling times
+Finally, we implement the observation model to reflect the haemagglutination inhibition assay which is often used for influenza serology [@Lessler2012, @Fonville2014]. This is a discretized assay with some measurement error, which we will represent using the `observation_model_discrete_noise` function. The assay is bounded between values of 0 and 8. We will assume high assay sensitivity and specificity, noting that many true positive samples will be simulated with a HI titre of 0 through the noise function.
 
-# 1.7 Observation Model and observation_times
-Now we specify how observed influenza biomarker quantities are generated as a 
-probabilistic function of the true, latent biomarker quantity and when to 
-observe these quantities. In this step, we specify the sampling design and 
-assay choice for our serological survey. We will take samples of all individuals 
-at the end of the simulation (t=120). 
+To simulate a longitudinal survey with paired samples, we simulate two observation time for each individual centered either around the last time step or one year prior. 
 
-Our chosen observation model observes the latent influenza biomarker quantity for all 
-three biomarkers given a discrete assay with added noise. The added noise represents 
-assay variability and is implemented by sampling from a distribution with the 
-true latent biomarker quantity as the mean and the measurement error as the 
-standard deviation. The observation standard deviation and distribution are 
-defined within model_pars as the “obs_sd” parameter. Within this observation 
-model, we can also specify the assay sensitivity and specificity. 
 ```{r}
 ## Specify the observation model 
 observation_model<-observation_model_discrete_noise
@@ -277,20 +199,10 @@ obs2 <- expand_grid(tibble(i=1:N, t = pmin(floor(rnorm(N, 540, 3)), 540)), b=1:n
 observation_times <- bind_rows(obs1, obs2)
 ```
 
-# 1.8 Optional Arguments 
-There are no optional arguments needed for this simulation. 
-
-
-# 1.9 Run Simulation 
-This is the core simulation where all simulation settings, models and parameters 
-are specified within the main simulation function. Run time for this step varies 
-depending on the number of individuals and the complexities of the specified models. 
-There is a built in pre-computation step within _runserosim_ where the simulation 
-attempts to perform as much pre-computation as possible for the exposure model 
-to speed up the main simulation code. Users can turn off this pre-computation by 
-setting pre-computation to FALSE within _runserosim_.
+# Run simulation 
+We now have all the pieces in place to run the full _serosim_ model. Note that for this example, we will use _serosim_'s optional arguments for speeding up the model, exploiting both the attempted precomputation step and parellelization.
 ```{r message=FALSE, warning=FALSE, eval=TRUE}
-## Run the core simulation and save outputs in "res"
+## Run the core simulation
 res<- runserosim(
   simulation_settings=simulation_settings,
   demography=demography,
@@ -308,7 +220,8 @@ res<- runserosim(
   cutoffs=cutoffs,
   sensitivity=sensitivity,
   specificity=specificity,
-  VERBOSE=10,
+  VERBOSE=NULL,
+  attempt_precomputation = TRUE,
   parallel=TRUE,
   n_cores=8
 )
@@ -316,19 +229,20 @@ res<- runserosim(
 ```
 
 
-# 1.10 Generate Plots
-Now that the simulation is complete, let's plot and examine the simulation outputs.
+# Generate output plots
+Now that the simulation is complete, let's plot and examine the simulation outputs. First, let's at the full longitudinal kinetics to one biomarker for a random subset of individuals, marking the timing of each infection and the exposure ID. The vertical dashed lines show the timing of infections, coloured by their exposure ID.
 ```{r, fig.dim = c(8, 6)} 
 ## Plot influenza strain A specific biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$immune_histories_long, subset=10, demography, removal=TRUE)
+plot_subset_individuals_history(res$biomarker_states %>% filter(b==1), res$immune_histories_long, subset=10, demography)
 ```
 
+We can also look at the biomarker kinetics for all biomarker IDs simultaneously by setting the `heatmap` argument to `TRUE`.
 ```{r, fig.dim = c(8, 6)} 
 ## Plot influenza strain A specific biomarker kinetics and exposure histories for 10 individuals 
-plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography, removal=TRUE, heatmap=TRUE)
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography, heatmap=TRUE)
 ```
 
-
+We can see the time-varying exposure probabilities of the different strains, as well as the individual-level exposure probabilities mediated by their birth time.
 ```{r, fig.dim = c(8, 6)} 
 ## Plot individual probability of exposure for all exposure types.
 ## This is the output of the exposure model. Note that this reflects our inputs that the influenza strains were never co-circulating.
@@ -342,20 +256,21 @@ plot_exposure_force(res$exposure_force_long)
 plot_exposure_prob(res$exposure_probabilities_long)
 ```
 
+We also track each individual's history of infections and their true latent biomarker quantity against each biomarker ID.
 ```{r, fig.dim = c(8, 6)} 
 ## Plot individual exposure histories for all exposure types
 plot_immune_histories(res$immune_histories_long)
 ```
 
 ```{r, fig.dim = c(8, 6)} 
-## Plot influenza strain A antibody (biomarker 1) states for all individuals (true biomarker quantities)
+## Plot biomarket states for all individuals over time
 plot_biomarker_quantity(res$biomarker_states)
 ```
 
-
+Finally, we are interested in simulating a realistic serological survey. The following plots show the sort of observations that we would obtain from paired samples collected one year apart and tested for HI titres against each of the 10 strains.
 
 ```{r, fig.dim = c(5, 3)} 
-## Plot the influenza strain A serosurvey results (observed biomarker quantities)
+## Plot the serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_one_sample(res$observed_biomarker_states,add_boxplot=TRUE)
 ```
 
@@ -363,4 +278,10 @@ plot_obs_biomarkers_one_sample(res$observed_biomarker_states,add_boxplot=TRUE)
 ## Plot the influenza strain A serosurvey results (observed biomarker quantities)
 plot_obs_biomarkers_paired_sample(res$observed_biomarker_states)
 ```
+
+# Conclusions
+In this vignette, we have demonstrated how a complex epidemiological system representing multi-strain A/H3N2 serology can be implemented using _serosim_'s plug-and-play framework. Although this simulation is not intended to be an exhaustive, realistic representation of A/H3N2 dynamics, it demonstrates how the mulitple layers of the data-generating process interact to give rise to complex immune landscapes over time. Alternative models and parameterizations can be implemented to reflect different pathogens.
+
+
+# References
 

@@ -420,7 +420,7 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
 
   if(heatmap){
     g <- g + geom_tile(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=biomarker_id,fill=value)) +
-      scale_fill_viridis_c(name="Biomarker quantity", option="magma")
+      ggplot2::scale_fill_viridis_c(name="Biomarker quantity", option="magma")
     
   } else {
     g <- g +
