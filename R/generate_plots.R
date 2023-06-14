@@ -624,6 +624,7 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
     foe_all$`Exposure ID` <- as.factor(foe_all$`Exposure ID`)
     p <- ggplot(data=foe_all) + 
         geom_line(aes(x=Time,col=Group,y=value,group=interaction(Group,`Exposure ID`))) + 
+        viridis::scale_color_viridis_d() +
         ylab("Probability of exposure per unit time") +
         xlab("Time") +
         theme_bw() +
