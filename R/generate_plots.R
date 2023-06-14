@@ -615,7 +615,6 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
         }
         foe <- reshape2::melt(foe)
         colnames(foe) <- c("Group","Time","exposure_id","value")
-        foe$exposure_id <- paste0("Exposure: ", foe$exposure_id)
         foe$Individual <- paste0("Individual: ",i)
         foe_all[[i]] <- foe
     }
