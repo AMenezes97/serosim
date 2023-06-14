@@ -95,12 +95,11 @@ plot_exposure_prob<-function(exposure_probabilities_long){
          x="Time",
          y="Individual",
          fill="Probability")   + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                   axis.text.x = element_text(vjust=0.6, size= 8),
+                   axis.text.y = element_text(vjust=0.6, size= 8),
+                   axis.title.y = element_text(vjust=0.6, size= 10),
+                   axis.title.x = element_text(vjust=0.6, size= 10)) +
     theme(legend.position="bottom")
   return(p)
 }
@@ -137,12 +136,11 @@ plot_exposure_force<-function(exposure_force_long){
                   x="Time",
                   y="Individual",
                   fill="Probability")   + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                   axis.text.x = element_text(vjust=0.6, size= 8),
+                   axis.text.y = element_text(vjust=0.6, size= 8),
+                   axis.title.y = element_text(vjust=0.6, size= 10),
+                   axis.title.x = element_text(vjust=0.6, size= 10)) +
     theme(legend.position="bottom")
   return(p)
 }
@@ -182,12 +180,11 @@ plot_immune_histories <- function(immune_histories){
     ggplot2::labs(title="Individual immune history",
                   x="Time",
                   y="Individual")   + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                   axis.text.x = element_text(vjust=0.6, size= 8),
+                   axis.text.y = element_text(vjust=0.6, size= 8),
+                   axis.title.y = element_text(vjust=0.6, size= 10),
+                   axis.title.x = element_text(vjust=0.6, size= 10)) +
     ggplot2::guides(fill=guide_legend(title="Key")) +
     theme(legend.position="bottom")
   return(p)
@@ -225,11 +222,12 @@ plot_biomarker_quantity<- function(biomarker_states){
                   x="Time",
                   y="Individual",
                   fill="Biomarker quantity")   + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-    ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-    ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) 
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                   axis.text.x = element_text(vjust=0.6, size= 8),
+                   axis.text.y = element_text(vjust=0.6, size= 8),
+                   axis.title.y = element_text(vjust=0.6, size= 10),
+                   axis.title.x = element_text(vjust=0.6, size= 10),
+                   legend.position="bottom") 
   #+theme(legend.position="bottom")
   
   return(p)
@@ -273,11 +271,11 @@ plot_obs_biomarkers_one_sample<-function(observed_biomarker_states, add_boxplot=
   ggplot2::geom_jitter(ggplot2::aes(x=b, y=observed),
                        height=0,width=0.25) +
   ggplot2::theme_bw() +
-    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-  ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-  ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-  ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-    ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+    ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                   axis.text.x = element_text(vjust=0.6, size= 8),
+                   axis.text.y = element_text(vjust=0.6, size= 8),
+                   axis.title.y = element_text(vjust=0.6, size= 10),
+                   axis.title.x = element_text(vjust=0.6, size= 10)) +
     ggplot2::labs(title="Observed biomarker quantities",
                   x="Biomarker",
                   y="Observation") + 
@@ -353,11 +351,11 @@ p<- ggplot2::ggplot(observed_biomarker_states, aes(x = t, y = observed, group = 
         axis.line.y = element_line(linewidth = .5)) +
   ggplot2::labs(title="Paired biomarker quantities",
                 y="Observation") + 
-  ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-  ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-  ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-  ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-  ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                 axis.text.x = element_text(vjust=0.6, size= 8),
+                 axis.text.y = element_text(vjust=0.6, size= 8),
+                 axis.title.y = element_text(vjust=0.6, size= 10),
+                 axis.title.x = element_text(vjust=0.6, size= 10)) +
   ggplot2::scale_colour_discrete(name="Sample")
 return(p)
 }
@@ -422,7 +420,7 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
 
   if(heatmap){
     g <- g + geom_tile(data=biomarker_states %>% filter(i %in% sample_indivs), aes(x=t,y=biomarker_id,fill=value)) +
-      scale_fill_viridis_c(name="Biomarker and exposure key", option="magma")
+      scale_fill_viridis_c(name="Biomarker quantity", option="magma")
     
   } else {
     g <- g +
@@ -436,14 +434,15 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
       #scale_color_hue("Biomarker and Exposure Key", guide=guide_legend(order=3)) +
       #ggplot2::scale_color_viridis_d(name="Biomarker and Exposure Key") + 
     ggplot2::scale_color_manual(name="Biomarker and exposure key",values=all_colors)+
+    guides(color=guide_legend(ncol=4)) +
       ggplot2::labs(title="Individual biomarker kinetics",
                     x="Time",
                     y="Biomarker quantity") + 
-      ggplot2::theme(plot.title = element_text(hjust = 0.5, size=15)) +
-      ggplot2::theme(axis.text.x = element_text(vjust=0.6, size= 10)) +
-      ggplot2::theme(axis.text.y = element_text(vjust=0.6, size= 10)) +
-      ggplot2::theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
-      ggplot2::theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+      ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                     axis.text.x = element_text(vjust=0.6, size= 8),
+                     axis.text.y = element_text(vjust=0.6, size= 8),
+                     axis.title.y = element_text(vjust=0.6, size= 10),
+                     axis.title.x = element_text(vjust=0.6, size= 10)) +
       theme(legend.position="bottom", legend.box="vertical", legend.margin=margin())
   
     
@@ -525,14 +524,19 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
     biomarker_colors <- viridis::magma(n_biomarker_ids)
     names(biomarker_colors) <- unique(antibody_states_all$biomarker_id)
 
-    p <- ggplot(antibody_states_all) +
-        geom_line(aes(x=t,y=titer,col=biomarker_id,group=i),alpha=0.25) +
-        geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=biomarker_id),linewidth=1) +
-        theme_bw() +
-        xlab("Time since infection") +
-        ylab("Biomarker quantity") +
+    p <-  ggplot2::ggplot(antibody_states_all) +
+      ggplot2::geom_line(aes(x=t,y=titer,col=biomarker_id,group=i),alpha=0.25) +
+      ggplot2::geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=biomarker_id),linewidth=1) +
+        ggplot2::theme_bw() +
+      ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                     axis.text.x = element_text(vjust=0.6, size= 8),
+                     axis.text.y = element_text(vjust=0.6, size= 8),
+                     axis.title.y = element_text(vjust=0.6, size= 10),
+                     axis.title.x = element_text(vjust=0.6, size= 10)) +
+      ggplot2::xlab("Time since infection") +
+      ggplot2::ylab("Biomarker quantity") +
         ggplot2::scale_color_manual(name="Biomarker",values=biomarker_colors) +
-        facet_grid(b~exposure_id,scales="free_y")
+      ggplot2::facet_grid(b~exposure_id,scales="free_y")
     return(p)
     
 }
@@ -623,6 +627,11 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
         ylab("Probability of exposure per unit time") +
         xlab("Time") +
         theme_bw() +
+      ggplot2::theme(plot.title = element_text(hjust = 0.5, size=12),
+                     axis.text.x = element_text(vjust=0.6, size= 8),
+                     axis.text.y = element_text(vjust=0.6, size= 8),
+                     axis.title.y = element_text(vjust=0.6, size= 10),
+                     axis.title.x = element_text(vjust=0.6, size= 10)) +
         facet_grid(Individual~`Exposure ID`)
     return(p)
 }
