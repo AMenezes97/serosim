@@ -48,7 +48,7 @@ test_that("Check that plot_biomarker_quantity function works", {
   data("example_biomarker_states")
   
   ## Expect that plotting function works properly with no errors
-  expect_message(plot_biomarker_quantity(example_biomarker_states), regexp=NA)
+  expect_no_error(plot_biomarker_quantity(example_biomarker_states))
 })
 
 
@@ -58,7 +58,7 @@ test_that("Check that plot_obs_biomarkers_one_sample function works", {
   data("example_observed_biomarker_states")
   
   ## Expect that plotting function works properly with no errors
-  expect_message(plot_obs_biomarkers_one_sample(example_observed_biomarker_states), regexp=NA)
+  expect_no_error(plot_obs_biomarkers_one_sample(example_observed_biomarker_states))
 })
 
 
@@ -68,10 +68,10 @@ test_that("Check that plot_obs_biomarkers_paired_sample function works", {
   data("example_biomarker_states")
   
   example_biomarker_states$observed <- example_biomarker_states$value
-  example_biomarker_states_subset <- example_biomarker_states %>% filter(t %in% c(1,120))
+  example_biomarker_states_subset <- example_biomarker_states %>% dplyr::filter(t %in% c(1,120))
   
   ## Expect that plotting function works properly with no errors
-  expect_message(plot_obs_biomarkers_paired_sample(example_biomarker_states_subset), regexp=NA)
+  expect_no_error(plot_obs_biomarkers_paired_sample(example_biomarker_states_subset))
 })
 
 

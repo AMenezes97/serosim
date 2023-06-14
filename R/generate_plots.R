@@ -309,6 +309,7 @@ return(p)
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_line
 #' @importFrom ggplot2 element_blank
+#' @importFrom dplyr %>%
 #' @export
 #'
 #' @examples 
@@ -318,11 +319,17 @@ return(p)
 #' plot_obs_biomarkers_paired_sample(example_biomarker_states_subset)
 plot_obs_biomarkers_paired_sample<-function(observed_biomarker_states, discretize_times=TRUE){
   ## Find last 2 times for each individual
-  observed_biomarker_states <- observed_biomarker_states %>% left_join(
-    observed_biomarker_states %>% select(i, t) %>% distinct() %>% group_by(i) %>% arrange(-t) %>% mutate(n_samp=1:n()),
+  observed_biomarker_states <- observed_biomarker_states %>% dplyr::left_join(
+    observed_biomarker_states %>% 
+      dplyr::select(i, t) %>% 
+      dplyr::distinct() %>% 
+      dplyr::group_by(i) %>% 
+      dplyr::arrange(-t) %>% 
+      dplyr::mutate(n_samp=1:n()),
     by=c("i","t")
     ) %>%
-    filter(n_samp %in% 1:2) %>% mutate(n_samp = if_else(n_samp == 2, 1, 2))
+    dplyr::filter(n_samp %in% 1:2) %>% 
+    dplyr::mutate(n_samp = dplyr::if_else(n_samp == 2, 1, 2))
  
 
   observed_biomarker_states$biomarker_id <- factor(paste0("Biomarker: ", observed_biomarker_states$b), levels=paste0("Biomarker: ", unique(observed_biomarker_states$b)))
