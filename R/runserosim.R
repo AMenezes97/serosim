@@ -118,7 +118,8 @@ runserosim <- function(
     biomarker_ids <- unique(biomarker_map$biomarker_id)
     N_exposure_ids <- length(exposure_ids)
     N_biomarker_ids <- length(biomarker_ids)
-
+    demography<-data.table::data.table(demography)
+    
     ########################################################################
     ## Checking if pre-compuation of exposure probabilities is possible
     if(!is.null(VERBOSE)) message(cat("Checking for possible pre-computation to save time...\n"))
