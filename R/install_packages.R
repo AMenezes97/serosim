@@ -17,4 +17,4 @@
 utils::globalVariables(c('i','t','b','biomarker_id','titer','mean_titer','starting_biomarkers',
                           'boost_mod', 'biomarker', 'value', 'Time', 'Group', 
                          'Exposure', 'observed', 'times', 'x', 'birth', 'removal', 'group',
-                         'exposure_id', "Exposure ID", 'cross_reactivity','curr_biom_quant', 'block'))
+                         'exposure_id', "Exposure ID", 'cross_reactivity','curr_biom_quant', 'block', 'n_samp'))

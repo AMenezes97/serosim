@@ -36,7 +36,7 @@ antibody_model_biphasic(
 A biomarker quantity is returned
 }
 \description{
-Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term boost waning, short-term boost, and short-term boost waning parameters
+Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term waning, short-term boost, and short-term waning parameters
 }
 \examples{
 model_pars <- reformat_biomarker_map(example_model_pars_biphasic)
