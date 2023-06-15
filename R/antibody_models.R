@@ -49,7 +49,7 @@ antibody_model_monophasic <-  function(i, t1, b, immune_histories, biomarker_sta
 
 #' Biphasic antibody boosting-waning model
 #' 
-#' @description Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term boost waning, short-term boost, and short-term boost waning parameters
+#' @description Biphasic antibody boosting-waning model. This model assumes that for each exposure there is a set of long-term boost, long-term waning, short-term boost, and short-term waning parameters
 #'
 #' @inheritParams antibody_model_monophasic
 #' 

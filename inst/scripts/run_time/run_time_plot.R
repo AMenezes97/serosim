@@ -4,19 +4,25 @@ library(tidyverse)
 library(cowplot)
 
 ## Import run time data set 
-run_time_path <- system.file("run_time", "serosim_run_times.csv", package = "serosim")
-df <- read.csv(file = run_time_path, header = TRUE)
+# run_time_path <- system.file("run_time", "serosim_run_time_updated.csv", package = "serosim")
+# df <- read.csv(file = run_time_path, header = TRUE)
+
+library(readr)
+serosim_run_time_updated <- read_csv("inst/scripts/run_time/serosim_run_time_updated.csv")
+View(serosim_run_time_updated)
+df<-serosim_run_time_updated
 
 ## Separate run time by case study 
-df_readme <-  df %>% filter(df$example=="README")
+df_readme <-  df %>% filter(df$example=="quick_start")
 df_cs1<-df %>% filter(df$example=="CS1")
 df_cs2 <-df %>% filter(df$example=="CS2")
+df_cs3 <-df %>% filter(df$example=="CS3")
 
 theme_set(theme_bw()) 
 
 ## Create each individual plot 
-p_r<- ggplot(df_readme, aes(x=as.factor(individuals), y=(mean/60),  colour=as.character(times)))  
-p_r<- p_r + geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.character(times))), stat = "identity", width=0.5) +
+p_r<- ggplot(df_readme %>% filter(df_readme$mean<1000), aes(x=as.factor(individuals), y=(mean/60),  colour=as.factor(times)))  
+p_r<- p_r + geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.factor(times))), stat = "identity", width=0.5) +
   labs(y="Run time in minutes", 
        x="Number of individuals", 
        title="README example",
@@ -34,8 +40,8 @@ p_r<- p_r + geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/
 
 
 
-p_1<- ggplot(df_cs1, aes(x=as.factor(individuals), y=(mean/60),  colour=as.character(times)))  
-p_1<- p_1 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.character(times))), stat = "identity", width=0.5) +
+p_1<- ggplot(df_cs1, aes(x=as.factor(individuals), y=(mean/60),  colour=as.factor(times)))  
+p_1<- p_1 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.factor(times))), stat = "identity", width=0.5) +
   labs(y="Run time in minutes", 
        x="Number of individuals", 
        title="Case study 1",
@@ -51,8 +57,8 @@ p_1<- p_1 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/6
   guides(color = guide_legend(title = "Number of time steps")) + scale_color_viridis_d(option="D", end=0.65)
 
 
-p_2<- ggplot(df_cs2, aes(x=as.factor(individuals), y=(mean/60),  colour=as.character(times)))  
-p_2<- p_2 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.character(times))), stat = "identity", width=0.5) +
+p_2<- ggplot(df_cs2 %>% filter(df_cs2$individuals<5000), aes(x=as.factor(individuals), y=(mean/60),  colour=as.factor(times)))  
+p_2<- p_2 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.factor(times))), stat = "identity", width=0.5) +
   labs(y="Run time in minutes", 
        x="Number of individuals", 
        title="Case study 2",
@@ -72,3 +78,22 @@ p_2<- p_2 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/6
 ## Export as pdf with height of 6 inches width of 15 inches 
 plot_grid(p_r,p_1,p_2, nrow=1, ncol=3, align = "hv", scale=c(.98,.98, .98))
 
+
+## Create additional plot for case study 3
+p_3<- ggplot(df_cs3, aes(x=as.factor(individuals), y=(mean/60)))
+p_3<- p_3 +geom_boxplot(aes(x=as.factor(individuals), ymin=(min/60), ymax=(max/60), lower= (first_q/60), middle=(median/60), upper=(third_q/60), group=interaction(as.factor(individuals), as.factor(times))), stat = "identity", width=0.5) +
+  labs(y="Run time in minutes", 
+       x="Number of individuals", 
+       title="Case study 3",
+       subtitle = "10 exposure events, 10 biomarkers, 540 timesteps",
+       key ="test") +
+  theme(plot.title = element_text(hjust = 0.5, size=17)) +
+  theme(axis.text.x = element_text(vjust=0.6, size= 12)) +
+  theme(axis.text.y = element_text(vjust=0.6, size= 12)) +
+  theme(axis.title.y = element_text(vjust=0.6, size= 13)) +
+  theme(axis.title.x = element_text(vjust=0.6, size= 13)) +
+  theme(plot.subtitle = element_text(hjust=0.5, size= 12)) +
+  theme(legend.position="bottom", legend.box="vertical", legend.margin=margin()) +
+  guides(color = guide_legend(title = "Number of time steps")) + scale_color_viridis_d(option="D", end=0.65)
+p_3
+## Export as pdf with height of 5 inches width of 5 inches 
