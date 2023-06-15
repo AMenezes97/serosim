@@ -369,7 +369,7 @@ plot_biomarker_dependent_boosting(start=0, end=2, by=.1, biomarker_ceiling_thres
 plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_threshold=100, biomarker_ceiling_gradient=0.009)
 
 ## Plot example biomarker trajectories given the specified antibody kinetics model, model parameters and draw parameters function 
-plot_antibody_model(antibody_model_biphasic, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
+plot_antibody_model(antibody_model_biphasic, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map) + scale_color_viridis_d()
 ```
 
 # 1.7 Observation model 
