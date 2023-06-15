@@ -1,8 +1,8 @@
 ---
-title: "Extended version of the README simulation"
+title: "quickstart: Extended version of the README simulation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Extended_README}
+  %\VignetteIndexEntry{quickstart}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

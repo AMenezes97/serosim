@@ -28,7 +28,7 @@ the *runserosim* function in the order outlined in the methods section
 of the paper. We then run the simulation and examine its outputs.
 
 In the *vignettes* folder, you can find a more detailed walk through of
-this simple README simulation titled *Extended_README.Rmd*.
+this simple README simulation titled *quickstart.Rmd*.
 
 There are three additional complex vignettes/case studies in the
 *vignettes* folder.
