@@ -339,8 +339,8 @@ print(paste0("Saving to: ", chain_wd))
 
 ## Run multiple chains in parallel
 ## R CMD check only allows a maximum of two cores 
-cl <- makeCluster(2)
-#cl <- makeCluster(n_chains) ## Run this line instead to speed up the run.
+#cl <- makeCluster(2)
+cl <- makeCluster(n_chains) ## Run this line instead to speed up the run.
 registerDoParallel(cl)
 ```
 
