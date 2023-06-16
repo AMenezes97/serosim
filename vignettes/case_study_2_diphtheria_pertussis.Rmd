@@ -63,7 +63,7 @@ library(reshape2)
 ```
 
 
-# 1.1 Simulation settings
+# 1. Simulation settings
 We will simulate monthly time steps across a 10 year period. Therefore, we will 
 have 120 time steps. Note that these are arbitrary time steps which will need to 
 be scaled to the right time resolution to match any time-based parameters used 
@@ -76,7 +76,7 @@ times <- seq(1,120,by=1)
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
 ```
 
-# 1.2 Population demography
+# 2. Population demography
 For this case study, we are interested in tracking an individual's socioeconomic 
 status, group (a proxy for location), birth and removal time. We will use the 
 `generate_pop_demography` function to create the demography tibble needed for 
@@ -105,7 +105,7 @@ head(demography)
 tail(demography)
 ```
 
-# 1.3 Exposure to biomarker mapping
+# 3. Exposure to biomarker mapping
 We must set up the exposure IDs and biomarker IDs for our desired 
 simulation. Individuals can be seropositive either by natural infection or by 
 vaccination and we want to track both exposure types separately. 
@@ -136,7 +136,7 @@ biomarker_map <-reformat_biomarker_map(biomarker_map_original)
 biomarker_map
 ```
 
-# 1.4 Force of exposure and exposure model
+# 4. Force of exposure and exposure model
 Now, we need to specify the `foe_pars` argument which contains the force of exposure
 for all exposure_IDs across all time steps and groups. We also need to specify the 
 exposure model which will be called within `runserosim` later. The exposure model 
@@ -212,7 +212,7 @@ t_in_year=12
 plot_exposure_model(indivs=1:5,exposure_model=exposure_model_dem_mod, times=times, n_groups = 2, n_exposures = 3, foe_pars=foe_pars, demography=demography, dem_mod=dem_mod,t_in_year=t_in_year)
 ```
 
-# 1.5 Immunity model
+# 5. Immunity model
 Next, we specify the immunity model which will determine the probability that an 
 exposure event is successful in inducing an immunological response. Since we have both vaccination and natural 
 infection events, we will use `immunity_model_vacc_ifxn_biomarker_prot`. With this 
@@ -233,7 +233,7 @@ following a vaccination or previous infection. The user can limit the frequency
 of reinfections by adjusting the biomarker-mediated protection (also known as titer-mediated protection or titer-ceiling effects) parameters or by 
 specifying a maximum number of allowed successful exposure events. The 
 titer-mediated protection parameters used within this model are defined within 
-model_pars which will be loaded in section 1.6. 
+model_pars which will be loaded in section 6. 
 
 Again, the following diphtheria and pertussis titer-mediated protection parameters were selected by a literature search. The titer cutoffs used below were also discussed in a previous 
 analysis of diphtheria and pertussis serology [@Razafimahatratra2022-ub].
@@ -262,18 +262,18 @@ vacc_age<-c(NA,NA,2)
 ## We placed no successful exposure limit on the number of diphtheria or pertussis infection exposures and 3 dose limit on the vaccine exposure.
 max_events<-c(Inf,Inf,3)
 
-## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1, diphtheria antibody  (DP_antibody) which will be loaded in section 1.6
+## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 1, diphtheria antibody  (DP_antibody) which will be loaded in section 6
 ## The immunity model we selected will take into account an individual's current titer to diphtheria when determining the probability of successful infection. 
 ## Titers are ploted in mIU/mL 
 plot_biomarker_mediated_protection(0:150, biomarker_prot_midpoint=75, biomarker_prot_width=.1)
 
-## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody) which will be loaded in section 1.6
+## Plot biomarker-mediated protection curve given parameters specified within model_pars for biomarker 2, pertussis antibody (PT_antibody) which will be loaded in section 6
 ## The immunity model we selected will take into account an individual's current titer to pertussis when determining the probability of successful infection. 
 ## Titers are ploted in IU/mL 
 plot_biomarker_mediated_protection(0:100, biomarker_prot_midpoint=40, biomarker_prot_width=.25)
 ```
 
-# 1.6  Antibody model and model parameters 
+# 6.  Antibody model and model parameters 
 Now, we specify the antibody model to be used within `runserosim` to track antibody kinetics, or more broadly biomarker kinetics for each biomarker produced from successful exposure events.
 We will use a biphasic boosting-waning model[@Voysey2016-gu]. This model assumes that for each 
 exposure there is a set of long-term boost, long-term waning, short-term 
@@ -372,7 +372,7 @@ plot_biomarker_dependent_boosting(start=0, end=125, by=1, biomarker_ceiling_thre
 plot_antibody_model(antibody_model_biphasic, N=25, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map) + scale_color_viridis_d()
 ```
 
-# 1.7 Observation model 
+# 7. Observation model 
 Now we specify how observed biomarker quantities, in this case antibody titers, are generated as a probabilistic function of the true, latent biomarker quantities, and when to observe these quantities. In this step, users are specifying the sampling design and assay choice for their serological study. 
 
 This observation model observes the latent titer values 
@@ -407,11 +407,11 @@ observation_times<-rbind(obs1,obs2)
 ```
 
 
-# 1.8 Optional arguments 
+# 8. Optional arguments 
 There are no additional arguments needed for this simulation. 
 
 
-# 1.9 Run simulation 
+# 9. Run simulation 
 This is the core simulation where all simulation settings, models and parameters 
 are specified within the main simulation function. The run time for this step varies 
 depending on the number of individuals and the complexities of the specified models.
@@ -444,7 +444,7 @@ res<- runserosim(
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
-# 1.10 Generate plots
+# 10. Generate plots
 Now that the simulation is complete, we can examine the ground-truth states of the simulation for individual immune histories, the probability of exposure with each pathogen and vaccination over time, and the true, hidden biomarker kinetics.
 ```{r, fig.dim = c(7, 5)} 
 ## Plot biomarker 1 kinetics and immune histories for 10 individuals 
