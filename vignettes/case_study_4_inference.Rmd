@@ -21,16 +21,16 @@ This vignette demonstrates how serological data simulated from a complex, realis
 Outline:
 
 1. Simulate a serological dataset using a moderately complex `serosim` model with varying assumptions about immunity and vaccination.
-2. Estimate the ground-truth force of infection (FOI) using a serocatalytic model with the `serofoi` R-package. We will see how well serocatalytic models are able to re-estimate the FOI despite using simple classifications for seropositivity which ignore underlying complexity in the antibody model and immunity model.
-3. Infer individual-level exposures and antibody kinetics parameters using an infection history reconstruction methods from the `serosolver` R-package. We will see that the reconstructed infection histories are broadly accurate, but that there are some slight biases in the inferred antibody kinetics parameters and attack rates. 
+2. Estimate the ground-truth force of infection (FOI) using a serocatalytic model with the [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) R-package. We will see how well serocatalytic models are able to re-estimate the FOI despite using simple classifications for seropositivity which ignore underlying complexity in the antibody model and immunity model.
+3. Infer individual-level exposures and antibody kinetics parameters using an infection history reconstruction methods from the [`serosolver`](https://seroanalytics.github.io/serosolver/) R-package. We will see that the reconstructed infection histories are broadly accurate, but that there are some slight biases in the inferred antibody kinetics parameters and attack rates. 
 
 # 1.1 Motivation
 Serological data is commonly used to estimate past epidemiological dynamics. The presence of antibodies against a pathogen are indicative of prior exposure (either through vaccination or infection), and thus the level, kinetics and distribution of antibody measurements across time and age can be used to inform periods of high and low exposure rates. Virtually all approaches to inference using serology are underpinned by the same simple model: individuals become seropositive at some rate proportional to the FOI (which might vary over time), and remain seropositive for some duration governed by an assumed within-host model. Inference methods range in their complexity, from simple models assuming a constant FOI over time and life-long seropositivity, to time-varying FOI with nested within-host models accounting for antibody boosting and waning kinetics.
 
-However, even the most complex models are simplifications of reality. The model being fitted to the data will always be misspecified, as it is not feasible to accurately capture all mechanisms underpinning the data-generating process, both in terms of epistemology and identifiability issues when estimating model parameters. Regardless, we still aim to fit models and perform useful inferences from our data. It is therefore important to understand if estimates using simple _fitted_ models are reliable despite knowing that many of the true underlying _generative_ mechanisms are ignored.
+However, even the most complex models are simplifications of reality. The model being fitted to the data will always be misspecified, as it is not feasible to accurately capture all mechanisms underpinning the data-generating process, both in terms of epistemology and identifiability when estimating model parameters. Regardless, we still aim to fit models and perform useful inferences from our data. It is therefore important to understand if estimates using simple _fitted_ models are reliable despite knowing that many of the true underlying _generative_ mechanisms are ignored.
 
 ## 1.2 Setup
-We will use the outputs of `serosim` with two R-packages for estimating epidemic dynamics using serological data. These are [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) and [`serosolver`](https://seroanalytics.github.io/serosolver/). `serofoi` uses the `rstan` package to estimate the FOI by fitting serocatalytic models to age-stratified seroprevalence data, whereas `serosolver` uses a custom Markov chain Monte Carlo (MCMC) algorithm to estimate exposure histories, attack rates and parameters of a simple antibody kinetics using individual-level antibody titer data. Please refer to [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) and [`serosolver`](https://seroanalytics.github.io/serosolver/) websites for more information.
+We will use the outputs of `serosim` with two R-packages for estimating epidemic dynamics using serological data. These are [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) and [`serosolver`](https://seroanalytics.github.io/serosolver/). `serofoi` uses the `rstan` package to estimate the FOI by fitting serocatalytic models to age-stratified seroprevalence data, whereas `serosolver` uses a custom Markov chain Monte Carlo (MCMC) algorithm to jointly estimate exposure histories, attack rates and parameters of a simple antibody kinetics using individual-level antibody titer data. Please refer to the [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) and [`serosolver`](https://seroanalytics.github.io/serosolver/) webpages for more information.
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE,eval=TRUE}
 ## Install and load serosim 
@@ -41,10 +41,9 @@ library(serosim)
 library(plyr) ## Needed for a few internal serosolver functions -- careful, as some conflicts with dplyr
 library(tidyverse)
 library(data.table)
-library(ggplot2)
 library(patchwork)
 library(reshape2)
-library(coda)
+library(coda) ## For analyzing MCMC outputs
 library(foreach)
 library(doParallel)
 library(parallel)
@@ -57,7 +56,7 @@ library(ggpubr)
 ## Make sure rstan is installed
 library(rstan)
 library(remotes)
-remotes::install_github("epiverse-trace/serofoi")
+remotes::install_github("epiverse-trace/serofoi", ref = "26633e2")
 library(serofoi)
 
 ## Install serosolver
@@ -109,11 +108,9 @@ foe_pars <- array(0, dim=c(2,max(times),n_distinct(biomarker_map$exposure_id)))
 
 ## Specify the force of exposure for Location 1 (urban), Exposure ID 1 which represents natural infection
 foe_pars[1,,1] <- c(rep(0.05,20),rep(0.025,15),rep(0.01,15))
-#foe_pars[1,,1] <-0.03
 
 ## Specify the force of exposure for Location 2 (rural), Exposure ID 1 which represents natural infection
 foe_pars[2,,1] <- rev(c(rep(0.05,20),rep(0.025,15),rep(0.01,15))*2)
-#foe_pars[2,,1] <- 0.06
 
 ## Specify a simple exposure model which calculates the probability of exposure 
 ## directly from the force of exposure at that time step. In this selected model, 
@@ -127,7 +124,7 @@ plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times,
 
 
 ## 2.3 Antibody and immunity models
-The inference methods we will be using (`serofoi` and `serosolver`) have embedded models (whether explicit or implicit) for seroconversion or expected antibody level as a function fo time-since-infection. The serocatalytic model of `serofoi` makes the simplest assumption that individuals become seropositive indefinitely following exposure, though extensions of the serocatalytic model such as those in [`Rsero`](https://github.com/nathoze/Rsero) can also account for seroreversion. The `serosolver` model is more complicated with an embedded boosting and waning model, though under the assumption that all post-exposure kinetics are governed by the same magnitude of boost and wane. In reality, there is substantial heterogeneity in post-exposure antibody kinetics, and thus here we simulate a boosting and monophasic waning antibody process with random effects on the individual boosting and waning rate parameters (i.e., the kinetics of each exposure are governed by a randomly drawn set of parameter values). For the immunity model, we will assume that individuals have fairly strong antibody-mediated immunity.
+The inference methods we will be using ([`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) and [`serosolver`](https://seroanalytics.github.io/serosolver/)) have embedded models (whether explicit or implicit) for seroconversion or expected antibody level as a function of time-since-infection. The serocatalytic model of `serofoi` makes the simplest assumption that individuals become seropositive indefinitely following exposure, though extensions of the serocatalytic model such as those in [`Rsero`](https://github.com/nathoze/Rsero) can also account for seroreversion. The `serosolver` model is more complicated with an embedded boosting and waning model, though under the assumption that all post-exposure kinetics are governed by the same parameter values. In reality, there is substantial heterogeneity in post-exposure antibody kinetics, and thus here we simulate a boosting and monophasic waning antibody process with random effects on the individual boosting and waning rate parameters (i.e., the kinetics of each exposure are governed by a randomly drawn set of parameter values). For the immunity model, we will assume that individuals have fairly strong antibody-mediated immunity.
 
 We assume that post-infection antibody boosts are log-normally distributed with a mean of 4 and a standard deviation (on the log scale) of 2. This boost wanes at approximately 0.008 units per year (log-normally distributed, standard deviation of 0.025). Post-vaccination boosts are assumed to be lower with a mean boost of 2 units (log-normally distributed, standard deviation of 1), and wane slower at a rate of 0.005 units per year (log-normally distributed, standard deviation of 0.025). Although it takes a long time for most individuals to serorevert, the individual-level heterogeneity means that some individuals wane from seropositive to seronegative levels within the time frame of the simulation.
 
@@ -187,7 +184,7 @@ observation_times <- tibble(i=rep(1:max(demography$i),each=2),t=rep(c(48,50),N))
 
 ## 2.5 `serosim` run
 With all of the models and parameters in place, we now run the simulation. Inspect the `res` object to see some visualizations of the ground-truth simulation.
-```{r}
+```{r,fig.dim = c(7, 5)}
 ## Run the core simulation and save outputs in "res"
 res<- runserosim(
   simulation_settings,
@@ -210,6 +207,9 @@ res<- runserosim(
   sensitivity=sensitivity,
   specificity=specificity
 )
+
+## Plot biomarker kinetics and immune histories for 10 individuals 
+plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography, removal=TRUE)
 ```
 
 # 3.0 Estimating the force of infection using a serocatalytic model
@@ -221,7 +221,7 @@ $$
 where $\lambda_i$ is the FOI in year $i$ and $P(a,t)$ is the seroprevalence of age group $a$ at time $t$. We will use the `serofoi` package to fit this model to our simulated serological study data, noting that the simple fitted model does not explicitly account for the kinetics of the antibody response nor the imperfect performance of the antibody assay. Furthermore, the serocatalytic model fits to _seropositivity_ data rather than antibody level. Thus, we can also explore the consequences of using different thresholds to classify individuals as seropositive or seronegative.
 
 ## 3.1 Running the `serofoi` package
-We load the `serofoi` package, clean our simulated dataset into the format expected by the main `serofoi` functions, and then attempt to re-estimate the ground-truth FOI in our two study locations. We use the time-varying FOI model from `serofoi`, which allows the FOI to vary over time using a random-walk prior to allow the FOI to change smoothly over time. We only take the latest serum sample for each individual, though note that more complex serocatalytic models can combine multiple observations per person or cross-sections.
+We load the [`serofoi`](https://epiverse-trace.github.io/serofoi/index.html) package, clean our simulated dataset into the format expected by the main `serofoi` functions, and then attempt to re-estimate the ground-truth FOI in our two study locations. We use the time-varying FOI model from `serofoi`, which allows the FOI to vary over time using a random-walk prior to allow the FOI to change smoothly over time. We only take the latest serum sample for each individual, though note that more complex serocatalytic models can combine multiple observations per person or cross-sections.
 
 ```{r message=FALSE, warning=FALSE, results=FALSE}
 library(serofoi)
@@ -233,6 +233,7 @@ serodat <- left_join(serodat, demog, by="i")
 ## Create a custom function for summarizing the simulated serosurvey data into seroprevalence by age,
 ## then fit the serocatalytic model to the Rural and Urban location data.
 fit_serofoi <- function(seropos_cutoff = 1.5, serodat, true_foi){
+  ## Clean the data into form expected by serofoi
   summary <- serodat %>% dplyr::mutate(age = t - birth) %>% 
     dplyr::mutate(seropos=observed >= seropos_cutoff) %>% 
     group_by(age, location, t) %>% 
@@ -241,11 +242,12 @@ fit_serofoi <- function(seropos_cutoff = 1.5, serodat, true_foi){
     dplyr::mutate(test="sim",antibody="IgG",country="sim") %>%
     dplyr::rename(tsur=t, survey=location)
   
+  ## Fit the model to the data from rural individuals
   serodat_rural <- prepare_serodata(summary %>% filter(survey=="Rural"))
   model_rural <- run_seromodel(serodat_rural,foi_model = "tv_normal",n_iters=3000)
-  
   p_rural <- plot_seromodel(model_rural, size_text = 8,foi_sim=true_foi[2,,1])
   
+  ## Fit the model to the data from urban individuals
   serodat_urban <- prepare_serodata(summary %>% filter(survey=="Urban"))
   model_urban <- run_seromodel(serodat_urban,foi_model = "tv_normal",n_iters=3000)
   p_urban <- plot_seromodel(model_urban, size_text = 8,foi_sim=true_foi[1,,1])
@@ -305,7 +307,7 @@ p_vaccine_foi
 We can see that although the fits to the Rural dataset are fairly accurate, the model drastically overestimates the FOI in recent years for the Urban location. This is because the vaccination rate is so high that almost all individuals become seropositive within the first decade of life, and thus seropositivity alone cannot be used to estimate the FOI in the Urban location.
 
 ## 3.4 Summary
-In this section, we showed how FOI estimates from a simple catalytic model fitted to age-stratified seroprevalence data may be inaccurate or even biased if we fail to account for key mechanisms of the data-generating process (namely antibody waning in this case). An iterative approach of comparing estimates from the fitted model to ground truth from the simulation can be used to guide development of minimum acceptable inference models. From this analysis, we might consider refining the serocatalytic model in `serofoi` to include seroreversion, or use an alternative tool (e.g., the [`Rsero`](https://github.com/nathoze/Rsero) R-package also fits serocatalytic models using `rstan`, but allows for the possibility of seroreversion).
+In this section, we showed how FOI estimates from a simple catalytic model fitted to age-stratified seroprevalence data may be inaccurate or even biased if we fail to account for key mechanisms of the data-generating process (namely antibody waning in this case). An iterative approach of comparing estimates from the fitted model to ground truth from the simulation can be used to guide development of minimum acceptable inference models. From this analysis, we might consider refining the serocatalytic model in `serofoi` to include seroreversion, or use an alternative tool (e.g., the [`Rsero`](https://github.com/nathoze/Rsero) R-package which also fits serocatalytic models using `rstan`, but allows for the possibility of seroreversion).
 
 # 4.0 Estimating exposure histories, attack rates and antibody kinetics using `serosolver`
 Our next inference method uses the [`serosolver`](https://github.com/seroanalytics/serosolver) package to estimate not only which individuals have been exposed, but also _when_ each exposure event occurred. Like `serofoi`, `serosolver` uses a Markov chain Monte Carlo algorithm (MCMC) (in this case, a custom MCMC algorithm rather than `rstan`) to estimate model parameters conditional on the serological data. This approach differs in three ways from the serocatalytic model:
@@ -403,14 +405,14 @@ We will make some assumptions and simplifications about the epidemic model. `ser
 par_tab[par_tab$names %in% c("alpha","beta"),"values"] <- c(1,1)
 ```
 
-In the simulation, we assumed that individuals could be exposed in each of 50 years (i.e., an individual aged 50 or over could be infected between 0 and 50 times). This is clearly many exposure states to impute, and given we only have two biomarker measurements per individual, we restrict the parameter space to be explored. Here, we estimate exposure states in 5-year windows (i.e., was an individual infected in this 5-year period?) for historic times, and in 1-year windows for the final 5 years of the simulation. The vector `exposure_times` demarcates the lower bound of each of these time windows. We consider the "true" exposure state to be whether or not an individual was exposed at least once in each of these time windows.
+In the simulation, we assumed that individuals could be exposed in each one of 50 years (i.e., an individual aged 50 or over could be infected between 0 and 50 times). This is clearly many exposure states to impute, and given we only have two biomarker measurements per individual, we restrict the parameter space to be explored. Here, we estimate exposure states in 5-year windows (i.e., was an individual infected in this 5-year period?) for historic times, and in 1-year windows for the final 5 years of the simulation. The vector `exposure_times` demarcates the lower bound of each of these time windows. We consider the "true" exposure state to be whether or not an individual was exposed at least once in each of these time windows.
 ```{r}
 ## Setup some inputs for serosolver -- this just tells the function the vector of possible
 ## exposure times. The antigenic map is uninformative here, but is used in other examples
 ## to capture cross-reactivity
 # exposure_times <- seq(1,max(sero_data$samples),by=1) # If we wanted to estimated exposure states for each of 50 years
 exposure_times <- c(seq(1,45,by=5), 46:50)
-true_inf_hist <- res$exposure_histories_long
+true_inf_hist <- res$immune_histories_long
 true_inf_hist$t_group <- cut(true_inf_hist$t, breaks=exposure_times) # Note which time block each exposure time is in
 
 ## This is a data structure used by serosolver for antigenically variable pathogens -- it can be largely ignored here
@@ -503,7 +505,7 @@ list_chains <- lapply(list_chains, function(x) x[,(colnames(x) %in% c("mu_short"
 gelman.diag(as.mcmc.list(list_chains))
 effectiveSize(as.mcmc.list(list_chains))
 ```
-Next, we interrogate the estimates from `serosolver`. We can see that the 95% credible intervals (CrI) on the estimated total number of exposures captures the true value. It also looks like we are slightly overestimating the boosting and waning rates, despite the strong prior on the waning rate. This may not be too surprising: the simulation model has substantial heterogeneity in the degree of antibody boosting and waning, as well as sources of observation error not captured in the `serosolver` model. The error in the `serosolver` estimates are likely a reflection of failing to account for these mechanisms. However, overall, the estimates are not too far from truth.
+Next, we interrogate the estimates from `serosolver`. We can see that the 95% credible intervals (CrI) on the estimated total number of exposures captures the true value. It also looks like we are slightly overestimating the boosting and waning rates, despite the strong prior on the waning rate. This may not be too surprising: the simulation model has substantial heterogeneity in the degree of antibody boosting and waning, as well as sources of observation error not captured in the `serosolver` model. The error in the `serosolver` estimates are likely a reflection of failing to account for these mechanisms. However, overall, the estimates are not too far from the ground truth.
 
 ```{r, warning=FALSE, message=FALSE,results=FALSE}
 ## Read in chains for all other plots
@@ -531,7 +533,7 @@ print(paste0("Estimated waning rate (posterior mean and 95% CrI): ",  signif(mea
              signif(quantile(chains$theta_chain$wane, 0.975),3), ")"))
 
 ```
-One of the estimates we are most concerned with are the individual exposure histories. The following two plots show the estimated exposure histories from `serosolver` for 25 individuals in two ways. The first plot shows the cumulative number of exposures over time -- the x-axis gives the time-period, and the plotted line moves up by one one the y-axis when an exposure is imputed. The solid blue line shows the true cumulative exposure history, whereas the coloured regions and lines show the posterior 95% CrI and median estimated by `serosolver`. Note that the different colours represent estimates from the 5 different MCMC chains.
+One of the estimates we are most concerned with are the individual exposure histories. The following two plots show the estimated exposure histories from `serosolver` for 25 individuals in two ways. The first plot shows the cumulative number of exposures over time -- the x-axis gives the time-period, and the plotted line moves up by one one the y-axis when an exposure is imputed. The solid blue line shows the true cumulative exposure history, whereas the colored regions and lines show the posterior 95% CrI and median estimated by `serosolver`. Note that the different colors represent estimates from the 5 different MCMC chains.
 
 ```{r}
 ## Plot individual infection history estimates
@@ -546,9 +548,9 @@ The second plot shows the posterior density that an individual was infected in a
 p_cumu_infs[[2]]
 ```
 
-Overall, we see that although we largely estimated the correct total number of exposures per person, the timings of these exposure events is off in places. This is somewhat unsurprising -- we are trying to infer the timing of events that happened many years before our measurements were taken. Thus, the only information the model has to back-calculate these infection events is the antibody waning rate.
+Overall, we see that although we largely estimated the correct total number of exposures per person, the timings of these exposure events is off in places. This is unsurprising -- we are trying to infer the timing of events that happened many years before our measurements were taken. Thus, the only information the model has to back-calculate these infection events is the antibody waning rate.
 
-We next compare the model-estimate attack rates for the two locations (urban and rural) to the ground truth. The following plot shows the posterior mean and 95% CrI on the proportion of the alive population exposed in that each time period (red pointrange) compared to the ground truth (purple points). The blue pointranges denote time periods in which serum samples were taken. The left-hand plot corresponds to the urban location, whereas the right-hand plot corresponds to the rural location. We see substantial uncertainty in time periods further back in time, reflecting the smaller number of alive individuals in those older time periods. We can also roughly see the trend of decreasing incidence over time in the urban population and higher recent incidence in the rural population, however, the estimates are not particularly precise, and we are substantially underestimating the attack rates in the 5-year windows starting in year 31 and year 41. It seems likely that those exposures are being incorrectly placed in the time window around year 36.
+We next compare the model-estimate attack rates for the two locations (urban and rural) to the ground truth. The following plot shows the posterior mean and 95% CrI on the proportion of the alive population exposed in that each time period (red point-range) compared to the ground truth (purple points). The blue point-ranges denote time periods in which serum samples were taken. The left-hand plot corresponds to the urban location, whereas the right-hand plot corresponds to the rural location. We see substantial uncertainty in time periods further back in time, reflecting the smaller number of alive individuals in those older time periods. We can also roughly see the trend of decreasing incidence over time in the urban population and higher recent incidence in the rural population, however, the estimates are not particularly precise, and we are substantially underestimating the attack rates in the 5-year windows starting in year 31 and year 41. It seems likely that those exposures are being incorrectly placed in the time window around year 36.
 ```{r}
 ## Plot attack rates
 ## Get number alive in each time point and true number of exposures per time point
@@ -604,4 +606,4 @@ As in the `serofoi` section, there are many different ways in which we could fur
 3. Simulating larger serological studies with more and individuals and/or more longitudinal samples per individual.
 
 # 5.0 Conclusions
-In this vignette, we have seen how `serosim` can be used to generate synthetic data for testing two inference packages: `serofoi` and `serosolver`. Both inference packages have functionality for simulating data from the fitted model -- a recommended test prior to fitting any statistical model to real data, but arguably an easy test given that the fitted model is correctly specified. Crucially, the `serosim` model included realistic, complex processes which we expect to be important for generating our data, but which are unfeasible to include in our fitted models. Despite this model misspecification/over-simplification, both packages generate useful and reasonable estimates for the force of exposure, exposure histories and antibody kinetics, but with some error and bias. We suggest that this process of simulation-recovery using a simulation model that is different to the fitted model is a useful approach for understanding the performance of seroepidemiological inference methods prior to fitting to real data.
+In this vignette, we have seen how `serosim` can be used to generate synthetic data for testing two inference packages: `serofoi` and `serosolver`. Both inference packages have functionality for simulating data from the fitted model -- a recommended test prior to fitting any statistical model to real data, but arguably an easy test to pass given that the fitted model is correctly specified. Crucially, the `serosim` model included realistic, complex processes which we expect to be important for generating our data, but which are unfeasible to include in our fitted models. Despite this model misspecification/over-simplification, both packages generate useful and reasonable estimates for the force of exposure, exposure histories and antibody kinetics, but with some error and bias. We suggest that this process of simulation-recovery using a simulation model that is different to the fitted model is a useful approach for understanding the performance of seroepidemiological inference methods prior to fitting to real data.

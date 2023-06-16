@@ -14,7 +14,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(warnings=FALSE)
 
 ```
-
+# 1. Outline
 Here, we will use the _serosim_  package to generate a longitudinal serological 
 study of a one pathogen system with vaccination and natural infection. The 
 overall structure and principles discussed within this case study are also 
@@ -62,7 +62,7 @@ library(reshape2)
 ```
 
 
-# 1. Simulation settings
+# 2. Simulation settings
 We will simulate monthly time steps across a 10 year period. Therefore, we will 
 have 120 time steps. Note that these are arbitrary time steps which will need to 
 be scaled to the right time resolution to match any time-based parameters used 
@@ -75,7 +75,7 @@ times <- seq(1,120,by=1)
 simulation_settings <- list("t_start"=1,"t_end"=max(times))
 ```
 
-# 2. Population demography
+# 3. Population demography
 For this case study, we are not interested in tracking any demography information
 but we are interested in tracking individual's birth time. We will 
 use the generate_pop_demography function to create the demography tibble needed 
@@ -97,7 +97,7 @@ demography <- generate_pop_demography(N, times, age_min=0, prob_removal=0)
 summary(demography)
 ```
 
-# 3. Exposure to biomarker mapping
+# 4. Exposure to biomarker mapping
 Now, we set up the exposure IDs and biomarker IDs for our simulation. 
 Individuals can be seropositive either by measles natural infection 
 or by vaccination and we want to track both exposure types separately. 
@@ -123,7 +123,7 @@ biomarker_map
 ```
 
 
-# 4. Force of exposure and exposure model
+# 5. Force of exposure and exposure model
 Now, we need to specify the `foe_pars` argument which contains the force of exposure
 for all `exposure_IDs` across all time steps and groups. We also specify the 
 exposure model which will be called within `runserosim`  later. The exposure model 
@@ -160,7 +160,7 @@ exposure_model<-exposure_model_simple_FOE
 plot_exposure_model(exposure_model=exposure_model_simple_FOE, times=times, n_groups = 1, n_exposures = 2, foe_pars=foe_pars)
 ```
 
-# 5. Immunity model
+# 6. Immunity model
 Here, we specify the immunity model which will determine the probability that an 
 exposure event is successful in producing an immunological response. Since we have both vaccination and natural 
 infection events, we will use `immunity_model_vacc_ifxn_biomarker_prot`. With this 
@@ -209,7 +209,7 @@ max_events<-c(1,1)
 plot_biomarker_mediated_protection(0:1000, biomarker_prot_midpoint=200, biomarker_prot_width=1)
 ```
 
-# 6.  Antibody model, antibody kinetics parameters, and `draw_parameters`
+# 7.  Antibody model, antibody kinetics parameters, and `draw_parameters`
 Now, we specify the antibody model to be used within `runserosim` to track biomarker kinetics for each biomarker produced from the exposure events.
 
 We will be using a biphasic boosting-waning model here. This model assumes that for 
@@ -305,7 +305,7 @@ plot_biomarker_dependent_boosting(start=0, end=1000, by=1, biomarker_ceiling_thr
 plot_antibody_model(antibody_model_biphasic, N=100, model_pars=model_pars,draw_parameters_fn = draw_parameters_random_fx_biomarker_dep, biomarker_map=biomarker_map)
 ```
 
-# 7. Observation model and `observation_times`
+# 8. Observation model and `observation_times`
 Now we specify how observed biomarker quantities, in this case antibody titers, are generated as a probabilistic 
 function of the true, latent biomarker quantities, and when to observe these quantities.
 In this step, users are specifying the sampling design and assay choice for 
@@ -341,7 +341,7 @@ observation_times<-rbind(obs1,obs2)
 ```
 
 
-# 8. Optional arguments 
+# 9. Optional arguments 
 Users can specify any additional arguments needed for their models. Here, we 
 specify an optional argument to print an message to update us on the progress of 
 the simulation. 
@@ -351,7 +351,7 @@ the simulation.
 VERBOSE<-10
 ```
 
-# 9. Run simulation 
+# 10. Run simulation 
 This is the core simulation where all simulation settings, models and parameters 
 are specified within the main simulation function. The run time for this step varies 
 depending on the number of individuals and the complexities of the specified models. 
@@ -385,7 +385,7 @@ res<- runserosim(
 ## Note that models and arguments specified earlier in the code can be specified directly within this function.
 ```
 
-# 10. Generate plots
+# 11. Generate plots
 Now that the simulation is complete, we can plot all of the underlying immune histories, exposure probabilities and biomarker states for each individual.
 ```{r, fig.dim = c(6, 4)}
 ## Plot biomarker kinetics and immune histories for 10 individuals 
