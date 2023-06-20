@@ -45,7 +45,7 @@ Case study 4 demonstrates how serological data simulated from a complex, realist
 Load necessary packages:
 ```{r message=FALSE, warning=FALSE,eval=TRUE}
 ## Install and load serosim 
-devtools::install_github("AMenezes97/serosim")
+## devtools::install_github("seroanalytics/serosim")
 library(serosim)
 
 ## Load additional packages required 
@@ -264,8 +264,9 @@ Now that the simulation is complete, let's plot and examine the simulation outpu
 ```{r, fig.dim = c(6, 4)} 
 ## Plot biomarker kinetics and immune histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
+```
 
-
+```{r, fig.dim = c(4, 6)}
 ## Plot individual force of exposure for all exposure types
 ## This is the output of the exposure model.
 ## Note: All individuals are under the same force of exposure since we specified a simple exposure model and constant foe_pars

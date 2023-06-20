@@ -28,7 +28,7 @@ the *runserosim* function in the order outlined in the methods section
 of the paper. We then run the simulation and examine its outputs.
 
 In the *vignettes* folder, you can find a more detailed walk through of
-this simple README simulation titled *quickstart.Rmd*.
+this simple README simulation titled *Extended_README.Rmd*.
 
 There are three additional complex vignettes/case studies in the
 *vignettes* folder.
@@ -214,7 +214,7 @@ simulation outputs.
 ``` r
 ## Plot biomarker kinetics and immune histories for 10 individuals 
 plot_subset_individuals_history(res$biomarker_states, res$immune_histories_long, subset=10, demography)
-#> Warning: Removed 89 rows containing missing values (`geom_line()`).
+#> Warning: Removed 30 rows containing missing values (`geom_line()`).
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
