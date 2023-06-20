@@ -122,8 +122,9 @@ runserosim <- function(
     
     ########################################################################
     ## Checking if pre-compuation of exposure probabilities is possible
-    if(!is.null(VERBOSE)) message(cat("Checking for possible pre-computation to save time...\n"))
     if(attempt_precomputation){
+      if(!is.null(VERBOSE)) message(cat("Checking for possible pre-computation to save time...\n"))
+      
         precomputations <- precomputation_checks(N, times,exposure_ids, groups,
                                                  exposure_model, foe_pars, demography, 
                                                  VERBOSE, ...)
