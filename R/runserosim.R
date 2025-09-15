@@ -152,7 +152,6 @@ runserosim <- function(
       if(!is.null(immune_histories_fixed)){
           immune_histories <- ifelse(!is.na(immune_histories_fixed), immune_histories_fixed, immune_histories) 
       }
-      
       if(!is.null(VERBOSE)) message(cat("Beginning simulation\n"))
   
       ## For each individual
@@ -216,9 +215,9 @@ runserosim <- function(
       }
       return(list(array(biomarker_states[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_biomarker_ids)), 
                   kinetics_parameters[tmp_indivs], 
-                  immune_histories[tmp_indivs,,], 
-                  exposure_probabilities[tmp_indivs,,], 
-                  exposure_force[tmp_indivs,,]))
+                  array(immune_histories[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_exposure_ids)), 
+                  array(exposure_probabilities[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_exposure_ids)), 
+                  array(exposure_force[tmp_indivs,,],dim=c(length(tmp_indivs), length(times),N_exposure_ids))))
     }
     ## Run either the entire simulation in one go, or split into n_cores jobs and run in parallel
     if(!parallel){
@@ -255,16 +254,15 @@ runserosim <- function(
     }
     
     if(!is.null(VERBOSE)) message(cat("Simulation complete! Cleaning up...\n"))
-    
     all_kinetics_parameters <- do.call("bind_rows", kinetics_parameters)
     
     ## Reshape antibody states
     biomarker_states <- reshape2::melt(biomarker_states)
     colnames(biomarker_states) <- c("i","t","b","value")
     biomarker_states <- biomarker_states %>% arrange(i, t, b)
-
     ## Reshape immune histories
     immune_histories_long <- NULL
+
     if(sum(immune_histories, na.rm = TRUE) > 0){
         immune_histories_long <- reshape2::melt(immune_histories)
         colnames(immune_histories_long) <- c("i","t","x","value")
