@@ -398,7 +398,7 @@ plot_subset_individuals_history <- function(biomarker_states, immune_histories, 
   n_exposure_ids <- length(unique(immune_histories$exposure_id))
   n_biomarker_ids <- length(unique(biomarker_states$biomarker_id))
   
-  biomarker_colors <- viridis::magma(n_biomarker_ids)
+  biomarker_colors <- RColorBrewer::brewer.pal(max(3,n_biomarker_ids), "Set1")
   names(biomarker_colors) <- unique(biomarker_states$biomarker_id)
   exposure_colors <- viridis::viridis(n_exposure_ids)
   names(exposure_colors) <- unique(immune_histories$exposure_id)
@@ -521,9 +521,8 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
     antibody_states_summ$exposure_id <-factor(paste0("Exposure: ",antibody_states_summ$x), levels=paste0("Exposure: ", unique(antibody_states_summ$x)))    
     ## Create biomarker colors
     n_biomarker_ids <- length(unique(antibody_states_all$biomarker_id))
-    biomarker_colors <- viridis::magma(n_biomarker_ids)
+    biomarker_colors <- RColorBrewer::brewer.pal(max(3,n_biomarker_ids), "Set1")
     names(biomarker_colors) <- unique(antibody_states_all$biomarker_id)
-
     p <-  ggplot2::ggplot(antibody_states_all) +
       ggplot2::geom_line(aes(x=t,y=titer,col=biomarker_id,group=i),alpha=0.25) +
       ggplot2::geom_line(data=antibody_states_summ,aes(x=t,y=mean_titer,col=biomarker_id),linewidth=1) +
@@ -625,7 +624,7 @@ plot_exposure_model <- function(indivs=1, exposure_model, times, n_groups=1, n_e
                                   levels=paste0("Exposure: ", unique(foe_all$exposure_id)))
     
     n_exposure_ids <- length(unique(foe_all$exposure_id))
-    exposure_colors <- viridis::viridis(n_exposure_ids)
+    exposure_colors <- RColorBrewer::brewer.pal(max(n_exposure_ids,3), "Set3") #viridis::viridis(n_exposure_ids)
     names(exposure_colors) <- unique(foe_all$exposure_id)
     
     p <- ggplot(data=foe_all) + 
