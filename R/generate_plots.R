@@ -500,7 +500,7 @@ plot_antibody_model <- function(antibody_model,N=100, times=seq(1,50,by=1),model
                 if(b %in% biomarkers_tmp){
                     kinetics_pars_tmp <- list(draw_parameters_fn(i, 1, x, demography,antibody_states, model_pars, ...))
                     kinetics_pars_tmp[[1]] <- kinetics_pars_tmp[[1]][complete.cases(kinetics_pars_tmp[[1]]),]
-                    antibody_states[i,,b] <- vapply(times,function(t) antibody_model(1, t, b, immune_histories_tmp,antibody_states, 
+                    antibody_states[i,,b] <- vapply(times,function(t) antibody_model(i, t, b, immune_histories_tmp,antibody_states, 
                                                                                      kinetics_pars_tmp, biomarker_map, ...), numeric(1))
                 } else {
                     antibody_states[i,,b] <- NA
